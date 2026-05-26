@@ -806,6 +806,7 @@ namespace wumgr
             About += string.Format("Version: \t{0}\r\n", Program.mVersion);
             About += "\r\n";
             About += "Source: \thttps://github.com/Darkaxt/wumgr\r\n";
+            About += "Releases: \thttps://github.com/Darkaxt/wumgr/releases\r\n";
             About += "Upstream: \thttps://github.com/DavidXanatos/wumgr\r\n";
             About += "\r\n";
             About += "Icons from: https://icons8.com/";
@@ -1594,12 +1595,13 @@ namespace wumgr
 
             ignoreChecks = true;
 
-            foreach (ListViewItem item in updateView.Items)
-                item.Checked = chkAll.Checked;
+            bool changed = UpdateSelectionHelper.SetAllChecked(updateView.Items, chkAll.Checked);
 
             ignoreChecks = false;
 
             checkChecks = true;
+            if (changed)
+                UpdateState();
         }
 
         private void updateView_ItemChecked(object sender, ItemCheckedEventArgs e)

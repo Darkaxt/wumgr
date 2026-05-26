@@ -31,3 +31,6 @@ administrator rights.
 
 Some options are disabled on Windows editions that ignore the relevant policy or
 when WuMgr is not elevated.
+
+For removal and policy recovery steps, see
+[UNINSTALL_AND_RECOVERY.md](UNINSTALL_AND_RECOVERY.md).

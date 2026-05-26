@@ -106,6 +106,7 @@
     <Compile Include="MsUpdate.cs" />
     <Compile Include="Translate.cs" />
     <Compile Include="UpdateDownloader.cs" />
+    <Compile Include="UpdateSelectionHelper.cs" />
     <Compile Include="Common\WinConsole.cs" />
     <Compile Include="UpdateErrors.cs" />
     <Compile Include="UpdateInstaller.cs" />

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Windows.Forms;
 
 namespace wumgr.Tests
 {
@@ -12,6 +13,7 @@ namespace wumgr.Tests
             Run("Create skips updates without download URLs", CreateSkipsUpdatesWithoutDownloadUrls);
             Run("Create treats empty download URLs as missing", CreateTreatsEmptyDownloadUrlsAsMissing);
             Run("GetCompletedFiles skips failed and incomplete downloads", GetCompletedFilesSkipsFailedAndIncompleteDownloads);
+            Run("Select all reports selection changes", SelectAllReportsSelectionChanges);
 
             if (failures != 0)
                 Console.Error.WriteLine("{0} test(s) failed.", failures);
@@ -75,6 +77,21 @@ namespace wumgr.Tests
 
             AssertEqual(1, files.GetCount(), "completed file count");
             AssertEqual(@"C:\Updates\KB4\good.msu", files.GetValues("KB4")[0], "completed file path");
+        }
+
+        private static void SelectAllReportsSelectionChanges()
+        {
+            using (var list = new ListView())
+            {
+                list.Items.Add(new ListViewItem("one"));
+                list.Items.Add(new ListViewItem("two"));
+
+                bool changed = UpdateSelectionHelper.SetAllChecked(list.Items, true);
+
+                Assert(changed, "selection helper should report that items changed");
+                Assert(list.Items[0].Checked, "first item should be checked");
+                Assert(list.Items[1].Checked, "second item should be checked");
+            }
         }
 
         private static void Assert(bool condition, string message)
