@@ -2,7 +2,7 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased]
+## [1.2.1] - 2026-05-27
 ### Added
 - Added upstream issue triage notes for the maintained fork.
 - Added uninstall and Windows Update policy recovery documentation.
@@ -11,7 +11,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - Select All now refreshes available update actions immediately.
 - Enabled WinForms high-DPI auto-resizing for high-DPI displays.
+- Restoring WuMgr from startup, tray, notification, or single-instance IPC now explicitly activates the main window.
+- Repeated operation failures no longer stack duplicate result dialogs while one is already open.
 - Fixed an old changelog typo.
+
+### Changed
+- Version updated to 1.2.1.0.
 
 ## [1.2.0] - 2026-05-26
 ### Added

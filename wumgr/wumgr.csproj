@@ -104,6 +104,7 @@
     <Compile Include="Common\ServiceHelper.cs" />
     <Compile Include="ManualDownloadPlanner.cs" />
     <Compile Include="MsUpdate.cs" />
+    <Compile Include="ResultDialogGuard.cs" />
     <Compile Include="Translate.cs" />
     <Compile Include="UpdateDownloader.cs" />
     <Compile Include="UpdateSelectionHelper.cs" />
