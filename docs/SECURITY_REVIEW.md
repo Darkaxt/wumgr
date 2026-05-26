@@ -42,3 +42,32 @@ privilege and update integrity.
   additional confirmed code fix was identified for v1.2.1 beyond the dialog
   guard and the v1.2.0 hardening work.
 - v1.2.1 binaries remain unsigned.
+
+## v1.2.2 Follow-up
+
+- GitHub code scanning and Dependabot security alerts were checked during the
+  pass and both reported zero open alerts.
+- Named-pipe single-instance IPC no longer grants `World` full control. The pipe
+  ACL is limited to the current Windows user, local Administrators, and Local
+  System so single-instance restore still works for the same user and elevated
+  process pairings.
+- Manual download filenames are derived from the final response URI or
+  `Content-Disposition` header through a sanitizer. Directory components are
+  stripped, invalid filename characters are replaced, and empty or directory-only
+  names continue to fall back to generated `Download_N` names.
+- HTTP redirects remain enabled because Microsoft download endpoints may redirect
+  through CDN URLs. The app does not force HTTPS-only downloads in this
+  maintenance pass to avoid breaking existing Windows Update Catalog links.
+- `Tools.ini` `[OnStart]` and `[OnClose]` command hooks remain intentional
+  local command-execution features. They run with the privileges used to launch
+  WuMgr, so users should keep `Tools.ini` writable only by trusted local users.
+- The `-onclose` command-line hook remains disabled during `-NoUAC` Skip UAC
+  runs. This preserves the existing local privilege escalation guard.
+- Skip UAC remains a local-admin convenience feature. It creates a highest-run
+  scheduled task for the interactive user and should only be enabled on machines
+  where that local-admin trust boundary is acceptable.
+- Update facilitator service hardening still changes service registry state and
+  can add a deny ACE for Local System when disabling those services. Recovery
+  steps remain documented in `docs/UNINSTALL_AND_RECOVERY.md`.
+- WPF migration is deferred. The maintained fork keeps the WinForms UI for
+  maintenance releases while security and reliability work stabilizes.

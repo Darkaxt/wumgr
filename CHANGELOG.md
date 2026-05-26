@@ -2,6 +2,19 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased]
+### Added
+- Added v1.2.2 security review notes covering command hooks, Skip UAC, IPC,
+  manual downloads, service/GPO writes, and WPF deferral.
+- Added modernization notes documenting that WPF migration is deferred until
+  after security and reliability stabilization.
+
+### Fixed
+- Restricted named-pipe IPC ACLs to the current user, local Administrators, and
+  Local System instead of granting `World` full control.
+- Sanitized manual download filenames derived from redirects and
+  `Content-Disposition` headers before writing files.
+
 ## [1.2.1] - 2026-05-27
 ### Added
 - Added upstream issue triage notes for the maintained fork.

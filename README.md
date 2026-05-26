@@ -36,5 +36,5 @@ and SHA256 hashes.
 See [docs/OPTIONS.md](docs/OPTIONS.md) for option descriptions,
 [docs/UNINSTALL_AND_RECOVERY.md](docs/UNINSTALL_AND_RECOVERY.md) for uninstall
 and Windows Update policy recovery, [docs/ISSUE_TRIAGE.md](docs/ISSUE_TRIAGE.md)
-for upstream issue triage, and [SECURITY.md](SECURITY.md) for security
-reporting.
+for upstream issue triage, [docs/MODERNIZATION.md](docs/MODERNIZATION.md) for
+modernization notes, and [SECURITY.md](SECURITY.md) for security reporting.
