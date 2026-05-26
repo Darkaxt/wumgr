@@ -90,6 +90,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Common\HttpTask.cs" />
+    <Compile Include="Common\DownloadFileNameHelper.cs" />
     <Compile Include="Common\FileOps.cs" />
     <Compile Include="Common\AppLog.cs" />
     <Compile Include="Common\KnownFolders.cs" />
@@ -98,6 +99,7 @@
     </Compile>
     <Compile Include="Common\MultiValueDictionary.cs" />
     <Compile Include="Common\PipeIPC.cs" />
+    <Compile Include="Common\PipeSecurityFactory.cs" />
     <Compile Include="Common\TokenManipulator.cs" />
     <Compile Include="GPO.cs" />
     <Compile Include="Common\MiscFunc.cs" />

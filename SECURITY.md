@@ -16,6 +16,9 @@ minimal reproduction details and no exploit payload. Include:
 - Whether the app was running elevated
 - Affected feature, such as Skip UAC, Tools.ini command hooks, manual downloads,
   Windows Update service control, or GPO changes
+- For Skip UAC reports, whether the `WuMgrNoUAC` scheduled task is enabled
+- For command-hook reports, the relevant `Tools.ini` section or command-line
+  option, with secrets and exploit payloads removed
 
 ## Security-Sensitive Areas
 
@@ -29,3 +32,6 @@ they touch:
 - service and registry/GPO manipulation
 
 Published binaries are unsigned unless release notes state otherwise.
+
+For the current security review status and accepted local-admin trust
+boundaries, see [docs/SECURITY_REVIEW.md](docs/SECURITY_REVIEW.md).

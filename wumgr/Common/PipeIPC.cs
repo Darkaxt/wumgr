@@ -89,8 +89,7 @@ class PipeIPC
 
         public PipeServer(string pipeName)
         {
-            PipeSecurity pipeSa = new PipeSecurity();
-            pipeSa.SetAccessRule(new PipeAccessRule(new SecurityIdentifier(FileOps.SID_Worls), PipeAccessRights.FullControl, AccessControlType.Allow));
+            PipeSecurity pipeSa = PipeSecurityFactory.CreateCurrentUserSecurity();
             int buffLen = 1029; // 4 + 1024 + 1
             pipeStream = new NamedPipeServerStream(pipeName, PipeDirection.InOut, NamedPipeServerStream.MaxAllowedServerInstances, PipeTransmissionMode.Message, PipeOptions.Asynchronous,  buffLen, buffLen,  pipeSa);
             pipeStream.BeginWaitForConnection(new AsyncCallback(PipeConnected), null);

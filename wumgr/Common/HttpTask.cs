@@ -178,7 +178,7 @@ class HttpTask
 
             Console.WriteLine("The server at {0} returned {1}", task.response.ResponseUri, task.response.StatusCode);
 
-            string fileName = Path.GetFileName(task.response.ResponseUri.ToString());
+            string fileName = DownloadFileNameHelper.GetFileNameFromUri(task.response.ResponseUri);
             task.lastTime = DateTime.Now;
 
             Console.WriteLine("With headers:");
@@ -192,8 +192,9 @@ class HttpTask
                 }
                 else if (key.Equals("Content-Disposition", StringComparison.CurrentCultureIgnoreCase))
                 {
-                    string cd = task.response.Headers[key];
-                    fileName = cd.Substring(cd.IndexOf("filename=") + 9).Replace("\"", "");
+                    string contentDispositionFileName = DownloadFileNameHelper.GetContentDispositionFileName(task.response.Headers[key]);
+                    if (!string.IsNullOrEmpty(contentDispositionFileName))
+                        fileName = contentDispositionFileName;
                 }
                 else if (key.Equals("Last-Modified", StringComparison.CurrentCultureIgnoreCase))
                 {
@@ -205,6 +206,7 @@ class HttpTask
 
             if (task.mDlName == null)
                 task.mDlName = fileName;
+            task.mDlName = DownloadFileNameHelper.Sanitize(task.mDlName);
 
             FileInfo testInfo = new FileInfo(task.mDlPath + @"\" + task.mDlName);
             if (testInfo.Exists && testInfo.LastWriteTime == task.lastTime && testInfo.Length == task.mLength)
@@ -238,10 +240,11 @@ class HttpTask
         {
             if (e.Response != null)
             {
-                string fileName = Path.GetFileName(e.Response.ResponseUri.AbsolutePath.ToString());
+                string fileName = DownloadFileNameHelper.GetFileNameFromUri(e.Response.ResponseUri);
 
                 if (task.mDlName == null)
                     task.mDlName = fileName;
+                task.mDlName = DownloadFileNameHelper.Sanitize(task.mDlName);
 
                 FileInfo testInfo = new FileInfo(task.mDlPath + @"\" + task.mDlName);
                 if (testInfo.Exists)

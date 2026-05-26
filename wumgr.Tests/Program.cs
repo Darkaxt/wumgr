@@ -1,5 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.IO.Pipes;
+using System.Linq;
+using System.Security.AccessControl;
+using System.Security.Principal;
 using System.Windows.Forms;
 
 namespace wumgr.Tests
@@ -15,6 +19,9 @@ namespace wumgr.Tests
             Run("GetCompletedFiles skips failed and incomplete downloads", GetCompletedFilesSkipsFailedAndIncompleteDownloads);
             Run("Select all reports selection changes", SelectAllReportsSelectionChanges);
             Run("Result dialog guard suppresses duplicate dialogs", ResultDialogGuardSuppressesDuplicateDialogs);
+            Run("Pipe security avoids World access", PipeSecurityAvoidsWorldAccess);
+            Run("Download file names are sanitized", DownloadFileNamesAreSanitized);
+            Run("Content-Disposition filename parsing is guarded", ContentDispositionFilenameParsingIsGuarded);
 
             if (failures != 0)
                 Console.Error.WriteLine("{0} test(s) failed.", failures);
@@ -106,6 +113,44 @@ namespace wumgr.Tests
 
             Assert(guard.TryBegin(), "dialog should be allowed after previous dialog ends");
             guard.End();
+        }
+
+        private static void PipeSecurityAvoidsWorldAccess()
+        {
+            PipeSecurity security = PipeSecurityFactory.CreateCurrentUserSecurity();
+            AuthorizationRuleCollection rules = security.GetAccessRules(true, true, typeof(SecurityIdentifier));
+
+            SecurityIdentifier worldSid = new SecurityIdentifier(WellKnownSidType.WorldSid, null);
+            SecurityIdentifier currentUserSid = WindowsIdentity.GetCurrent().User;
+
+            bool grantsWorld = rules
+                .Cast<PipeAccessRule>()
+                .Any(rule => rule.IdentityReference.Value == worldSid.Value && rule.AccessControlType == AccessControlType.Allow);
+
+            bool grantsCurrentUser = rules
+                .Cast<PipeAccessRule>()
+                .Any(rule => rule.IdentityReference.Value == currentUserSid.Value
+                    && rule.AccessControlType == AccessControlType.Allow
+                    && (rule.PipeAccessRights & PipeAccessRights.FullControl) == PipeAccessRights.FullControl);
+
+            Assert(!grantsWorld, "pipe security must not grant World access");
+            Assert(grantsCurrentUser, "pipe security should grant the current user full control");
+        }
+
+        private static void DownloadFileNamesAreSanitized()
+        {
+            AssertEqual("evil.msu", DownloadFileNameHelper.Sanitize(@"..\evil.msu"), "parent path stripped");
+            AssertEqual("file.msu", DownloadFileNameHelper.Sanitize("folder/sub/file.msu"), "forward slash path stripped");
+            AssertEqual("bad_name_.msu", DownloadFileNameHelper.Sanitize("bad:name?.msu"), "invalid characters replaced");
+            AssertEqual("", DownloadFileNameHelper.Sanitize(".."), "directory-only name rejected");
+        }
+
+        private static void ContentDispositionFilenameParsingIsGuarded()
+        {
+            AssertEqual("package.msu", DownloadFileNameHelper.GetContentDispositionFileName("attachment; filename=\"package.msu\""), "quoted filename");
+            AssertEqual("safe.msu", DownloadFileNameHelper.GetContentDispositionFileName(@"attachment; filename=""..\safe.msu"""), "path filename sanitized");
+            AssertEqual(null, DownloadFileNameHelper.GetContentDispositionFileName("attachment; name=\"package.msu\""), "missing filename ignored");
+            AssertEqual(null, DownloadFileNameHelper.GetContentDispositionFileName("attachment; filename=\"..\""), "directory filename ignored");
         }
 
         private static void Assert(bool condition, string message)
