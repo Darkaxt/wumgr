@@ -1,0 +1,104 @@
+# Upstream Issue Triage
+
+This fork tracks upstream issues from
+[DavidXanatos/wumgr](https://github.com/DavidXanatos/wumgr) as maintenance
+input. The fork does not mirror every upstream issue. Focused fork issues are
+opened only when the work is actionable for this maintained fork.
+
+## Already handled by v1.2.0
+
+- [#5](https://github.com/DavidXanatos/wumgr/issues/5) Window position, size, column sizes, not saved or restored
+- [#6](https://github.com/DavidXanatos/wumgr/issues/6) Help file
+- [#94](https://github.com/DavidXanatos/wumgr/issues/94) Options description
+- [#103](https://github.com/DavidXanatos/wumgr/issues/103) Translation does not work v.1.1
+- [#104](https://github.com/DavidXanatos/wumgr/issues/104) Which version of Visual Studio is needed with this code?
+- [#108](https://github.com/DavidXanatos/wumgr/issues/108) Looking for documentation for the Options and Auto Update tabs attributes
+- [#117](https://github.com/DavidXanatos/wumgr/issues/117) Installing updates fails, if list is not refreshed
+- [#135](https://github.com/DavidXanatos/wumgr/issues/135) Add Swedish translation to WuMgr
+- [#142](https://github.com/DavidXanatos/wumgr/issues/142) Column settings are not saved
+- [#145](https://github.com/DavidXanatos/wumgr/issues/145) Missing download URLs wrongly report success
+- [#146](https://github.com/DavidXanatos/wumgr/issues/146) Log messages are not copyable
+
+## Partially handled
+
+- [#80](https://github.com/DavidXanatos/wumgr/issues/80) Ability to resize and copy the output/status window
+- [#102](https://github.com/DavidXanatos/wumgr/issues/102) WUMgr logging and resizing
+- [#138](https://github.com/DavidXanatos/wumgr/issues/138) Options documentation and large update size report
+
+## v1.2.1 candidates
+
+- [#44](https://github.com/DavidXanatos/wumgr/issues/44) Stacked error windows
+- [#58](https://github.com/DavidXanatos/wumgr/issues/58) Select All not updating available actions
+- [#71](https://github.com/DavidXanatos/wumgr/issues/71) Typo in changelog.md
+- [#73](https://github.com/DavidXanatos/wumgr/issues/73) Typo in repository description
+- [#78](https://github.com/DavidXanatos/wumgr/issues/78) Defender Updates task when Windows Update service is disabled
+- [#90](https://github.com/DavidXanatos/wumgr/issues/90) Link to download new releases
+- [#96](https://github.com/DavidXanatos/wumgr/issues/96) Cannot remove Group Policy
+- [#109](https://github.com/DavidXanatos/wumgr/issues/109) Uninstall WUMGR
+- [#119](https://github.com/DavidXanatos/wumgr/issues/119) DPIAwareness does not work properly in v1.1
+- [#141](https://github.com/DavidXanatos/wumgr/issues/141) Program can open behind other windows
+- [#144](https://github.com/DavidXanatos/wumgr/issues/144) Hide WU Settings Page is too unobtrusive
+- [#149](https://github.com/DavidXanatos/wumgr/issues/149) Typo: "managemetn"
+- [#152](https://github.com/DavidXanatos/wumgr/issues/152) SAST analysis results
+
+## Needs reproduction before code changes
+
+- [#14](https://github.com/DavidXanatos/wumgr/issues/14) Disable Windows Update
+- [#41](https://github.com/DavidXanatos/wumgr/issues/41) Does not find available updates
+- [#45](https://github.com/DavidXanatos/wumgr/issues/45) Delete KB scan never stops
+- [#54](https://github.com/DavidXanatos/wumgr/issues/54) KB4487044 shows 82.34 GB
+- [#59](https://github.com/DavidXanatos/wumgr/issues/59) Error in size of update
+- [#60](https://github.com/DavidXanatos/wumgr/issues/60) Fresh Windows 8.1 install cannot launch WuMgr
+- [#61](https://github.com/DavidXanatos/wumgr/issues/61) Options page does not apply some settings
+- [#82](https://github.com/DavidXanatos/wumgr/issues/82) SQL Server updates support
+- [#83](https://github.com/DavidXanatos/wumgr/issues/83) Office 2013 updates are not installed
+- [#85](https://github.com/DavidXanatos/wumgr/issues/85) Internal error downloading updates
+- [#87](https://github.com/DavidXanatos/wumgr/issues/87) Jittering during large update operations
+- [#91](https://github.com/DavidXanatos/wumgr/issues/91) SCEP update KB3209361 install error
+- [#95](https://github.com/DavidXanatos/wumgr/issues/95) Non-local date format
+- [#99](https://github.com/DavidXanatos/wumgr/issues/99) Update size 84.77 GB
+- [#100](https://github.com/DavidXanatos/wumgr/issues/100) Hide option does not work in Store update manager
+- [#107](https://github.com/DavidXanatos/wumgr/issues/107) Repeated failures on Windows 10
+- [#112](https://github.com/DavidXanatos/wumgr/issues/112) Update failures reported as applied
+- [#113](https://github.com/DavidXanatos/wumgr/issues/113) Automatic search for updates does not work
+- [#118](https://github.com/DavidXanatos/wumgr/issues/118) Windows Server 2019 hidden update behavior
+- [#121](https://github.com/DavidXanatos/wumgr/issues/121) Update history showing wrong date
+- [#137](https://github.com/DavidXanatos/wumgr/issues/137) Packages without a KB cite download but do not appear
+- [#139](https://github.com/DavidXanatos/wumgr/issues/139) Windows 11 upgrade not applied on reboot
+- [#151](https://github.com/DavidXanatos/wumgr/issues/151) Shows 0 updates
+- [#153](https://github.com/DavidXanatos/wumgr/issues/153) Surface Slim Pen not charging
+
+## Deferred feature or major-scope requests
+
+- [#42](https://github.com/DavidXanatos/wumgr/issues/42) Select remote computers
+- [#50](https://github.com/DavidXanatos/wumgr/issues/50) Installer-based version
+- [#53](https://github.com/DavidXanatos/wumgr/issues/53) Command-line version
+- [#55](https://github.com/DavidXanatos/wumgr/issues/55) Launch minimized
+- [#57](https://github.com/DavidXanatos/wumgr/issues/57) MMC snap-in and Control Panel object
+- [#63](https://github.com/DavidXanatos/wumgr/issues/63) Check certificates and repair Windows Update
+- [#65](https://github.com/DavidXanatos/wumgr/issues/65) Search button
+- [#69](https://github.com/DavidXanatos/wumgr/issues/69) Progress percentage and download speed
+- [#79](https://github.com/DavidXanatos/wumgr/issues/79) Feature update version options
+- [#93](https://github.com/DavidXanatos/wumgr/issues/93) Block specific updates and filter by size
+- [#97](https://github.com/DavidXanatos/wumgr/issues/97) Security Intelligence update automation only
+- [#98](https://github.com/DavidXanatos/wumgr/issues/98) 32-bit version
+- [#110](https://github.com/DavidXanatos/wumgr/issues/110) Defer updates
+- [#116](https://github.com/DavidXanatos/wumgr/issues/116) Manage apps and app updates
+- [#133](https://github.com/DavidXanatos/wumgr/issues/133) Cancellation confirmation
+- [#143](https://github.com/DavidXanatos/wumgr/issues/143) Honor system dark mode
+
+## Support or meta
+
+- [#10](https://github.com/DavidXanatos/wumgr/issues/10) Unavailable settings
+- [#129](https://github.com/DavidXanatos/wumgr/issues/129) Disabled facilitator and WU Settings controls are greyed out
+- [#132](https://github.com/DavidXanatos/wumgr/issues/132) Program not asking for reboot
+- [#134](https://github.com/DavidXanatos/wumgr/issues/134) Need for changes with Windows 11
+- [#140](https://github.com/DavidXanatos/wumgr/issues/140) Future of Windows 11
+- [#147](https://github.com/DavidXanatos/wumgr/issues/147) Dead project?
+
+## Low priority or insufficiently actionable
+
+- [#40](https://github.com/DavidXanatos/wumgr/issues/40) Add time marks in log panel
+- [#92](https://github.com/DavidXanatos/wumgr/issues/92) KB4549951
+- [#101](https://github.com/DavidXanatos/wumgr/issues/101) General pre-test questions
+- [#105](https://github.com/DavidXanatos/wumgr/issues/105) Switch GUI language from German to English

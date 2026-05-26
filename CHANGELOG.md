@@ -2,6 +2,17 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased]
+### Added
+- Added upstream issue triage notes for the maintained fork.
+- Added uninstall and Windows Update policy recovery documentation.
+- Added a releases link to the About dialog.
+
+### Fixed
+- Select All now refreshes available update actions immediately.
+- Enabled WinForms high-DPI auto-resizing for high-DPI displays.
+- Fixed an old changelog typo.
+
 ## [1.2.0] - 2026-05-26
 ### Added
 - Maintained-fork docs, security policy, build docs, option docs, and release packaging script.
@@ -69,7 +80,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Added french translation thanks to Leo
 
 ### Changed
-- now the WU setting is always available, and it not ato set when chagrin AU blocking options.
+- the WU setting is always available and is not auto-set when changing AU blocking options.
 
 
 ## [0.8] - 2018-10-23
