@@ -70,6 +70,7 @@ namespace wumgr
         }
 
         WuAgent agent;
+        private readonly ResultDialogGuard mResultDialogGuard = new ResultDialogGuard();
 
         void LineLogger(object sender, AppLog.LogEventArgs args)
         {
@@ -128,6 +129,7 @@ namespace wumgr
         public WuMgr()
         {
             InitializeComponent();
+            this.Shown += new System.EventHandler(this.WuMgr_Shown);
 
             //notifyIcon1.Icon = System.Drawing.Icon.ExtractAssociatedIcon(System.Reflection.Assembly.GetExecutingAssembly().Location);
             notifyIcon.Text = Program.mName;
@@ -339,7 +341,7 @@ namespace wumgr
         {
             if (data.Equals("show", StringComparison.CurrentCultureIgnoreCase))
             {
-                notifyIcon_BalloonTipClicked(null, null);
+                RequestShowMainWindow();
                 pipe.Send("ok");
             }
             else
@@ -410,6 +412,12 @@ namespace wumgr
         {
             if (GetConfig("WindowWidth", "").Length == 0)
                 this.Width = 900;
+        }
+
+        private void WuMgr_Shown(object sender, EventArgs e)
+        {
+            if (allowshowdisplay)
+                ShowMainWindow();
         }
 
         private int GetAutoUpdateDue()
@@ -486,8 +494,7 @@ namespace wumgr
             }
             else
             {
-                allowshowdisplay = true;
-                this.Show();
+                ShowMainWindow();
             }
         }
 
@@ -1031,7 +1038,10 @@ namespace wumgr
             ShowResult(args.Op, args.Ret, args.RebootNeeded);
         }
 
-        bool ResultShown = false;
+        bool ResultShown
+        {
+            get { return mResultDialogGuard.IsActive; }
+        }
 
         private void ShowResult(WuAgent.AgentOperation op, WuAgent.RetCodes ret, bool reboot = false)
         {
@@ -1039,12 +1049,12 @@ namespace wumgr
             {
                 if (ret == WuAgent.RetCodes.Success)
                 {
-                    MessageBox.Show(Translate.fmt("msg_dl_done", agent.dlPath), Program.mName, MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    ShowResultDialog(Translate.fmt("msg_dl_done", agent.dlPath), MessageBoxIcon.Information, "download completed");
                     return;
                 }
                 else if (ret == WuAgent.RetCodes.DownloadFailed)
                 {
-                    MessageBox.Show(Translate.fmt("msg_dl_err", agent.dlPath), Program.mName, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                    ShowResultDialog(Translate.fmt("msg_dl_err", agent.dlPath), MessageBoxIcon.Exclamation, "manual download failed");
                     return;
                 }
             }
@@ -1053,12 +1063,12 @@ namespace wumgr
             {
                 if (ret == WuAgent.RetCodes.Success)
                 {
-                    MessageBox.Show(Translate.fmt("msg_inst_done", agent.dlPath), Program.mName, MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    ShowResultDialog(Translate.fmt("msg_inst_done", agent.dlPath), MessageBoxIcon.Information, "manual install completed");
                     return;
                 }
                 else if (ret == WuAgent.RetCodes.DownloadFailed)
                 {
-                    MessageBox.Show(Translate.fmt("msg_inst_err", agent.dlPath), Program.mName, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                    ShowResultDialog(Translate.fmt("msg_inst_err", agent.dlPath), MessageBoxIcon.Exclamation, "manual install download failed");
                     return;
                 }
             }
@@ -1080,9 +1090,25 @@ namespace wumgr
 
             string action = GetOpStr(op);
 
-            ResultShown = true;
-            MessageBox.Show(Translate.fmt("msg_err", action, status), Program.mName, MessageBoxButtons.OK, MessageBoxIcon.Error);
-            ResultShown = false;
+            ShowResultDialog(Translate.fmt("msg_err", action, status), MessageBoxIcon.Error, string.Format("{0}: {1}", action, status));
+        }
+
+        private void ShowResultDialog(string message, MessageBoxIcon icon, string duplicateDescription)
+        {
+            if (!mResultDialogGuard.TryBegin())
+            {
+                AppLog.Line("Suppressed duplicate result dialog: {0}", duplicateDescription);
+                return;
+            }
+
+            try
+            {
+                MessageBox.Show(message, Program.mName, MessageBoxButtons.OK, icon);
+            }
+            finally
+            {
+                mResultDialogGuard.End();
+            }
         }
 
         private void dlSource_SelectedIndexChanged(object sender, EventArgs e)
@@ -1415,18 +1441,34 @@ namespace wumgr
         }
 
         [DllImport("User32.dll")]
-        public static extern Int32 SetForegroundWindow(int hWnd);
+        public static extern bool SetForegroundWindow(IntPtr hWnd);
+
+        private void ShowMainWindow()
+        {
+            allowshowdisplay = true;
+            if(this.WindowState == FormWindowState.Minimized)
+                this.WindowState = FormWindowState.Normal;
+            if (!this.Visible)
+                this.Show();
+            this.Activate();
+            this.BringToFront();
+            SetForegroundWindow(this.Handle);
+        }
+
+        private void RequestShowMainWindow()
+        {
+            if (this.InvokeRequired)
+            {
+                this.BeginInvoke(new MethodInvoker(ShowMainWindow));
+                return;
+            }
+
+            ShowMainWindow();
+        }
 
         private void notifyIcon_BalloonTipClicked(object sender, EventArgs e)
         {
-            if (!allowshowdisplay)
-            {
-                allowshowdisplay = true;
-                this.Show();
-            }
-            if(this.WindowState == FormWindowState.Minimized)
-                this.WindowState = FormWindowState.Normal;   
-            SetForegroundWindow(this.Handle.ToInt32());
+            ShowMainWindow();
         }
 
         private void updateView_ColumnClick(object sender, ColumnClickEventArgs e)

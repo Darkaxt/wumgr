@@ -14,6 +14,7 @@ namespace wumgr.Tests
             Run("Create treats empty download URLs as missing", CreateTreatsEmptyDownloadUrlsAsMissing);
             Run("GetCompletedFiles skips failed and incomplete downloads", GetCompletedFilesSkipsFailedAndIncompleteDownloads);
             Run("Select all reports selection changes", SelectAllReportsSelectionChanges);
+            Run("Result dialog guard suppresses duplicate dialogs", ResultDialogGuardSuppressesDuplicateDialogs);
 
             if (failures != 0)
                 Console.Error.WriteLine("{0} test(s) failed.", failures);
@@ -92,6 +93,19 @@ namespace wumgr.Tests
                 Assert(list.Items[0].Checked, "first item should be checked");
                 Assert(list.Items[1].Checked, "second item should be checked");
             }
+        }
+
+        private static void ResultDialogGuardSuppressesDuplicateDialogs()
+        {
+            var guard = new ResultDialogGuard();
+
+            Assert(guard.TryBegin(), "first dialog should be allowed");
+            Assert(!guard.TryBegin(), "duplicate dialog should be suppressed");
+
+            guard.End();
+
+            Assert(guard.TryBegin(), "dialog should be allowed after previous dialog ends");
+            guard.End();
         }
 
         private static void Assert(bool condition, string message)
