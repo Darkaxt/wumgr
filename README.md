@@ -1,5 +1,12 @@
 # WuMgr
 
+## Maintained fork
+
+This repository is a public maintained fork of
+[DavidXanatos/wumgr](https://github.com/DavidXanatos/wumgr). The first forked
+maintenance release is `v1.2.0`, focused on build hygiene, documentation,
+release packaging, and conservative bug fixes.
+
 ## Overview
 WuMgr (Update Manager for Windows) is a tool to manage updates of Microsoft products on the Windows operating system.
 It uses the ["Windows Update Agent API"](https://docs.microsoft.com/en-us/windows/win32/wua_sdk/portal-client) to identify as well as download and install missing updates.
@@ -16,3 +23,12 @@ And if you preffer more legit payment methods, here is [my pateron page](https:/
 
 Icons provided by: 
 * Icons8-com (http://icons8.com/)
+
+## Building and releases
+
+See [docs/BUILDING.md](docs/BUILDING.md) for local build, test, and packaging
+commands. Release zips include `wumgr.exe`, `Translation.ini`, project docs,
+and SHA256 hashes.
+
+See [docs/OPTIONS.md](docs/OPTIONS.md) for option descriptions and
+[SECURITY.md](SECURITY.md) for security reporting.

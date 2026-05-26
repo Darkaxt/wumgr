@@ -77,6 +77,27 @@ namespace wumgr
             logBox.ScrollToCaret();
         }
 
+        private void InitializeLogMenu()
+        {
+            logBox.ShortcutsEnabled = true;
+            logBox.HideSelection = false;
+
+            ContextMenuStrip menu = new ContextMenuStrip();
+            ToolStripMenuItem copy = new ToolStripMenuItem("Copy");
+            ToolStripMenuItem copyAll = new ToolStripMenuItem("Copy All");
+
+            copy.Click += (sender, args) => logBox.Copy();
+            copyAll.Click += (sender, args) => Clipboard.SetText(logBox.Text);
+            menu.Opening += (sender, args) => {
+                copy.Enabled = logBox.SelectionLength > 0;
+                copyAll.Enabled = logBox.TextLength > 0;
+            };
+
+            menu.Items.Add(copy);
+            menu.Items.Add(copyAll);
+            logBox.ContextMenuStrip = menu;
+        }
+
         private bool allowshowdisplay = true;
 
         protected override void SetVisibleCore(bool value)
@@ -129,6 +150,8 @@ namespace wumgr
             btnHide.Image = (Image)(new Bitmap(global::wumgr.Properties.Resources.icons8_hide_32, new Size(25, 25)));
             btnGetLink.Image = (Image)(new Bitmap(global::wumgr.Properties.Resources.icons8_link_32, new Size(25, 25)));
             btnCancel.Image = (Image)(new Bitmap(global::wumgr.Properties.Resources.icons8_cancel_32, new Size(25, 25)));
+
+            InitializeLogMenu();
 
             AppLog.Logger += LineLogger;
 
@@ -261,6 +284,8 @@ namespace wumgr
 
             mSearchBoxHeight = this.panelList.RowStyles[2].Height;
             this.panelList.RowStyles[2].Height = 0;
+            LoadWindowSettings();
+            LoadColumnSettings();
 
             chkGrupe.Checked = MiscFunc.parseInt(GetConfig("GroupUpdates", "1")) != 0;
             updateView.ShowGroups = chkGrupe.Checked;
@@ -357,7 +382,7 @@ namespace wumgr
                     if (LastBaloon < DateTime.Now.AddHours(-4))
                     {
                         LastBaloon = DateTime.Now;
-                        notifyIcon.ShowBalloonTip(int.MaxValue, Translate.fmt("cap_new_upd"), Translate.fmt("msg_new_upd", Program.mName, agent.mPendingUpdates.Count), ToolTipIcon.Info);
+                        notifyIcon.ShowBalloonTip(int.MaxValue, Translate.fmt("cap_new_upd"), GetPendingUpdatesBalloonText(), ToolTipIcon.Info);
                     }
                 }
             }
@@ -383,7 +408,8 @@ namespace wumgr
 
         private void WuMgr_Load(object sender, EventArgs e)
         {
-            this.Width = 900;
+            if (GetConfig("WindowWidth", "").Length == 0)
+                this.Width = 900;
         }
 
         private int GetAutoUpdateDue()
@@ -417,6 +443,24 @@ namespace wumgr
             }
         }
 
+        private string GetPendingUpdatesBalloonText()
+        {
+            string text = Translate.fmt("msg_new_upd", Program.mName, agent.mPendingUpdates.Count);
+            List<string> titles = agent.mPendingUpdates
+                .Take(5)
+                .Select(update => "- " + update.Title)
+                .ToList();
+
+            if (titles.Count > 0)
+                text += Environment.NewLine + string.Join(Environment.NewLine, titles);
+
+            int remaining = agent.mPendingUpdates.Count - titles.Count;
+            if (remaining > 0)
+                text += Environment.NewLine + string.Format("...and {0} more", remaining);
+
+            return text;
+        }
+
         private void WuMgr_FormClosing(object sender, FormClosingEventArgs e)
         {
             if (notifyIcon.Visible && allowshowdisplay)
@@ -430,6 +474,7 @@ namespace wumgr
             agent.Progress -= OnProgress;
             agent.UpdatesChaged -= OnUpdates;
             agent.Finished -= OnFinished;
+            SaveWindowSettings();
         }
 
         private void notifyIcon1_MouseDoubleClick(object sender, MouseEventArgs e)
@@ -760,7 +805,8 @@ namespace wumgr
             About += "Licence: \tGNU General Public License v3\r\n";
             About += string.Format("Version: \t{0}\r\n", Program.mVersion);
             About += "\r\n";
-            About += "Source: \thttps://github.com/DavidXanatos/wumgr\r\n";
+            About += "Source: \thttps://github.com/Darkaxt/wumgr\r\n";
+            About += "Upstream: \thttps://github.com/DavidXanatos/wumgr\r\n";
             About += "\r\n";
             About += "Icons from: https://icons8.com/";
             MessageBox.Show(About, Program.mName);
@@ -901,7 +947,7 @@ namespace wumgr
             if (Links.Length != 0)
             {
                 Clipboard.SetText(Links);
-                AppLog.Line("Update Download Links copyed to clipboard");
+                AppLog.Line("Update Download Links copied to clipboard");
             }
             else
                 AppLog.Line("No updates selected");
@@ -1299,6 +1345,72 @@ namespace wumgr
             Program.IniWriteValue("Options", name, value.ToString());
             //var subKey = Registry.CurrentUser.CreateSubKey(@"SOFTWARE\Xanatos\Windows Update Manager", true);
             //subKey.SetValue(name, value);
+        }
+
+        private void LoadWindowSettings()
+        {
+            int left;
+            int top;
+            int width;
+            int height;
+
+            if (!int.TryParse(GetConfig("WindowLeft", ""), out left) ||
+                !int.TryParse(GetConfig("WindowTop", ""), out top) ||
+                !int.TryParse(GetConfig("WindowWidth", ""), out width) ||
+                !int.TryParse(GetConfig("WindowHeight", ""), out height))
+                return;
+
+            if (width < MinimumSize.Width || height < MinimumSize.Height)
+                return;
+
+            Rectangle bounds = new Rectangle(left, top, width, height);
+            bool visibleOnAnyScreen = Screen.AllScreens.Any(screen => screen.WorkingArea.IntersectsWith(bounds));
+            if (!visibleOnAnyScreen)
+            {
+                Rectangle workingArea = Screen.PrimaryScreen.WorkingArea;
+                bounds.Location = new Point(workingArea.Left, workingArea.Top);
+            }
+
+            StartPosition = FormStartPosition.Manual;
+            Bounds = bounds;
+
+            string state = GetConfig("WindowState", "");
+            if (state.Equals(FormWindowState.Maximized.ToString(), StringComparison.CurrentCultureIgnoreCase))
+                WindowState = FormWindowState.Maximized;
+        }
+
+        private void SaveWindowSettings()
+        {
+            FormWindowState state = WindowState == FormWindowState.Minimized ? FormWindowState.Normal : WindowState;
+            Rectangle bounds = state == FormWindowState.Normal ? Bounds : RestoreBounds;
+
+            SetConfig("WindowLeft", bounds.Left.ToString());
+            SetConfig("WindowTop", bounds.Top.ToString());
+            SetConfig("WindowWidth", bounds.Width.ToString());
+            SetConfig("WindowHeight", bounds.Height.ToString());
+            SetConfig("WindowState", state.ToString());
+            SaveColumnSettings();
+        }
+
+        private void LoadColumnSettings()
+        {
+            string value = GetConfig("ColumnWidths", "");
+            if (value.Length == 0)
+                return;
+
+            string[] widths = value.Split(',');
+            for (int i = 0; i < widths.Length && i < updateView.Columns.Count; i++)
+            {
+                int width;
+                if (int.TryParse(widths[i], out width) && width > 20)
+                    updateView.Columns[i].Width = width;
+            }
+        }
+
+        private void SaveColumnSettings()
+        {
+            string value = string.Join(",", updateView.Columns.Cast<ColumnHeader>().Select(column => column.Width.ToString()).ToArray());
+            SetConfig("ColumnWidths", value);
         }
 
         [DllImport("User32.dll")]

@@ -1,0 +1,21 @@
+name: Build
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: microsoft/setup-msbuild@v2
+      - name: Build solution
+        run: msbuild wumgr.sln /restore /p:Configuration=Release /p:Platform="Any CPU" /m
+      - name: Build tests
+        run: msbuild wumgr.Tests\wumgr.Tests.csproj /restore /p:Configuration=Debug /p:Platform=AnyCPU /m
+      - name: Run tests
+        run: .\wumgr.Tests\bin\Debug\wumgr.Tests.exe

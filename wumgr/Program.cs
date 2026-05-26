@@ -256,14 +256,14 @@ namespace wumgr
 
         }
 
-        [DllImport("kernel32")]
+        [DllImport("kernel32", CharSet = CharSet.Unicode)]
         private static extern long WritePrivateProfileString(string section, string key, string val, string filePath);
         public static void IniWriteValue(string Section, string Key, string Value, string INIPath = null)
         {
             WritePrivateProfileString(Section, Key, Value, INIPath != null ? INIPath : GetINIPath());
         }
 
-        [DllImport("kernel32")]
+        [DllImport("kernel32", CharSet = CharSet.Unicode)]
         private static extern int GetPrivateProfileString(string section, string key, string def, [In, Out] char[] retVal, int size, string filePath);
         public static string IniReadValue(string Section, string Key, string Default = "", string INIPath = null)
         {

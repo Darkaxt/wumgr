@@ -44,6 +44,7 @@ namespace wumgr
 
         UpdateDownloader mUpdateDownloader = null;
         UpdateInstaller mUpdateInstaller = null;
+        private bool mManualDownloadSkippedUpdates = false;
 
         public WuAgent()
         {
@@ -67,7 +68,7 @@ namespace wumgr
 
             mUpdateSession = new UpdateSession();
             mUpdateSession.ClientApplicationID = Program.mName;
-            //mUpdateSession.UserLocale = 1033; // alwys show strings in englisch
+            //mUpdateSession.UserLocale = 1033; // always show strings in English
 
             mUpdateServiceManager = new UpdateServiceManager();
 
@@ -266,7 +267,7 @@ namespace wumgr
         {
             if (mOfflineService != null)
             {
-                // note: if we keep references to updates reffering to an removed service we may got a crash
+                // note: if we keep references to updates referring to a removed service we may get a crash
                 foreach (MsUpdate Update in mUpdateHistory)
                     Update.Invalidate();
                 foreach (MsUpdate Update in mPendingUpdates)
@@ -460,28 +461,26 @@ namespace wumgr
             mCurOperation = Install ? AgentOperation.PreparingUpdates : AgentOperation.DownloadingUpdates;
             OnProgress(-1, 0, 0, 0);
 
-            List<UpdateDownloader.Task> downloads = new List<UpdateDownloader.Task>();
-            foreach (MsUpdate Update in Updates)
-            {
-                if (Update.Downloads.Count == 0)
-                {
-                    AppLog.Line("Error: No Download Url's found for update {0}", Update.Title);
-                    continue;
-                }
+            ManualDownloadPlan plan = ManualDownloadPlanner.Create(Updates, dlPath);
+            mManualDownloadSkippedUpdates = plan.HasSkippedUpdates;
 
-                foreach (string url in Update.Downloads)
-                {
-                    UpdateDownloader.Task download = new UpdateDownloader.Task();
-                    download.Url = url;
-                    download.Path = dlPath + @"\" + Update.KB;
-                    download.KB = Update.KB;
-                    downloads.Add(download);
-                }
+            foreach (MsUpdate update in plan.MissingUpdates)
+                AppLog.Line("Error: No Download Url's found for update {0}", update.Title);
+
+            if (plan.Downloads.Count == 0)
+            {
+                AppLog.Line("No downloadable files found for the selected updates");
+                mManualDownloadSkippedUpdates = false;
+                OnFinished(RetCodes.DownloadFailed);
+                return RetCodes.InProgress;
             }
 
-            if (!mUpdateDownloader.Download(downloads, Updates))
+            if (!mUpdateDownloader.Download(plan.Downloads, plan.Updates))
+            {
+                mManualDownloadSkippedUpdates = false;
                 OnFinished(RetCodes.DownloadFailed);
-            
+            }
+
             return RetCodes.InProgress;
         }
 
@@ -533,10 +532,11 @@ namespace wumgr
             return RetCodes.InProgress;
         }
 
-        void DownloadsFinished(object sender, UpdateDownloader.FinishedEventArgs args) // "manuall" mode
+        void DownloadsFinished(object sender, UpdateDownloader.FinishedEventArgs args) // "manual" mode
         {
             if (mCurOperation == AgentOperation.CancelingOperation)
             {
+                mManualDownloadSkippedUpdates = false;
                 OnFinished(RetCodes.Abborted);
                 return;
             }
@@ -555,13 +555,7 @@ namespace wumgr
             }
             else
             {
-                MultiValueDictionary<string, string> AllFiles = new MultiValueDictionary<string, string>();
-                foreach (UpdateDownloader.Task task in args.Downloads)
-                {
-                    if (task.Failed && task.FileName != null)
-                        continue;
-                    AllFiles.Add(task.KB, task.Path + @"\" + task.FileName);
-                }
+                MultiValueDictionary<string, string> AllFiles = ManualDownloadPlanner.GetCompletedFiles(args.Downloads);
 
                 // TODO
                 /*string INIPath = dlPath + @"\updates.ini";
@@ -581,13 +575,23 @@ namespace wumgr
 
                 if (mCurOperation == AgentOperation.PreparingUpdates)
                 {
-                    RetCodes ret = InstallUpdatesManually(args.Updates, AllFiles);
-                    if (ret <= 0)
-                        OnFinished(ret);
+                    if (mManualDownloadSkippedUpdates || AllFiles.GetCount() != args.Downloads.Count)
+                    {
+                        mManualDownloadSkippedUpdates = false;
+                        OnFinished(RetCodes.DownloadFailed);
+                    }
+                    else
+                    {
+                        mManualDownloadSkippedUpdates = false;
+                        RetCodes ret = InstallUpdatesManually(args.Updates, AllFiles);
+                        if (ret <= 0)
+                            OnFinished(ret);
+                    }
                 }
                 else
                 {
-                    RetCodes ret = AllFiles.GetCount() == args.Downloads.Count ? RetCodes.Success : RetCodes.DownloadFailed;
+                    RetCodes ret = !mManualDownloadSkippedUpdates && AllFiles.GetCount() == args.Downloads.Count ? RetCodes.Success : RetCodes.DownloadFailed;
+                    mManualDownloadSkippedUpdates = false;
                     if (mCurOperation == AgentOperation.CancelingOperation)
                         ret = RetCodes.Abborted;
                     OnFinished(ret);
@@ -600,11 +604,11 @@ namespace wumgr
             OnProgress(args.TotalCount, args.TotalPercent, args.CurrentIndex, args.CurrentPercent, args.Info);
         }
 
-        void InstallFinished(object sender, UpdateInstaller.FinishedEventArgs args) // "manuall" mode
+        void InstallFinished(object sender, UpdateInstaller.FinishedEventArgs args) // "manual" mode
         {
             if (args.Success)
             {
-                AppLog.Line("Updates (Un)Installed succesfully");
+                AppLog.Line("Updates (Un)Installed successfully");
 
                 foreach (MsUpdate Update in args.Updates)
                 {
@@ -939,7 +943,7 @@ namespace wumgr
 
             if (InstallationResults.ResultCode == OperationResultCode.orcSucceeded)
             {
-                AppLog.Line("Updates (Un)Installed succesfully");
+                AppLog.Line("Updates (Un)Installed successfully");
 
                 foreach (MsUpdate Update in Updates)
                 {
@@ -1164,7 +1168,7 @@ namespace wumgr
             // Implementation of ISearchCompletedCallback interface...
             public void Invoke(ISearchJob searchJob, ISearchCompletedCallbackArgs e)
             {
-                // !!! warning this function is invoced from a different thread !!!            
+                // !!! warning this function is invoked from a different thread !!!
                 agent.mDispatcher.Invoke(new Action(() => {
                     agent.OnUpdatesFound(searchJob);
                 }));
@@ -1173,7 +1177,7 @@ namespace wumgr
             // Implementation of IDownloadProgressChangedCallback interface...
             public void Invoke(IDownloadJob downloadJob, IDownloadProgressChangedCallbackArgs callbackArgs)
             {
-                // !!! warning this function is invoced from a different thread !!!            
+                // !!! warning this function is invoked from a different thread !!!
                 agent.mDispatcher.Invoke(new Action(() => {
                     agent.OnProgress(downloadJob.Updates.Count, callbackArgs.Progress.PercentComplete, callbackArgs.Progress.CurrentUpdateIndex + 1,
                         callbackArgs.Progress.CurrentUpdatePercentComplete, downloadJob.Updates[callbackArgs.Progress.CurrentUpdateIndex].Title);
@@ -1183,7 +1187,7 @@ namespace wumgr
             // Implementation of IDownloadCompletedCallback interface...
             public void Invoke(IDownloadJob downloadJob, IDownloadCompletedCallbackArgs callbackArgs)
             {
-                // !!! warning this function is invoced from a different thread !!!            
+                // !!! warning this function is invoked from a different thread !!!
                 agent.mDispatcher.Invoke(new Action(() => {
                     agent.OnUpdatesDownloaded(downloadJob, downloadJob.AsyncState);
                 }));
@@ -1192,7 +1196,7 @@ namespace wumgr
             // Implementation of IInstallationProgressChangedCallback interface...
             public void Invoke(IInstallationJob installationJob, IInstallationProgressChangedCallbackArgs callbackArgs)
             {
-                // !!! warning this function is invoced from a different thread !!!            
+                // !!! warning this function is invoked from a different thread !!!
                 agent.mDispatcher.Invoke(new Action(() => {
                     agent.OnProgress(installationJob.Updates.Count, callbackArgs.Progress.PercentComplete, callbackArgs.Progress.CurrentUpdateIndex + 1,
                         callbackArgs.Progress.CurrentUpdatePercentComplete, installationJob.Updates[callbackArgs.Progress.CurrentUpdateIndex].Title);
@@ -1202,7 +1206,7 @@ namespace wumgr
             // Implementation of IInstallationCompletedCallback interface...
             public void Invoke(IInstallationJob installationJob, IInstallationCompletedCallbackArgs callbackArgs)
             {
-                // !!! warning this function is invoced from a different thread !!!            
+                // !!! warning this function is invoked from a different thread !!!
                 agent.mDispatcher.Invoke(new Action(() => {
                     agent.OnInstalationCompleted(installationJob, installationJob.AsyncState);
                 }));

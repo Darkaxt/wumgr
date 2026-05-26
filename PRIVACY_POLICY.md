@@ -1,1 +1,6 @@
-The tool only gathers information's about installed and missing updates, all data are processed local on the users own device, no personal information's of any kind are send to the cloud.
+WuMgr only gathers information about installed and missing updates. All data is
+processed locally on the user's device. No personal information is sent to this
+fork's maintainers.
+
+Windows Update queries, downloads, and Microsoft Update registration use
+Microsoft operating-system services and endpoints as configured by Windows.

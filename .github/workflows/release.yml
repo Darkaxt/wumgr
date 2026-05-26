@@ -1,0 +1,42 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Release version without leading v
+        required: true
+
+jobs:
+  package:
+    runs-on: windows-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: microsoft/setup-msbuild@v2
+      - name: Resolve version
+        id: version
+        shell: pwsh
+        run: |
+          if ("${{ github.event_name }}" -eq "workflow_dispatch") {
+            "value=${{ inputs.version }}" >> $env:GITHUB_OUTPUT
+          } else {
+            "value=$($env:GITHUB_REF_NAME.TrimStart('v'))" >> $env:GITHUB_OUTPUT
+          }
+      - name: Build release
+        run: msbuild wumgr.sln /restore /p:Configuration=Release /p:Platform="Any CPU" /m
+      - name: Package
+        shell: pwsh
+        run: .\scripts\package-release.ps1 -Version '${{ steps.version.outputs.value }}'
+      - name: Upload release assets
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            artifacts/WuMgr_v${{ steps.version.outputs.value }}.zip
+            artifacts/SHA256SUMS.txt
+          draft: false
+          prerelease: false

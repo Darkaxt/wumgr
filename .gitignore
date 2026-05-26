@@ -1,0 +1,32 @@
+# Visual Studio user state
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Build output
+[Bb]in/
+[Oo]bj/
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+artifacts/
+publish/
+TestResults/
+
+# Logs and binary logs
+*.binlog
+*.log
+
+# OS/editor noise
+.DS_Store
+Thumbs.db
+Desktop.ini
+.vscode/
+
+# NuGet
+packages/
+*.nupkg
+project.assets.json

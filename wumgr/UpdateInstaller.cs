@@ -38,6 +38,15 @@ namespace wumgr
 
         public bool Install(List<MsUpdate> Updates, MultiValueDictionary<string, string> AllFiles)
         {
+            if (Updates == null || Updates.Count == 0 || AllFiles == null || AllFiles.GetCount() == 0)
+                return false;
+
+            foreach (MsUpdate update in Updates)
+            {
+                if (AllFiles.GetValues(update.KB).Count == 0)
+                    return false;
+            }
+
             Reset();
             mUpdates = Updates;
             mAllFiles = AllFiles;
@@ -49,6 +58,9 @@ namespace wumgr
 
         public bool UnInstall(List<MsUpdate> Updates)
         {
+            if (Updates == null || Updates.Count == 0)
+                return false;
+
             Reset();
             mUpdates = Updates;
             DoInstall = false;
@@ -71,7 +83,7 @@ namespace wumgr
         {
             if (!Canceled && mUpdates.Count > mCurrentTask)
             {
-                int Percent = 0; // Note: there does not seam to be an easy way to get this value
+                int Percent = 0; // Note: there does not seem to be an easy way to get this value
                 Progress?.Invoke(this, new WuAgent.ProgressArgs(mUpdates.Count, mUpdates.Count == 0 ? 0 : (100 * mCurrentTask + Percent) / mUpdates.Count, mCurrentTask + 1, Percent, mUpdates[mCurrentTask].Title));
 
                 if (DoInstall)
@@ -165,7 +177,7 @@ namespace wumgr
                     else
                         throw new System.IO.FileFormatException("Unknown Update format: " + ext);
 
-                    if (exitCode == 3010 || exitCode == 3010)
+                    if (exitCode == 3010)
                         reboot = true; // reboot requires
                     else if (exitCode == 1641)
                     {

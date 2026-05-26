@@ -102,6 +102,7 @@
     <Compile Include="GPO.cs" />
     <Compile Include="Common\MiscFunc.cs" />
     <Compile Include="Common\ServiceHelper.cs" />
+    <Compile Include="ManualDownloadPlanner.cs" />
     <Compile Include="MsUpdate.cs" />
     <Compile Include="Translate.cs" />
     <Compile Include="UpdateDownloader.cs" />
@@ -147,6 +148,9 @@
     <None Include="App.config">
       <SubType>Designer</SubType>
     </None>
+    <Content Include="Translation.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <COMReference Include="TaskScheduler">
@@ -196,6 +200,12 @@
     <None Include="res\icons8-eye-32.png" />
     <None Include="res\icons8-invisible-32.png" />
     <Content Include="wu.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies.net461">
+      <Version>1.0.3</Version>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.6">

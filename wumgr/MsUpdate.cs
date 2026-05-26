@@ -126,12 +126,12 @@ namespace wumgr
 
         public IUpdate GetUpdate()
         {
-            /*if (Entry == null)
+            if (Entry == null)
             {
                 WuAgent agen = WuAgent.GetInstance();
-                if (agen.IsActive())
+                if (agen != null && agen.IsActive() && UUID.Length != 0)
                     Entry = agen.FindUpdate(UUID);
-            }*/
+            }
             return Entry;
         }
 

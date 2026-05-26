@@ -2,6 +2,27 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.2.0] - 2026-05-26
+### Added
+- Maintained-fork docs, security policy, build docs, option docs, and release packaging script.
+- GitHub Actions workflows for build, CodeQL, and release packaging.
+- Focused regression tests for manual download planning.
+- Translation.ini is now tracked and copied with release builds.
+
+### Fixed
+- Manual downloads now fail when selected updates have no usable download URLs instead of reporting success.
+- Manual install no longer starts when any selected update was skipped or a download task failed.
+- Cached update entries can re-resolve their live Windows Update object by UUID before install/hide operations.
+- INI read/write imports now use Unicode consistently.
+- The notification for newly found updates now includes update titles.
+- Log output has a copy context menu.
+- Window size/position and update-list column widths are saved and restored.
+- Safe typo-only cleanup from upstream PRs without importing a known compile error.
+
+### Changed
+- Version updated to 1.2.0.0.
+- Removed tracked Visual Studio user settings.
+
 ## [1.1] - 2019-12-11
 ### Added
 - DpiAwareness
