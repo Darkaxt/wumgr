@@ -75,6 +75,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
   `Content-Disposition` headers before writing files.
 - Manual install and uninstall now treat generic process exit code `1` as a
   failure instead of reporting success.
+- Error `0x80072EE6` is now displayed as a WinINet URL-scheme error instead of
+  an unknown error.
 
 ## [1.2.1] - 2026-05-27
 ### Added

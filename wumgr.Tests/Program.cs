@@ -29,6 +29,7 @@ namespace wumgr.Tests
             Run("Content-Disposition filename parsing is guarded", ContentDispositionFilenameParsingIsGuarded);
             Run("Command-line argument lookup guards missing values", CommandLineArgumentLookupGuardsMissingValues);
             Run("Manual installer exit codes report failures", ManualInstallerExitCodesReportFailures);
+            Run("WinINet unrecognized scheme error is named", WinInetUnrecognizedSchemeErrorIsNamed);
             Run("Startup elevation only runs when explicitly configured", StartupElevationOnlyRunsWhenConfigured);
             Run("Startup UI defaults to WPF with WinForms fallback", StartupUiDefaultsToWpfWithWinFormsFallback);
             Run("Startup defers agent init for WPF shell", StartupDefersAgentInitForWpfShell);
@@ -266,6 +267,13 @@ namespace wumgr.Tests
             ManualInstallExitCode genericFailure = ManualInstallExitCode.FromProcessExitCode(1);
             Assert(!genericFailure.Success, "generic exit code 1 should fail");
             Assert(!genericFailure.RebootRequired, "generic exit code 1 should not require reboot");
+        }
+
+        private static void WinInetUnrecognizedSchemeErrorIsNamed()
+        {
+            string message = UpdateErrors.GetErrorStr(0x80072EE6);
+            AssertEqual("The URL scheme could not be recognized or is not supported.", message, "WinINet unrecognized scheme message");
+            Assert(!message.Contains("Unknown Error"), "message should not be generic unknown text");
         }
 
         private static void StartupUiDefaultsToWpfWithWinFormsFallback()

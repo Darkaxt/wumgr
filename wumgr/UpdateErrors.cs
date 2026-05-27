@@ -24,6 +24,7 @@ namespace wumgr
                 case 0x00242015: return "The installation operation for the update is still in progress.";
                 case 0x00245001: return "No operation was required by the server-initiated healing server response.";
                 case 0x00246001: return "The update to be downloaded is already being downloaded.";
+                case 0x80072EE6: return "The URL scheme could not be recognized or is not supported.";
                 case 0x80240001: return "Windows Update Agent was unable to provide the service.";
                 case 0x80240002: return "The maximum capacity of the service was exceeded.";
                 case 0x80240003: return "An ID cannot be found.";
