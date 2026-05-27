@@ -27,6 +27,7 @@ opened only when the work is actionable for this maintained fork.
 - [#138](https://github.com/DavidXanatos/wumgr/issues/138) Options documentation and large update size report
 - [#113](https://github.com/DavidXanatos/wumgr/issues/113) Automatic search/startup search; `-update` startup search is restored in the WPF path, while scheduled automatic search still requires the background tray option
 - [#87](https://github.com/DavidXanatos/wumgr/issues/87) Jittering during large update operations; duplicate dialogs and WPF first-render progress issues are mitigated, but the original install/download failure still needs reproduction data
+- [#85](https://github.com/DavidXanatos/wumgr/issues/85) Internal error downloading updates; reported error `0x80072EE6` is now mapped to a WinINet URL-scheme message, while the underlying update failure still needs reproduction data
 - [#10](https://github.com/DavidXanatos/wumgr/issues/10) Unavailable settings; the default WPF Auto Update tab now explains common disabled-control reasons
 - [#14](https://github.com/DavidXanatos/wumgr/issues/14) Disable Windows Update; Hide WU Settings Page now preserves unrelated `SettingsPageVisibility` entries, while the Settings app crash report still needs reproduction data
 - [#129](https://github.com/DavidXanatos/wumgr/issues/129) Disabled facilitator and WU Settings controls are greyed out; the default WPF Auto Update tab now explains common disabled-control reasons
@@ -67,7 +68,6 @@ opened only when the work is actionable for this maintained fork.
 - [#61](https://github.com/DavidXanatos/wumgr/issues/61) Options page does not apply some settings
 - [#82](https://github.com/DavidXanatos/wumgr/issues/82) SQL Server updates support
 - [#83](https://github.com/DavidXanatos/wumgr/issues/83) Office 2013 updates are not installed
-- [#85](https://github.com/DavidXanatos/wumgr/issues/85) Internal error downloading updates
 - [#91](https://github.com/DavidXanatos/wumgr/issues/91) SCEP update KB3209361 install error
 - [#100](https://github.com/DavidXanatos/wumgr/issues/100) Hide option does not work in Store update manager
 - [#107](https://github.com/DavidXanatos/wumgr/issues/107) Repeated failures on Windows 10
