@@ -8,6 +8,7 @@ using System.Diagnostics;
 using System.Threading;
 using System.Security.AccessControl;
 using System.Security.Principal;
+using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using wumgr.Wpf;
 
@@ -54,6 +55,7 @@ namespace wumgr.Tests
             Run("Process runner cancels running processes", ProcessRunnerCancelsRunningProcesses);
             Run("WUA search criteria uses explicit deployment actions", WuaSearchCriteriaUsesExplicitDeploymentActions);
             Run("WinINet unrecognized scheme error is named", WinInetUnrecognizedSchemeErrorIsNamed);
+            Run("Hide failure messages identify update and Windows error", HideFailureMessagesIdentifyUpdateAndWindowsError);
             Run("Startup elevation only runs when explicitly configured", StartupElevationOnlyRunsWhenConfigured);
             Run("Startup UI defaults to WPF with WinForms fallback", StartupUiDefaultsToWpfWithWinFormsFallback);
             Run("Startup defers agent init for WPF shell", StartupDefersAgentInitForWpfShell);
@@ -370,6 +372,16 @@ namespace wumgr.Tests
             string message = UpdateErrors.GetErrorStr(0x80072EE6);
             AssertEqual("The URL scheme could not be recognized or is not supported.", message, "WinINet unrecognized scheme message");
             Assert(!message.Contains("Unknown Error"), "message should not be generic unknown text");
+        }
+
+        private static void HideFailureMessagesIdentifyUpdateAndWindowsError()
+        {
+            var update = new MsUpdate { Title = "Store App Update", KB = "KBUnknown" };
+            var error = new COMException("declined", unchecked((int)0x80248016));
+
+            string message = UpdateHideResultMessage.Failure(update, true, error);
+
+            AssertEqual("Failed to hide update \"Store App Update\": Error 0x80248016: A request to hide an update was declined because it is a mandatory update or because it was deployed with a deadline.", message, "hide failure message");
         }
 
         private static void StartupUiDefaultsToWpfWithWinFormsFallback()
