@@ -392,13 +392,7 @@ namespace wumgr
             // http://msdn.microsoft.com/en-us/library/windows/desktop/aa386526(v=VS.85).aspx
             try
             {
-                //string query = "(IsInstalled = 0 and IsHidden = 0) or (IsInstalled = 1 and IsHidden = 0) or (IsHidden = 1)";
-                //string query = "(IsInstalled = 0 and IsHidden = 0) or (IsInstalled = 1 and IsHidden = 0) or (IsHidden = 1) or (IsInstalled = 0 and IsHidden = 0 and DeploymentAction='OptionalInstallation') or (IsInstalled = 1 and IsHidden = 0 and DeploymentAction='OptionalInstallation') or (IsHidden = 1 and DeploymentAction='OptionalInstallation')";
-                string query;
-                if (MiscFunc.IsWindows7OrLower)
-                    query = "(IsInstalled = 0 and IsHidden = 0) or (IsInstalled = 1 and IsHidden = 0) or (IsHidden = 1)";
-                else
-                    query = "(IsInstalled = 0 and IsHidden = 0 and DeploymentAction=*) or (IsInstalled = 1 and IsHidden = 0 and DeploymentAction=*) or (IsHidden = 1 and DeploymentAction=*)";
+                string query = WuaSearchCriteria.Create(MiscFunc.IsWindows7OrLower);
                 mSearchJob = mUpdateSearcher.BeginSearch(query, mCallback, null);
             }
             catch (Exception err)

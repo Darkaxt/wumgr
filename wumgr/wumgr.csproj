@@ -124,6 +124,7 @@
     <Compile Include="UpdateDownloader.cs" />
     <Compile Include="UpdateSelectionHelper.cs" />
     <Compile Include="UpdateSelectionState.cs" />
+    <Compile Include="WuaSearchCriteria.cs" />
     <Compile Include="Common\WinConsole.cs" />
     <Compile Include="UpdateErrors.cs" />
     <Compile Include="UpdateInstaller.cs" />
