@@ -6,8 +6,13 @@ using System.Drawing;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Windows;
+using Controls = System.Windows.Controls;
 using Forms = System.Windows.Forms;
+using System.Windows.Interop;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using WUApiLib;
 
@@ -385,6 +390,7 @@ namespace wumgr.Wpf
             DataContext = this;
             Title = Program.mName;
             ApplyLocalizedText();
+            ApplyActionButtonIcons();
 
             IsAdministrator = MiscFunc.IsAdministrator();
             skipUacEnabled = Program.IsSkipUacRun();
@@ -431,6 +437,89 @@ namespace wumgr.Wpf
             DateColumn.Header = text.DateColumn;
             SizeColumn.Header = text.SizeColumn;
             StateColumn.Header = text.StateColumn;
+        }
+
+        private void ApplyActionButtonIcons()
+        {
+            foreach (WpfActionButtonSpec spec in WpfActionButtonSpec.CreateDefault())
+            {
+                Controls.Button button = GetActionButton(spec.Kind);
+                button.Content = CreateActionIcon(spec.ResourceName);
+            }
+
+            RefreshActionButtonTooltips();
+        }
+
+        private Controls.Button GetActionButton(WpfActionButtonKind kind)
+        {
+            switch (kind)
+            {
+                case WpfActionButtonKind.Search: return SearchActionButton;
+                case WpfActionButtonKind.Download: return DownloadActionButton;
+                case WpfActionButtonKind.Install: return InstallActionButton;
+                case WpfActionButtonKind.Uninstall: return UninstallActionButton;
+                case WpfActionButtonKind.Hide: return HideActionButton;
+                case WpfActionButtonKind.GetLinks: return GetLinksActionButton;
+                case WpfActionButtonKind.Cancel: return CancelActionButton;
+                default: throw new ArgumentOutOfRangeException("kind");
+            }
+        }
+
+        private string GetActionButtonText(WpfActionButtonKind kind)
+        {
+            switch (kind)
+            {
+                case WpfActionButtonKind.Search: return text.SearchButton;
+                case WpfActionButtonKind.Download: return text.DownloadButton;
+                case WpfActionButtonKind.Install: return text.InstallButton;
+                case WpfActionButtonKind.Uninstall: return text.UninstallButton;
+                case WpfActionButtonKind.Hide: return HideButtonText;
+                case WpfActionButtonKind.GetLinks: return text.GetLinksButton;
+                case WpfActionButtonKind.Cancel: return text.CancelButton;
+                default: throw new ArgumentOutOfRangeException("kind");
+            }
+        }
+
+        private void RefreshActionButtonTooltips()
+        {
+            foreach (WpfActionButtonSpec spec in WpfActionButtonSpec.CreateDefault())
+            {
+                Controls.Button button = GetActionButton(spec.Kind);
+                string label = GetActionButtonText(spec.Kind);
+                button.ToolTip = label;
+                System.Windows.Automation.AutomationProperties.SetName(button, label);
+            }
+        }
+
+        private static Controls.Image CreateActionIcon(string resourceName)
+        {
+            Bitmap bitmap = Properties.Resources.ResourceManager.GetObject(resourceName) as Bitmap;
+            if (bitmap == null)
+                return null;
+
+            BitmapSource source = CreateBitmapSource(bitmap);
+            return new Controls.Image
+            {
+                Source = source,
+                Width = 24,
+                Height = 24,
+                Stretch = Stretch.Uniform
+            };
+        }
+
+        private static BitmapSource CreateBitmapSource(Bitmap bitmap)
+        {
+            IntPtr handle = bitmap.GetHbitmap();
+            try
+            {
+                BitmapSource source = Imaging.CreateBitmapSourceFromHBitmap(handle, IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromWidthAndHeight(24, 24));
+                source.Freeze();
+                return source;
+            }
+            finally
+            {
+                DeleteObject(handle);
+            }
         }
 
         private void WuMgrWpfWindow_Closing(object sender, CancelEventArgs e)
@@ -980,9 +1069,9 @@ namespace wumgr.Wpf
             if (ProgressTrack == null || ProgressFill == null)
                 return;
 
-            double ratio = isBusyIndeterminate ? 1.0 : WpfProgressValue.NormalizePercent(totalPercent);
-            ProgressFill.Width = ProgressTrack.ActualWidth * ratio;
-            ProgressFill.Visibility = ratio > 0 ? Visibility.Visible : Visibility.Collapsed;
+            double width = WpfProgressValue.GetFillWidth(ProgressTrack.ActualWidth, totalPercent, isBusyIndeterminate);
+            ProgressFill.Width = width;
+            ProgressFill.Visibility = width > 0 ? Visibility.Visible : Visibility.Collapsed;
         }
 
         private void OpenWinForms_Click(object sender, RoutedEventArgs e)
@@ -1244,6 +1333,7 @@ namespace wumgr.Wpf
             OnPropertyChanged("IsHiddenList");
             OnPropertyChanged("IsHistoryList");
             OnPropertyChanged("HideButtonText");
+            RefreshActionButtonTooltips();
             NotifyPolicySelectionChanged();
             NotifyPolicyOptionStateChanged();
             NotifyActionStateChanged();
@@ -1308,6 +1398,9 @@ namespace wumgr.Wpf
             if (PropertyChanged != null)
                 PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
         }
+
+        [DllImport("gdi32.dll")]
+        private static extern bool DeleteObject(IntPtr hObject);
     }
 
     public class WpfUpdateRow : INotifyPropertyChanged

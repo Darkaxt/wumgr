@@ -129,6 +129,7 @@
     <Compile Include="Wpf\WuMgrWpfWindow.xaml.cs">
       <DependentUpon>WuMgrWpfWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Wpf\WpfActionButtonSpec.cs" />
     <Compile Include="Wpf\WpfActionState.cs" />
     <Compile Include="Wpf\WpfLocalizedText.cs" />
     <Compile Include="Wpf\WpfPolicyOptionState.cs" />

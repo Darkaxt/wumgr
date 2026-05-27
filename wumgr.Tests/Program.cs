@@ -33,6 +33,8 @@ namespace wumgr.Tests
             Run("WPF policy options disable writes without elevation", WpfPolicyOptionsDisableWritesWithoutElevation);
             Run("WPF policy options mirror GPO respect rules", WpfPolicyOptionsMirrorGpoRespectRules);
             Run("WPF progress value clamps percentages", WpfProgressValueClampsPercentages);
+            Run("WPF progress fill width mirrors progress state", WpfProgressFillWidthMirrorsProgressState);
+            Run("WPF action toolbar uses original icon resources", WpfActionToolbarUsesOriginalIconResources);
             Run("WPF localized text mirrors shared translations", WpfLocalizedTextMirrorsSharedTranslations);
 
             if (failures != 0)
@@ -309,6 +311,30 @@ namespace wumgr.Tests
             AssertEqual(0.42, WpfProgressValue.NormalizePercent(42), "mid percent");
             AssertEqual(1.0, WpfProgressValue.NormalizePercent(100), "full percent");
             AssertEqual(1.0, WpfProgressValue.NormalizePercent(150), "overfull percent");
+        }
+
+        private static void WpfProgressFillWidthMirrorsProgressState()
+        {
+            AssertEqual(0.0, WpfProgressValue.GetFillWidth(200.0, 0, false), "empty determinate progress");
+            AssertEqual(84.0, WpfProgressValue.GetFillWidth(200.0, 42, false), "partial determinate progress");
+            AssertEqual(200.0, WpfProgressValue.GetFillWidth(200.0, 100, false), "complete determinate progress");
+            AssertEqual(200.0, WpfProgressValue.GetFillWidth(200.0, 0, true), "indeterminate progress");
+            AssertEqual(0.0, WpfProgressValue.GetFillWidth(0.0, 50, false), "zero-width track");
+        }
+
+        private static void WpfActionToolbarUsesOriginalIconResources()
+        {
+            WpfActionButtonSpec[] specs = WpfActionButtonSpec.CreateDefault();
+
+            AssertEqual(7, specs.Length, "toolbar action count");
+            AssertEqual(WpfActionButtonKind.Search, specs[0].Kind, "search action order");
+            AssertEqual("icons8_available_updates_32", specs[0].ResourceName, "search icon");
+            AssertEqual("icons8_downloading_updates_32", specs[1].ResourceName, "download icon");
+            AssertEqual("icons8_software_installer_32", specs[2].ResourceName, "install icon");
+            AssertEqual("icons8_trash_32", specs[3].ResourceName, "uninstall icon");
+            AssertEqual("icons8_hide_32", specs[4].ResourceName, "hide icon");
+            AssertEqual("icons8_link_32", specs[5].ResourceName, "link icon");
+            AssertEqual("icons8_cancel_32", specs[6].ResourceName, "cancel icon");
         }
 
         private static void Assert(bool condition, string message)

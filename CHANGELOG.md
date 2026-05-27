@@ -27,6 +27,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
   explicitly configured.
 - WPF startup now creates and shows the shell before initializing the Windows
   Update Agent, so slow WUA startup does not make launch look dead.
+- Restored the original WinForms action icons in the WPF toolbar.
 - Replaced the WPF status `ProgressBar` with a lightweight progress strip to
   avoid a first-render hang that could leave the WPF window hidden on launch.
 - Restricted named-pipe IPC ACLs to the current user, local Administrators, and
