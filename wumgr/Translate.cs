@@ -94,7 +94,7 @@ namespace wumgr
             mStrings.Add("col_kb", "KB Article");
             mStrings.Add("col_app_id", "Application ID");
             mStrings.Add("col_date", "Date");
-            mStrings.Add("col_site", "Size");
+            mStrings.Add("col_site", "Max Size");
             mStrings.Add("col_stat", "State");
             mStrings.Add("lbl_support", "Support Url");
             mStrings.Add("lbl_search", "Search filter:");

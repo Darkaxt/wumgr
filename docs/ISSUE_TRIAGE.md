@@ -21,6 +21,9 @@ opened only when the work is actionable for this maintained fork.
 
 ## Partially handled
 
+- [#54](https://github.com/DavidXanatos/wumgr/issues/54) Large update size reports; size is now labeled as the Windows Update API maximum, not an exact payload size
+- [#59](https://github.com/DavidXanatos/wumgr/issues/59) Large update size reports; size is now labeled as the Windows Update API maximum, not an exact payload size
+- [#99](https://github.com/DavidXanatos/wumgr/issues/99) Large update size reports; size is now labeled as the Windows Update API maximum, not an exact payload size
 - [#138](https://github.com/DavidXanatos/wumgr/issues/138) Options documentation and large update size report
 - [#113](https://github.com/DavidXanatos/wumgr/issues/113) Automatic search/startup search; `-update` startup search is restored in the WPF path, while scheduled automatic search still requires the background tray option
 
@@ -58,8 +61,6 @@ opened only when the work is actionable for this maintained fork.
 - [#14](https://github.com/DavidXanatos/wumgr/issues/14) Disable Windows Update
 - [#41](https://github.com/DavidXanatos/wumgr/issues/41) Does not find available updates
 - [#45](https://github.com/DavidXanatos/wumgr/issues/45) Delete KB scan never stops
-- [#54](https://github.com/DavidXanatos/wumgr/issues/54) KB4487044 shows 82.34 GB
-- [#59](https://github.com/DavidXanatos/wumgr/issues/59) Error in size of update
 - [#60](https://github.com/DavidXanatos/wumgr/issues/60) Fresh Windows 8.1 install cannot launch WuMgr
 - [#61](https://github.com/DavidXanatos/wumgr/issues/61) Options page does not apply some settings
 - [#82](https://github.com/DavidXanatos/wumgr/issues/82) SQL Server updates support
@@ -67,7 +68,6 @@ opened only when the work is actionable for this maintained fork.
 - [#85](https://github.com/DavidXanatos/wumgr/issues/85) Internal error downloading updates
 - [#87](https://github.com/DavidXanatos/wumgr/issues/87) Jittering during large update operations
 - [#91](https://github.com/DavidXanatos/wumgr/issues/91) SCEP update KB3209361 install error
-- [#99](https://github.com/DavidXanatos/wumgr/issues/99) Update size 84.77 GB
 - [#100](https://github.com/DavidXanatos/wumgr/issues/100) Hide option does not work in Store update manager
 - [#107](https://github.com/DavidXanatos/wumgr/issues/107) Repeated failures on Windows 10
 - [#112](https://github.com/DavidXanatos/wumgr/issues/112) Update failures reported as applied

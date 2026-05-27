@@ -375,6 +375,7 @@ namespace wumgr.Tests
             AssertEqual(Translate.fmt("lbl_block_ms"), text.BlockMicrosoftServers, "block Microsoft servers");
             AssertEqual(Translate.fmt("tip_inst"), text.InstallButton, "install button");
             AssertEqual(Translate.fmt("col_kb"), text.KbColumn, "KB column");
+            AssertEqual("Max Size", text.SizeColumn, "size column should indicate WUA maximum size");
             AssertEqual("Refresh", text.RefreshButton, "button text should strip WinForms mnemonic markers");
             AssertEqual("Exit", text.ExitMenu, "WPF tray menu text should strip WinForms mnemonic markers");
             AssertEqual("Initializing Windows Update Agent...", text.InitializingAgent, "WPF startup status text");

@@ -35,6 +35,12 @@ administrator rights.
 Some options are disabled on Windows editions that ignore the relevant policy or
 when WuMgr is not elevated.
 
+## Update Size Column
+
+The Max Size column shows the maximum download size reported by the Windows
+Update API. For cumulative and feature updates, Windows may report a much larger
+upper bound than the bytes actually downloaded for the current machine.
+
 For removal and policy recovery steps, see
 [UNINSTALL_AND_RECOVERY.md](UNINSTALL_AND_RECOVERY.md).
 

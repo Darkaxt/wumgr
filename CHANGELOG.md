@@ -35,6 +35,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
   explicitly configured.
 - The WPF shell now honors `-update` after deferred Windows Update Agent
   initialization, including tray startup.
+- The update size column is now labeled Max Size to reflect that it comes from
+  the Windows Update API maximum download size.
 - WPF startup now creates and shows the shell before initializing the Windows
   Update Agent, so slow WUA startup does not make launch look dead.
 - Restored the original WinForms action icons in the WPF toolbar.

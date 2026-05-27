@@ -284,7 +284,7 @@
             // 
             // columnHeader5
             // 
-            this.columnHeader5.Text = "Size";
+            this.columnHeader5.Text = "Max Size";
             // 
             // columnHeader6
             // 
