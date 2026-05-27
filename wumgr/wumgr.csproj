@@ -105,6 +105,7 @@
     <Compile Include="Common\PipeIPC.cs" />
     <Compile Include="Common\PipeSecurityFactory.cs" />
     <Compile Include="Common\TokenManipulator.cs" />
+    <Compile Include="Common\UpdateDateFormatter.cs" />
     <Compile Include="GPO.cs" />
     <Compile Include="Common\MiscFunc.cs" />
     <Compile Include="Common\ServiceHelper.cs" />

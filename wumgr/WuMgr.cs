@@ -277,7 +277,7 @@ namespace wumgr
 
             try {
                 LastCheck = DateTime.Parse(GetConfig("LastCheck", ""));
-                AppLog.Line("Last Checked for updates: {0}", LastCheck.ToString(CultureInfo.CurrentUICulture.DateTimeFormat.ShortDatePattern));
+                AppLog.Line("Last Checked for updates: {0}", UpdateDateFormatter.FormatForDisplay(LastCheck));
             } catch {
                 LastCheck = DateTime.Now;
             }
@@ -601,7 +601,7 @@ namespace wumgr
                     Update.Title,
                     Update.Category,
                     CurrentList == UpdateLists.UpdateHistory ? Update.ApplicationID : Update.KB,
-                    Update.Date.ToString(CultureInfo.CurrentUICulture.DateTimeFormat.ShortDatePattern),
+                    UpdateDateFormatter.FormatForDisplay(Update.Date),
                     FileOps.FormatSize(Update.Size),
                     State};
 
