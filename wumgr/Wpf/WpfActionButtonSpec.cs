@@ -2,6 +2,7 @@ namespace wumgr.Wpf
 {
     internal enum WpfActionButtonKind
     {
+        Refresh,
         Search,
         Download,
         Install,
@@ -26,6 +27,7 @@ namespace wumgr.Wpf
         {
             return new[]
             {
+                new WpfActionButtonSpec(WpfActionButtonKind.Refresh, "icons8_refresh_32"),
                 new WpfActionButtonSpec(WpfActionButtonKind.Search, "icons8_available_updates_32"),
                 new WpfActionButtonSpec(WpfActionButtonKind.Download, "icons8_downloading_updates_32"),
                 new WpfActionButtonSpec(WpfActionButtonKind.Install, "icons8_software_installer_32"),

@@ -35,6 +35,8 @@ namespace wumgr.Tests
             Run("WPF progress value clamps percentages", WpfProgressValueClampsPercentages);
             Run("WPF progress fill width mirrors progress state", WpfProgressFillWidthMirrorsProgressState);
             Run("WPF action toolbar uses original icon resources", WpfActionToolbarUsesOriginalIconResources);
+            Run("WPF list selection policy hides history selectors", WpfListSelectionPolicyHidesHistorySelectors);
+            Run("WPF status text avoids implementation labels", WpfStatusTextAvoidsImplementationLabels);
             Run("WPF localized text mirrors shared translations", WpfLocalizedTextMirrorsSharedTranslations);
 
             if (failures != 0)
@@ -296,10 +298,8 @@ namespace wumgr.Tests
             AssertEqual(Translate.fmt("lbl_block_ms"), text.BlockMicrosoftServers, "block Microsoft servers");
             AssertEqual(Translate.fmt("tip_inst"), text.InstallButton, "install button");
             AssertEqual(Translate.fmt("col_kb"), text.KbColumn, "KB column");
-            AssertEqual("Refresh", text.RefreshButton, "WPF button text should strip WinForms mnemonic markers");
+            AssertEqual("Refresh", text.RefreshButton, "button text should strip WinForms mnemonic markers");
             AssertEqual("Exit", text.ExitMenu, "WPF tray menu text should strip WinForms mnemonic markers");
-            AssertEqual("Open WinForms UI", text.OpenWinFormsButton, "WPF-specific open WinForms text");
-            AssertEqual("Close this WPF window and launch WuMgr with -winforms to use the legacy UI.", text.OpenWinFormsHint, "WPF-specific WinForms hint text");
             AssertEqual("Initializing Windows Update Agent...", text.InitializingAgent, "WPF startup status text");
             AssertEqual("Wednesday", text.ScheduleDays[4], "WPF schedule day text");
         }
@@ -326,15 +326,33 @@ namespace wumgr.Tests
         {
             WpfActionButtonSpec[] specs = WpfActionButtonSpec.CreateDefault();
 
-            AssertEqual(7, specs.Length, "toolbar action count");
-            AssertEqual(WpfActionButtonKind.Search, specs[0].Kind, "search action order");
-            AssertEqual("icons8_available_updates_32", specs[0].ResourceName, "search icon");
-            AssertEqual("icons8_downloading_updates_32", specs[1].ResourceName, "download icon");
-            AssertEqual("icons8_software_installer_32", specs[2].ResourceName, "install icon");
-            AssertEqual("icons8_trash_32", specs[3].ResourceName, "uninstall icon");
-            AssertEqual("icons8_hide_32", specs[4].ResourceName, "hide icon");
-            AssertEqual("icons8_link_32", specs[5].ResourceName, "link icon");
-            AssertEqual("icons8_cancel_32", specs[6].ResourceName, "cancel icon");
+            AssertEqual(8, specs.Length, "toolbar action count");
+            AssertEqual(WpfActionButtonKind.Refresh, specs[0].Kind, "refresh action order");
+            AssertEqual("icons8_refresh_32", specs[0].ResourceName, "refresh icon");
+            AssertEqual(WpfActionButtonKind.Search, specs[1].Kind, "search action order");
+            AssertEqual("icons8_available_updates_32", specs[1].ResourceName, "search icon");
+            AssertEqual("icons8_downloading_updates_32", specs[2].ResourceName, "download icon");
+            AssertEqual("icons8_software_installer_32", specs[3].ResourceName, "install icon");
+            AssertEqual("icons8_trash_32", specs[4].ResourceName, "uninstall icon");
+            AssertEqual("icons8_hide_32", specs[5].ResourceName, "hide icon");
+            AssertEqual("icons8_link_32", specs[6].ResourceName, "link icon");
+            AssertEqual("icons8_cancel_32", specs[7].ResourceName, "cancel icon");
+        }
+
+        private static void WpfListSelectionPolicyHidesHistorySelectors()
+        {
+            Assert(WpfListSelectionPolicy.CanSelectRows(WpfUpdateListKind.Pending), "pending updates should be selectable");
+            Assert(WpfListSelectionPolicy.CanSelectRows(WpfUpdateListKind.Installed), "installed updates should be selectable");
+            Assert(WpfListSelectionPolicy.CanSelectRows(WpfUpdateListKind.Hidden), "hidden updates should be selectable");
+            Assert(!WpfListSelectionPolicy.CanSelectRows(WpfUpdateListKind.History), "history rows should not expose purposeless selection checkboxes");
+        }
+
+        private static void WpfStatusTextAvoidsImplementationLabels()
+        {
+            AssertEqual("Ready.", WpfStatusText.Ready, "startup status");
+            AssertEqual("Current list refreshed from the update cache.", WpfStatusText.CurrentListRefreshed, "refresh status");
+            Assert(!WpfStatusText.Ready.Contains("WPF"), "ready text should not mention implementation framework");
+            Assert(!WpfStatusText.CurrentListRefreshed.Contains("WPF"), "refresh text should not mention implementation framework");
         }
 
         private static void Assert(bool condition, string message)

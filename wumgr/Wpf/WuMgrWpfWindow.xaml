@@ -187,8 +187,10 @@
       <DockPanel Grid.Row="0" Margin="0,0,0,10">
         <TextBlock Text="{Binding Text.WindowsUpdateHeading}" FontSize="20" FontWeight="SemiBold" DockPanel.Dock="Left" />
         <StackPanel Orientation="Horizontal" DockPanel.Dock="Right">
-          <Button Content="{Binding Text.RefreshButton}" Click="Refresh_Click" />
-          <Button Content="{Binding Text.OpenWinFormsButton}" Click="OpenWinForms_Click" />
+          <Button x:Name="RefreshActionButton"
+                  Style="{StaticResource ActionIconButtonStyle}"
+                  Content="{Binding Text.RefreshButton}"
+                  Click="Refresh_Click" />
         </StackPanel>
       </DockPanel>
 
@@ -202,7 +204,15 @@
                 HeadersVisibility="Column"
                 RowHeaderWidth="0">
         <DataGrid.Columns>
-          <DataGridCheckBoxColumn Header="" Binding="{Binding Selected, Mode=TwoWay}" Width="38" />
+          <DataGridCheckBoxColumn x:Name="SelectionColumn" Binding="{Binding Selected, Mode=TwoWay}" Width="38">
+            <DataGridCheckBoxColumn.Header>
+              <CheckBox x:Name="SelectAllRowsCheckBox"
+                        IsThreeState="True"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Click="SelectAllRows_Click" />
+            </DataGridCheckBoxColumn.Header>
+          </DataGridCheckBoxColumn>
           <DataGridTextColumn x:Name="TitleColumn" Binding="{Binding Title}" Width="*" IsReadOnly="True" />
           <DataGridTextColumn x:Name="CategoryColumn" Binding="{Binding Category}" Width="190" IsReadOnly="True" />
           <DataGridTextColumn x:Name="KbColumn" Binding="{Binding KB}" Width="100" IsReadOnly="True" />

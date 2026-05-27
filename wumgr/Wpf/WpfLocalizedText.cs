@@ -36,8 +36,7 @@ namespace wumgr.Wpf
         public string GetLinksButton { get { return Translate.fmt("tip_lnk"); } }
         public string CancelButton { get { return Translate.fmt("tip_cancel"); } }
         public string RefreshButton { get { return StripWinFormsMnemonic(Translate.fmt("menu_refresh")); } }
-        public string OpenWinFormsButton { get { return Translate.fmt("wpf_open_winforms"); } }
-        public string OpenWinFormsHint { get { return Translate.fmt("wpf_open_winforms_hint"); } }
+        public string SelectAllRows { get { return Translate.fmt("lbl_all"); } }
         public string WindowsUpdateHeading { get { return Translate.fmt("wpf_updates_heading"); } }
         public string StatusHeader { get { return Translate.fmt("wpf_status"); } }
         public string ElevatedStatus { get { return Translate.fmt("wpf_elevated"); } }
