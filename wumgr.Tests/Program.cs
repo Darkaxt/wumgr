@@ -24,6 +24,7 @@ namespace wumgr.Tests
             Run("Content-Disposition filename parsing is guarded", ContentDispositionFilenameParsingIsGuarded);
             Run("Startup elevation only runs when explicitly configured", StartupElevationOnlyRunsWhenConfigured);
             Run("WPF action state mirrors admin and list rules", WpfActionStateMirrorsAdminAndListRules);
+            Run("WPF window placement rejects missing and tiny persisted bounds", WpfWindowPlacementRejectsInvalidBounds);
 
             if (failures != 0)
                 Console.Error.WriteLine("{0} test(s) failed.", failures);
@@ -185,6 +186,20 @@ namespace wumgr.Tests
             Assert(!busy.CanSearch, "busy agent cannot search");
             Assert(!busy.CanDownload, "busy agent cannot download");
             Assert(busy.CanCancel, "busy agent can be cancelled");
+        }
+
+        private static void WpfWindowPlacementRejectsInvalidBounds()
+        {
+            WpfWindowPlacement placement;
+
+            Assert(!WpfWindowPlacement.TryCreate("", "10", "1200", "800", "Normal", 900, 600, out placement), "missing left should be rejected");
+            Assert(!WpfWindowPlacement.TryCreate("10", "10", "200", "800", "Normal", 900, 600, out placement), "too-small width should be rejected");
+            Assert(WpfWindowPlacement.TryCreate("10", "20", "1200", "800", "Maximized", 900, 600, out placement), "valid bounds should be accepted");
+            AssertEqual(10.0, placement.Left, "left");
+            AssertEqual(20.0, placement.Top, "top");
+            AssertEqual(1200.0, placement.Width, "width");
+            AssertEqual(800.0, placement.Height, "height");
+            Assert(placement.Maximized, "maximized state should be retained");
         }
 
         private static void Assert(bool condition, string message)

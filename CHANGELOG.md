@@ -11,6 +11,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Wired the WPF shell to core update actions: provider selection, search,
   list switching, download/install/uninstall, hide/unhide, link copying,
   cancel, progress, and single-instance restore.
+- Added WPF window placement persistence and basic tray restore/exit behavior
+  for the Run in background option.
 
 ### Fixed
 - Normal non-admin launch no longer opens a UAC prompt unless Skip UAC was
