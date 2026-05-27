@@ -26,7 +26,7 @@ namespace wumgr.Wpf
 
         public static bool ShouldShowProgress(bool isBusy, int percent, bool isIndeterminate)
         {
-            return isBusy || isIndeterminate || NormalizePercent(percent) > 0.0;
+            return isBusy;
         }
 
         public static string GetDisplayText(int percent, bool isIndeterminate)
