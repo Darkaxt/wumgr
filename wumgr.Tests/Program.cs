@@ -20,6 +20,7 @@ namespace wumgr.Tests
         {
             Run("Create skips updates without download URLs", CreateSkipsUpdatesWithoutDownloadUrls);
             Run("Create treats empty download URLs as missing", CreateTreatsEmptyDownloadUrlsAsMissing);
+            Run("Create uses package title keys for KBUnknown downloads", CreateUsesPackageTitleKeysForKbUnknownDownloads);
             Run("GetCompletedFiles skips failed and incomplete downloads", GetCompletedFilesSkipsFailedAndIncompleteDownloads);
             Run("Select all reports selection changes", SelectAllReportsSelectionChanges);
             Run("Result dialog guard suppresses duplicate dialogs", ResultDialogGuardSuppressesDuplicateDialogs);
@@ -107,6 +108,19 @@ namespace wumgr.Tests
             AssertEqual(0, plan.Updates.Count, "eligible update count");
             AssertEqual(0, plan.Downloads.Count, "download task count");
             Assert(plan.HasSkippedUpdates, "plan should record skipped updates");
+        }
+
+        private static void CreateUsesPackageTitleKeysForKbUnknownDownloads()
+        {
+            var driver = new MsUpdate { KB = "KBUnknown", Title = "Lenovo Driver Update (15.11.30.11)" };
+            driver.Downloads.Add("https://download.example.test/driver.cab");
+
+            ManualDownloadPlan plan = ManualDownloadPlanner.Create(new List<MsUpdate> { driver }, @"C:\Updates");
+
+            AssertEqual(1, plan.Downloads.Count, "download task count");
+            AssertEqual("Lenovo Driver Update (15.11.30.11)", plan.Downloads[0].KB, "download key");
+            AssertEqual(@"C:\Updates\Lenovo Driver Update (15.11.30.11)", plan.Downloads[0].Path, "download path");
+            AssertEqual("Lenovo Driver Update (15.11.30.11)", ManualDownloadPlanner.GetUpdateKey(driver), "installer key");
         }
 
         private static void GetCompletedFilesSkipsFailedAndIncompleteDownloads()

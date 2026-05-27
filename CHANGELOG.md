@@ -77,6 +77,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
   failure instead of reporting success.
 - Error `0x80072EE6` is now displayed as a WinINet URL-scheme error instead of
   an unknown error.
+- Manual downloads for `KBUnknown` updates now use a sanitized package-title
+  folder/key instead of colliding in one `KBUnknown` folder.
 
 ## [1.2.1] - 2026-05-27
 ### Added

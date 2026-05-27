@@ -43,7 +43,7 @@ namespace wumgr
 
             foreach (MsUpdate update in Updates)
             {
-                if (AllFiles.GetValues(update.KB).Count == 0)
+                if (AllFiles.GetValues(ManualDownloadPlanner.GetUpdateKey(update)).Count == 0)
                     return false;
             }
 
@@ -88,7 +88,7 @@ namespace wumgr
 
                 if (DoInstall)
                 {
-                    List<string> Files = mAllFiles.GetValues(mUpdates[mCurrentTask].KB);
+                    List<string> Files = mAllFiles.GetValues(ManualDownloadPlanner.GetUpdateKey(mUpdates[mCurrentTask]));
 
                     mThread = new Thread(new ParameterizedThreadStart(RunInstall));
                     mThread.Start(Files);

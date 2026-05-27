@@ -25,6 +25,23 @@ namespace wumgr
 
     static class ManualDownloadPlanner
     {
+        public static string GetUpdateKey(MsUpdate update)
+        {
+            if (update == null)
+                return "Update";
+
+            if (!string.IsNullOrWhiteSpace(update.KB) &&
+                !update.KB.Equals("KBUnknown", System.StringComparison.CurrentCultureIgnoreCase))
+                return update.KB.Trim();
+
+            string titleKey = DownloadFileNameHelper.Sanitize(update.Title);
+            if (!string.IsNullOrEmpty(titleKey))
+                return titleKey;
+
+            string uuidKey = DownloadFileNameHelper.Sanitize(update.UUID);
+            return string.IsNullOrEmpty(uuidKey) ? "Update" : uuidKey;
+        }
+
         public static ManualDownloadPlan Create(IEnumerable<MsUpdate> updates, string downloadRoot)
         {
             ManualDownloadPlan plan = new ManualDownloadPlan();
@@ -42,14 +59,15 @@ namespace wumgr
                 }
 
                 plan.Updates.Add(update);
+                string updateKey = GetUpdateKey(update);
 
                 foreach (string url in urls)
                 {
                     plan.Downloads.Add(new UpdateDownloader.Task
                     {
                         Url = url,
-                        Path = Path.Combine(downloadRoot, update.KB),
-                        KB = update.KB
+                        Path = Path.Combine(downloadRoot, updateKey),
+                        KB = updateKey
                     });
                 }
             }
