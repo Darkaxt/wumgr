@@ -26,13 +26,13 @@ opened only when the work is actionable for this maintained fork.
 - [#99](https://github.com/DavidXanatos/wumgr/issues/99) Large update size reports; size is now labeled as the Windows Update API maximum, not an exact payload size
 - [#138](https://github.com/DavidXanatos/wumgr/issues/138) Options documentation and large update size report
 - [#113](https://github.com/DavidXanatos/wumgr/issues/113) Automatic search/startup search; `-update` startup search is restored in the WPF path, while scheduled automatic search still requires the background tray option
+- [#87](https://github.com/DavidXanatos/wumgr/issues/87) Jittering during large update operations; duplicate dialogs and WPF first-render progress issues are mitigated, but the original install/download failure still needs reproduction data
 
-## v1.2.1 candidates
+## Handled after v1.2.0
 
 - [#58](https://github.com/DavidXanatos/wumgr/issues/58) Select All not updating available actions
 - [#71](https://github.com/DavidXanatos/wumgr/issues/71) Typo in changelog.md
 - [#73](https://github.com/DavidXanatos/wumgr/issues/73) Typo in repository description
-- [#78](https://github.com/DavidXanatos/wumgr/issues/78) Defender Updates task when Windows Update service is disabled
 - [#90](https://github.com/DavidXanatos/wumgr/issues/90) Link to download new releases
 - [#96](https://github.com/DavidXanatos/wumgr/issues/96) Cannot remove Group Policy
 - [#109](https://github.com/DavidXanatos/wumgr/issues/109) Uninstall WUMGR
@@ -40,10 +40,7 @@ opened only when the work is actionable for this maintained fork.
 - [#141](https://github.com/DavidXanatos/wumgr/issues/141) Program can open behind other windows
 - [#144](https://github.com/DavidXanatos/wumgr/issues/144) Hide WU Settings Page is too unobtrusive
 - [#149](https://github.com/DavidXanatos/wumgr/issues/149) Typo: "managemetn"
-- [#152](https://github.com/DavidXanatos/wumgr/issues/152) SAST analysis results
-
-## Handled after v1.2.1
-
+- [#152](https://github.com/DavidXanatos/wumgr/issues/152) SAST analysis results; tracked in security review notes, CodeQL, and issue #3
 - [#40](https://github.com/DavidXanatos/wumgr/issues/40) Add time marks in log panel
 - [#55](https://github.com/DavidXanatos/wumgr/issues/55) Launch minimized
 - [#65](https://github.com/DavidXanatos/wumgr/issues/65) Search button
@@ -67,7 +64,6 @@ opened only when the work is actionable for this maintained fork.
 - [#82](https://github.com/DavidXanatos/wumgr/issues/82) SQL Server updates support
 - [#83](https://github.com/DavidXanatos/wumgr/issues/83) Office 2013 updates are not installed
 - [#85](https://github.com/DavidXanatos/wumgr/issues/85) Internal error downloading updates
-- [#87](https://github.com/DavidXanatos/wumgr/issues/87) Jittering during large update operations
 - [#91](https://github.com/DavidXanatos/wumgr/issues/91) SCEP update KB3209361 install error
 - [#100](https://github.com/DavidXanatos/wumgr/issues/100) Hide option does not work in Store update manager
 - [#107](https://github.com/DavidXanatos/wumgr/issues/107) Repeated failures on Windows 10
@@ -95,6 +91,7 @@ opened only when the work is actionable for this maintained fork.
 ## Support or meta
 
 - [#10](https://github.com/DavidXanatos/wumgr/issues/10) Unavailable settings
+- [#78](https://github.com/DavidXanatos/wumgr/issues/78) Defender Updates task when Windows Update service is disabled; the fork currently has no Defender update scheduled-task artifact to patch
 - [#129](https://github.com/DavidXanatos/wumgr/issues/129) Disabled facilitator and WU Settings controls are greyed out
 - [#132](https://github.com/DavidXanatos/wumgr/issues/132) Program not asking for reboot
 - [#134](https://github.com/DavidXanatos/wumgr/issues/134) Need for changes with Windows 11

@@ -70,5 +70,6 @@ privilege and update integrity.
 - Update facilitator service hardening still changes service registry state and
   can add a deny ACE for Local System when disabling those services. Recovery
   steps remain documented in `docs/UNINSTALL_AND_RECOVERY.md`.
-- WPF migration is deferred. The maintained fork keeps the WinForms UI for
-  maintenance releases while security and reliability work stabilizes.
+- WPF is now the default shell. The maintained fork keeps the legacy WinForms UI
+  as a fallback while additional UI modernization stays separate from security
+  hardening.
