@@ -992,13 +992,14 @@ namespace wumgr
 
         void OnProgress(object sender, WuAgent.ProgressArgs args)
         {
-            string Status = GetOpStr(agent.CurOperation());
+            string Operation = GetOpStr(agent.CurOperation());
+            string Status = Operation;
 
             if (args.TotalCount == -1)
             {
                 progTotal.Style = ProgressBarStyle.Marquee;
                 progTotal.MarqueeAnimationSpeed = 30;
-                Status += "...";
+                Status = ProgressStatusFormatter.Format(Operation, args);
             }
             else
             {
@@ -1008,11 +1009,7 @@ namespace wumgr
                 if(args.TotalPercent >= 0 && args.TotalPercent <= 100)
                     progTotal.Value = args.TotalPercent;
 
-                if(args.TotalCount > 1)
-                    Status += " " + args.CurrentIndex + "/" + args.TotalCount + " ";
-
-                //if (args.UpdatePercent != 0)
-                //    Status += " " + args.UpdatePercent + "%";
+                Status = ProgressStatusFormatter.Format(Operation, args);
             }
             lblStatus.Text = Status;
             toolTip.SetToolTip(lblStatus, args.Info);

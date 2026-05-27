@@ -43,6 +43,7 @@ opened only when the work is actionable for this maintained fork.
 
 - [#40](https://github.com/DavidXanatos/wumgr/issues/40) Add time marks in log panel
 - [#65](https://github.com/DavidXanatos/wumgr/issues/65) Search button
+- [#69](https://github.com/DavidXanatos/wumgr/issues/69) Progress percentage and download speed; download speed is shown for manual HTTP downloads where the fork controls the transfer
 - [#80](https://github.com/DavidXanatos/wumgr/issues/80) Ability to resize and copy the output/status window
 - [#102](https://github.com/DavidXanatos/wumgr/issues/102) WUMgr logging and resizing
 - [#95](https://github.com/DavidXanatos/wumgr/issues/95) Non-local date format
@@ -83,7 +84,6 @@ opened only when the work is actionable for this maintained fork.
 - [#55](https://github.com/DavidXanatos/wumgr/issues/55) Launch minimized
 - [#57](https://github.com/DavidXanatos/wumgr/issues/57) MMC snap-in and Control Panel object
 - [#63](https://github.com/DavidXanatos/wumgr/issues/63) Check certificates and repair Windows Update
-- [#69](https://github.com/DavidXanatos/wumgr/issues/69) Progress percentage and download speed
 - [#79](https://github.com/DavidXanatos/wumgr/issues/79) Feature update version options
 - [#93](https://github.com/DavidXanatos/wumgr/issues/93) Block specific updates and filter by size
 - [#97](https://github.com/DavidXanatos/wumgr/issues/97) Security Intelligence update automation only

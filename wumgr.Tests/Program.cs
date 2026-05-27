@@ -42,6 +42,7 @@ namespace wumgr.Tests
             Run("WPF progress value clamps percentages", WpfProgressValueClampsPercentages);
             Run("WPF progress fill width mirrors progress state", WpfProgressFillWidthMirrorsProgressState);
             Run("WPF progress visual helpers keep custom bar readable", WpfProgressVisualHelpersKeepCustomBarReadable);
+            Run("Progress status includes current percent and speed", ProgressStatusIncludesCurrentPercentAndSpeed);
             Run("WPF action toolbar uses modern glyph icons", WpfActionToolbarUsesModernGlyphIcons);
             Run("WPF theme settings persist and resolve modes", WpfThemeSettingsPersistAndResolveModes);
             Run("WPF caption glyphs reflect window state", WpfCaptionGlyphsReflectWindowState);
@@ -404,6 +405,16 @@ namespace wumgr.Tests
             AssertEqual(70.0, WpfProgressValue.GetMarqueeLeft(200.0, 60.0, 0.5), "marquee phase");
             AssertEqual(0.0, WpfProgressValue.GetMarqueeLeft(200.0, 60.0, -1.0), "marquee low clamp");
             AssertEqual(140.0, WpfProgressValue.GetMarqueeLeft(200.0, 60.0, 2.0), "marquee high clamp");
+        }
+
+        private static void ProgressStatusIncludesCurrentPercentAndSpeed()
+        {
+            AssertEqual("Downloading Updates...", ProgressStatusFormatter.Format("Downloading Updates", new WuAgent.ProgressArgs(-1, 0, 0, 0, "")), "indeterminate status");
+            AssertEqual("Downloading Updates 2/4 35%", ProgressStatusFormatter.Format("Downloading Updates", new WuAgent.ProgressArgs(4, 50, 2, 35, "")), "current percent status");
+            AssertEqual("Downloading Updates 2/4 35% 2.00 MB/s", ProgressStatusFormatter.Format("Downloading Updates", new WuAgent.ProgressArgs(4, 50, 2, 35, "", 2 * 1024 * 1024)), "speed status");
+            AssertEqual("", ProgressStatusFormatter.FormatSpeed(0), "zero speed");
+            AssertEqual("512 B/s", ProgressStatusFormatter.FormatSpeed(512), "byte speed");
+            AssertEqual("2.00 MB/s", ProgressStatusFormatter.FormatSpeed(2 * 1024 * 1024), "megabyte speed");
         }
 
         private static void WpfActionToolbarUsesModernGlyphIcons()
