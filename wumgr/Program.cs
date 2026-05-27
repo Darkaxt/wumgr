@@ -193,8 +193,16 @@ namespace wumgr
             {
                 for (int i = 0; i < Program.args.Length; i++)
                 {
-                    if (Program.args[i].Equals("-onclose", StringComparison.CurrentCultureIgnoreCase))
-                        DoExec(PrepExec(Program.args[++i], true));
+                    if (!Program.args[i].Equals("-onclose", StringComparison.CurrentCultureIgnoreCase))
+                        continue;
+
+                    if (i + 1 >= Program.args.Length || Program.args[i + 1].Length == 0 || Program.args[i + 1][0] == '-')
+                    {
+                        AppLog.Line("Ignoring -onclose without a command.");
+                        continue;
+                    }
+
+                    DoExec(PrepExec(Program.args[++i], true));
                 }
             }
         }
@@ -288,10 +296,16 @@ namespace wumgr
 
         public static string GetArg(string name)
         {
+            if (Program.args == null)
+                return null;
+
             for (int i = 0; i < Program.args.Length; i++)
             {
                 if (Program.args[i].Equals(name, StringComparison.CurrentCultureIgnoreCase))
                 {
+                    if (i + 1 >= Program.args.Length)
+                        return "";
+
                     string temp = Program.args[i + 1];
                     if (temp.Length > 0 && temp[0] != '-')
                         return temp;

@@ -62,7 +62,8 @@ privilege and update integrity.
   local command-execution features. They run with the privileges used to launch
   WuMgr, so users should keep `Tools.ini` writable only by trusted local users.
 - The `-onclose` command-line hook remains disabled during `-NoUAC` Skip UAC
-  runs. This preserves the existing local privilege escalation guard.
+  runs. This preserves the existing local privilege escalation guard. Malformed
+  `-onclose` arguments without a command are ignored.
 - Skip UAC remains a local-admin convenience feature. It creates a highest-run
   scheduled task for the interactive user and should only be enabled on machines
   where that local-admin trust boundary is acceptable.
