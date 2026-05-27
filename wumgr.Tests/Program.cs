@@ -30,6 +30,7 @@ namespace wumgr.Tests
             Run("Startup defers agent init for WPF shell", StartupDefersAgentInitForWpfShell);
             Run("WPF action state mirrors admin and list rules", WpfActionStateMirrorsAdminAndListRules);
             Run("WPF window placement rejects missing and tiny persisted bounds", WpfWindowPlacementRejectsInvalidBounds);
+            Run("WPF status pane height rejects invalid persisted values", WpfStatusPaneHeightRejectsInvalidPersistedValues);
             Run("Auto update schedule reports due days", AutoUpdateScheduleReportsDueDays);
             Run("Update dates display with local culture", UpdateDatesDisplayWithLocalCulture);
             Run("Update cache dates round-trip invariantly", UpdateCacheDatesRoundTripInvariantly);
@@ -241,6 +242,19 @@ namespace wumgr.Tests
             AssertEqual(1200.0, placement.Width, "width");
             AssertEqual(800.0, placement.Height, "height");
             Assert(placement.Maximized, "maximized state should be retained");
+        }
+
+        private static void WpfStatusPaneHeightRejectsInvalidPersistedValues()
+        {
+            WpfStatusPaneHeight height;
+
+            Assert(!WpfStatusPaneHeight.TryCreate("", out height), "missing status pane height should be rejected");
+            Assert(!WpfStatusPaneHeight.TryCreate("20", out height), "too-small status pane height should be rejected");
+            Assert(!WpfStatusPaneHeight.TryCreate("900", out height), "too-large status pane height should be rejected");
+            Assert(WpfStatusPaneHeight.TryCreate("220", out height), "valid status pane height should be accepted");
+            AssertEqual(220.0, height.Height, "status pane height");
+            AssertEqual(96.0, WpfStatusPaneHeight.Coerce(20), "coerce low height");
+            AssertEqual(420.0, WpfStatusPaneHeight.Coerce(900), "coerce high height");
         }
 
         private static void AutoUpdateScheduleReportsDueDays()

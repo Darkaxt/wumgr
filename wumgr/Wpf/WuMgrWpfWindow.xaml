@@ -320,7 +320,8 @@
     <Grid.RowDefinitions>
       <RowDefinition Height="52" />
       <RowDefinition Height="*" />
-      <RowDefinition Height="140" />
+      <RowDefinition Height="6" />
+      <RowDefinition x:Name="StatusPaneRow" Height="140" MinHeight="96" MaxHeight="420" />
     </Grid.RowDefinitions>
     <Grid.ColumnDefinitions>
       <ColumnDefinition Width="230" />
@@ -356,7 +357,7 @@
       </DockPanel>
     </Border>
 
-    <Border Grid.Row="1" Grid.Column="0" Grid.RowSpan="2" Background="{DynamicResource PanelBackgroundBrush}" BorderBrush="{DynamicResource BorderLineBrush}" BorderThickness="0,0,1,0">
+    <Border Grid.Row="1" Grid.Column="0" Grid.RowSpan="3" Background="{DynamicResource PanelBackgroundBrush}" BorderBrush="{DynamicResource BorderLineBrush}" BorderThickness="0,0,1,0">
       <DockPanel Margin="12">
         <TabControl DockPanel.Dock="Bottom" MinHeight="314" Margin="0,10,0,0">
           <TabItem Header="{Binding Text.OptionsTab}">
@@ -545,7 +546,18 @@
       </DataGrid>
     </Grid>
 
-    <Border Grid.Row="2" Grid.Column="1" Margin="14,0,14,14" Background="{DynamicResource PanelBackgroundBrush}" BorderBrush="{DynamicResource BorderLineBrush}" BorderThickness="1">
+    <GridSplitter Grid.Row="2"
+                  Grid.Column="1"
+                  Height="6"
+                  Margin="14,0,14,0"
+                  HorizontalAlignment="Stretch"
+                  VerticalAlignment="Center"
+                  Background="{DynamicResource BorderLineBrush}"
+                  ResizeBehavior="PreviousAndNext"
+                  ResizeDirection="Rows"
+                  ShowsPreview="True" />
+
+    <Border Grid.Row="3" Grid.Column="1" Margin="14,0,14,14" Background="{DynamicResource PanelBackgroundBrush}" BorderBrush="{DynamicResource BorderLineBrush}" BorderThickness="1">
       <DockPanel>
         <StackPanel DockPanel.Dock="Top" Margin="10,8,10,4">
           <TextBlock Text="{Binding Text.StatusHeader}" FontWeight="SemiBold" />

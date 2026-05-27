@@ -23,6 +23,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
   timed from the log panel.
 - Added a WPF list filter for finding visible updates by title, category, KB,
   date, size, or state.
+- Added a resizable WPF status/log pane and persist its height between runs.
 - Made the WPF shell the default UI and added `-winforms` as an explicit
   fallback switch for the legacy UI.
 

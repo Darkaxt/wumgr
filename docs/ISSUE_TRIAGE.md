@@ -21,8 +21,6 @@ opened only when the work is actionable for this maintained fork.
 
 ## Partially handled
 
-- [#80](https://github.com/DavidXanatos/wumgr/issues/80) Ability to resize and copy the output/status window
-- [#102](https://github.com/DavidXanatos/wumgr/issues/102) WUMgr logging and resizing
 - [#138](https://github.com/DavidXanatos/wumgr/issues/138) Options documentation and large update size report
 
 ## v1.2.1 candidates
@@ -45,6 +43,8 @@ opened only when the work is actionable for this maintained fork.
 
 - [#40](https://github.com/DavidXanatos/wumgr/issues/40) Add time marks in log panel
 - [#65](https://github.com/DavidXanatos/wumgr/issues/65) Search button
+- [#80](https://github.com/DavidXanatos/wumgr/issues/80) Ability to resize and copy the output/status window
+- [#102](https://github.com/DavidXanatos/wumgr/issues/102) WUMgr logging and resizing
 - [#95](https://github.com/DavidXanatos/wumgr/issues/95) Non-local date format
 - [#121](https://github.com/DavidXanatos/wumgr/issues/121) Update history showing wrong date; mitigated by invariant update-cache dates and legacy localized cache parsing
 - [#133](https://github.com/DavidXanatos/wumgr/issues/133) Cancellation confirmation
