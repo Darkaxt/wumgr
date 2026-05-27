@@ -15,6 +15,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
   for the Run in background option.
 - Added WPF automatic-search scheduling with idle checks and tray
   notifications.
+- Added WPF Auto Update policy/options controls for Windows Update GPO,
+  facilitator-service, Store auto-update, Settings-page, and driver policies.
 
 ### Fixed
 - Normal non-admin launch no longer opens a UAC prompt unless Skip UAC was

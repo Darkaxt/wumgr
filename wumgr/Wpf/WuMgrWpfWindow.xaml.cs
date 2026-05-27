@@ -24,6 +24,11 @@ namespace wumgr.Wpf
         private bool registerMicrosoftUpdate;
         private bool skipUacEnabled;
         private bool runInBackground;
+        private bool? blockMicrosoftServers;
+        private bool disableUpdateFacilitators;
+        private bool hideWindowsUpdatePage;
+        private bool disableStoreAutoUpdate;
+        private bool? includeDriversInUpdates;
         private string selectedSource;
         private string statusText;
         private string statusLog;
@@ -36,10 +41,18 @@ namespace wumgr.Wpf
         private int idleDelay;
         private DateTime lastCheck = DateTime.MinValue;
         private DateTime lastBalloon = DateTime.MinValue;
+        private GPO.Respect gpoRespect = GPO.Respect.Unknown;
+        private float windowsVersion;
+        private GPO.AUOptions selectedPolicyAutoUpdate;
+        private int selectedScheduleDay;
+        private int selectedScheduleTime;
+        private bool suspendPolicyUpdate;
 
         public ObservableCollection<WpfUpdateRow> Updates { get; private set; }
         public ObservableCollection<string> Sources { get; private set; }
         public ObservableCollection<string> AutoUpdateOptions { get; private set; }
+        public ObservableCollection<string> ScheduleDays { get; private set; }
+        public ObservableCollection<string> ScheduleTimes { get; private set; }
 
         public string VersionText { get { return "v" + Program.mVersion; } }
         public string ElevationText { get { return IsAdministrator ? "Running elevated" : "Read-only launch. Admin actions require elevation."; } }
@@ -156,6 +169,116 @@ namespace wumgr.Wpf
             }
         }
 
+        public bool? BlockMicrosoftServers
+        {
+            get { return blockMicrosoftServers; }
+            set
+            {
+                if (object.Equals(blockMicrosoftServers, value))
+                    return;
+
+                bool? previous = blockMicrosoftServers;
+                blockMicrosoftServers = value;
+                OnPropertyChanged("BlockMicrosoftServers");
+
+                if (!suspendPolicyUpdate && !HandleBlockMicrosoftServersChanged(previous))
+                    return;
+
+                CoercePolicyDerivedState();
+                NotifyPolicyOptionStateChanged();
+            }
+        }
+
+        public bool DisableUpdateFacilitators
+        {
+            get { return disableUpdateFacilitators; }
+            set { SetDisableUpdateFacilitators(value, !suspendPolicyUpdate); }
+        }
+
+        public bool HideWindowsUpdatePage
+        {
+            get { return hideWindowsUpdatePage; }
+            set { SetHideWindowsUpdatePage(value, !suspendPolicyUpdate); }
+        }
+
+        public bool DisableStoreAutoUpdate
+        {
+            get { return disableStoreAutoUpdate; }
+            set
+            {
+                if (!SetField(ref disableStoreAutoUpdate, value, "DisableStoreAutoUpdate"))
+                    return;
+
+                if (!suspendPolicyUpdate && IsAdministrator)
+                    GPO.SetStoreAU(value);
+            }
+        }
+
+        public bool? IncludeDriversInUpdates
+        {
+            get { return includeDriversInUpdates; }
+            set
+            {
+                if (!SetField(ref includeDriversInUpdates, value, "IncludeDriversInUpdates"))
+                    return;
+
+                if (!suspendPolicyUpdate && IsAdministrator)
+                    GPO.ConfigDriverAU(ToGpoCheckState(value));
+            }
+        }
+
+        public bool IsPolicyDefault
+        {
+            get { return selectedPolicyAutoUpdate == GPO.AUOptions.Default; }
+            set { if (value) SetSelectedPolicyAutoUpdate(GPO.AUOptions.Default); }
+        }
+
+        public bool IsPolicyDisabled
+        {
+            get { return selectedPolicyAutoUpdate == GPO.AUOptions.Disabled; }
+            set { if (value) SetSelectedPolicyAutoUpdate(GPO.AUOptions.Disabled); }
+        }
+
+        public bool IsPolicyNotification
+        {
+            get { return selectedPolicyAutoUpdate == GPO.AUOptions.Notification; }
+            set { if (value) SetSelectedPolicyAutoUpdate(GPO.AUOptions.Notification); }
+        }
+
+        public bool IsPolicyDownload
+        {
+            get { return selectedPolicyAutoUpdate == GPO.AUOptions.Download; }
+            set { if (value) SetSelectedPolicyAutoUpdate(GPO.AUOptions.Download); }
+        }
+
+        public bool IsPolicyScheduled
+        {
+            get { return selectedPolicyAutoUpdate == GPO.AUOptions.Scheduled; }
+            set { if (value) SetSelectedPolicyAutoUpdate(GPO.AUOptions.Scheduled); }
+        }
+
+        public int SelectedScheduleDay
+        {
+            get { return selectedScheduleDay; }
+            set
+            {
+                value = ClampIndex(value, ScheduleDays.Count);
+                if (SetField(ref selectedScheduleDay, value, "SelectedScheduleDay"))
+                    ApplyScheduledPolicyIfNeeded();
+            }
+        }
+
+        public int SelectedScheduleTime
+        {
+            get { return selectedScheduleTime; }
+            set
+            {
+                value = ClampIndex(value, ScheduleTimes.Count);
+                if (SetField(ref selectedScheduleTime, value, "SelectedScheduleTime"))
+                    ApplyScheduledPolicyIfNeeded();
+            }
+        }
+
         public string SelectedSource
         {
             get { return selectedSource; }
@@ -205,12 +328,29 @@ namespace wumgr.Wpf
         public bool CanGetLinks { get { return CurrentActionState.CanGetLinks; } }
         public bool CanCancel { get { return CurrentActionState.CanCancel; } }
         public string HideButtonText { get { return IsHiddenList ? "Unhide" : "Hide"; } }
+        public bool CanChangeBlockMicrosoft { get { return CurrentPolicyOptionState.CanChangeBlockMicrosoft; } }
+        public bool CanSelectNotification { get { return CurrentPolicyOptionState.CanSelectNotification; } }
+        public bool CanSelectDownload { get { return CurrentPolicyOptionState.CanSelectDownload; } }
+        public bool CanSelectScheduled { get { return CurrentPolicyOptionState.CanSelectScheduled; } }
+        public bool CanChangeSchedule { get { return CurrentPolicyOptionState.CanChangeSchedule; } }
+        public bool CanChangeDisableFacilitators { get { return CurrentPolicyOptionState.CanChangeDisableFacilitators; } }
+        public bool CanChangeHideWindowsUpdatePage { get { return CurrentPolicyOptionState.CanChangeHideWindowsUpdatePage; } }
+        public bool CanChangeStoreAutoUpdate { get { return CurrentPolicyOptionState.CanChangeStoreAutoUpdate; } }
+        public bool CanChangeDrivers { get { return CurrentPolicyOptionState.CanChangeDrivers; } }
 
         private WpfActionState CurrentActionState
         {
             get
             {
                 return WpfActionState.Create(HasSelection, IsAdministrator, Program.Agent.IsActive(), Program.Agent.IsBusy(), Program.Agent.IsValid(), ManualMode, currentList);
+            }
+        }
+
+        private WpfPolicyOptionState CurrentPolicyOptionState
+        {
+            get
+            {
+                return WpfPolicyOptionState.Create(IsAdministrator, gpoRespect, windowsVersion, selectedPolicyAutoUpdate, BlockMicrosoftServers == true, DisableUpdateFacilitators);
             }
         }
 
@@ -221,6 +361,8 @@ namespace wumgr.Wpf
             Updates = new ObservableCollection<WpfUpdateRow>();
             Sources = new ObservableCollection<string>();
             AutoUpdateOptions = new ObservableCollection<string>();
+            ScheduleDays = new ObservableCollection<string>();
+            ScheduleTimes = new ObservableCollection<string>();
             StatusLog = "";
             StatusText = "";
 
@@ -239,7 +381,9 @@ namespace wumgr.Wpf
             selectedAutoUpdateIndex = MiscFunc.parseInt(GetConfig("AutoUpdate", "0"));
             LoadLastCheck();
 
+            LoadScheduleOptions();
             LoadAutoUpdateOptions();
+            LoadPolicyOptions();
             LoadSources(GetConfig("Source", "Windows Update"));
             LoadWindowSettings();
             CreateNotifyIcon();
@@ -352,6 +496,54 @@ namespace wumgr.Wpf
                 selectedAutoUpdateIndex = 0;
         }
 
+        private void LoadScheduleOptions()
+        {
+            ScheduleDays.Clear();
+            ScheduleDays.Add("Daily");
+            ScheduleDays.Add("Sunday");
+            ScheduleDays.Add("Monday");
+            ScheduleDays.Add("Tuesday");
+            ScheduleDays.Add("Wednesday");
+            ScheduleDays.Add("Thursday");
+            ScheduleDays.Add("Friday");
+            ScheduleDays.Add("Saturday");
+
+            ScheduleTimes.Clear();
+            for (int hour = 0; hour < 24; hour++)
+                ScheduleTimes.Add(hour.ToString("00", CultureInfo.InvariantCulture) + ":00");
+        }
+
+        private void LoadPolicyOptions()
+        {
+            suspendPolicyUpdate = true;
+            try
+            {
+                IncludeDriversInUpdates = FromGpoCheckState(GPO.GetDriverAU());
+
+                gpoRespect = GPO.GetRespect();
+                windowsVersion = GPO.GetWinVersion();
+                if (gpoRespect == GPO.Respect.Unknown)
+                    AppendLog("Unrecognized Windows Edition, respect for GPO settings is unknown.");
+
+                HideWindowsUpdatePage = GPO.IsUpdatePageHidden();
+                BlockMicrosoftServers = FromGpoCheckState(GPO.GetBlockMS());
+
+                int day;
+                int time;
+                selectedPolicyAutoUpdate = GPO.GetAU(out day, out time);
+                selectedScheduleDay = ClampIndex(day, ScheduleDays.Count);
+                selectedScheduleTime = ClampIndex(time, ScheduleTimes.Count);
+
+                DisableUpdateFacilitators = windowsVersion >= 10.0f && GPO.GetDisableAU();
+                DisableStoreAutoUpdate = GPO.GetStoreAU();
+                CoercePolicyDerivedState();
+            }
+            finally
+            {
+                suspendPolicyUpdate = false;
+            }
+        }
+
         private void LoadLastCheck()
         {
             DateTime parsed;
@@ -359,6 +551,162 @@ namespace wumgr.Wpf
                 lastCheck = parsed;
             else
                 lastCheck = DateTime.Now;
+        }
+
+        private bool HandleBlockMicrosoftServersChanged(bool? previous)
+        {
+            if (selectedPolicyAutoUpdate == GPO.AUOptions.Disabled
+                && gpoRespect == GPO.Respect.Partial
+                && BlockMicrosoftServers != true
+                && !DisableUpdateFacilitators)
+            {
+                switch (MessageBox.Show(Translate.fmt("msg_gpo"), Program.mName, MessageBoxButton.YesNoCancel))
+                {
+                    case MessageBoxResult.Yes:
+                        SetDisableUpdateFacilitators(true, true);
+                        break;
+                    case MessageBoxResult.No:
+                        SetSelectedPolicyAutoUpdate(GPO.AUOptions.Default);
+                        break;
+                    case MessageBoxResult.Cancel:
+                        blockMicrosoftServers = previous;
+                        OnPropertyChanged("BlockMicrosoftServers");
+                        NotifyPolicyOptionStateChanged();
+                        return false;
+                }
+            }
+
+            if (IsAdministrator)
+                GPO.BlockMS(BlockMicrosoftServers == true);
+
+            return true;
+        }
+
+        private void SetSelectedPolicyAutoUpdate(GPO.AUOptions option)
+        {
+            if (selectedPolicyAutoUpdate == option)
+                return;
+
+            selectedPolicyAutoUpdate = option;
+            NotifyPolicySelectionChanged();
+
+            if (option != GPO.AUOptions.Disabled && disableUpdateFacilitators)
+                SetDisableUpdateFacilitators(false, !suspendPolicyUpdate);
+
+            CoercePolicyDerivedState();
+            NotifyPolicyOptionStateChanged();
+
+            if (!suspendPolicyUpdate && IsAdministrator)
+                ApplySelectedAutoUpdatePolicy();
+        }
+
+        private void ApplySelectedAutoUpdatePolicy()
+        {
+            if (selectedPolicyAutoUpdate == GPO.AUOptions.Disabled)
+            {
+                if (DisableUpdateFacilitators)
+                    ApplyDisableFacilitators(true);
+                GPO.ConfigAU(GPO.AUOptions.Disabled);
+                return;
+            }
+
+            if (selectedPolicyAutoUpdate == GPO.AUOptions.Notification)
+                GPO.ConfigAU(GPO.AUOptions.Notification);
+            else if (selectedPolicyAutoUpdate == GPO.AUOptions.Download)
+                GPO.ConfigAU(GPO.AUOptions.Download);
+            else if (selectedPolicyAutoUpdate == GPO.AUOptions.Scheduled)
+                GPO.ConfigAU(GPO.AUOptions.Scheduled, SelectedScheduleDay, SelectedScheduleTime);
+            else
+                GPO.ConfigAU(GPO.AUOptions.Default);
+        }
+
+        private void ApplyScheduledPolicyIfNeeded()
+        {
+            if (!suspendPolicyUpdate && IsAdministrator && selectedPolicyAutoUpdate == GPO.AUOptions.Scheduled)
+                GPO.ConfigAU(GPO.AUOptions.Scheduled, SelectedScheduleDay, SelectedScheduleTime);
+        }
+
+        private void SetDisableUpdateFacilitators(bool value, bool applyPolicy)
+        {
+            WpfPolicyOptionState state = CurrentPolicyOptionState;
+            if (state.DisableFacilitatorsForcedOn)
+                value = true;
+
+            if (!SetField(ref disableUpdateFacilitators, value, "DisableUpdateFacilitators") && !applyPolicy)
+                return;
+
+            if (value)
+                SetHideWindowsUpdatePage(true, applyPolicy);
+
+            NotifyPolicyOptionStateChanged();
+
+            if (applyPolicy && IsAdministrator)
+                ApplyDisableFacilitators(value);
+        }
+
+        private void ApplyDisableFacilitators(bool value)
+        {
+            bool previous = GPO.GetDisableAU();
+            GPO.DisableAU(value);
+            if (previous != value)
+                MessageBox.Show(Translate.fmt("msg_disable_au"), Program.mName);
+        }
+
+        private void SetHideWindowsUpdatePage(bool value, bool applyPolicy)
+        {
+            WpfPolicyOptionState state = CurrentPolicyOptionState;
+            if (state.HideWindowsUpdatePageForcedOn)
+                value = true;
+
+            if (!SetField(ref hideWindowsUpdatePage, value, "HideWindowsUpdatePage") && !applyPolicy)
+                return;
+
+            NotifyPolicyOptionStateChanged();
+
+            if (applyPolicy && IsAdministrator)
+                GPO.HideUpdatePage(value);
+        }
+
+        private void CoercePolicyDerivedState()
+        {
+            WpfPolicyOptionState state = CurrentPolicyOptionState;
+
+            if (state.DisableFacilitatorsForcedOn && !disableUpdateFacilitators)
+            {
+                disableUpdateFacilitators = true;
+                OnPropertyChanged("DisableUpdateFacilitators");
+            }
+
+            if (state.HideWindowsUpdatePageForcedOn && !hideWindowsUpdatePage)
+            {
+                hideWindowsUpdatePage = true;
+                OnPropertyChanged("HideWindowsUpdatePage");
+            }
+        }
+
+        private static bool? FromGpoCheckState(int checkState)
+        {
+            if (checkState == 1)
+                return true;
+            if (checkState == 0)
+                return false;
+            return null;
+        }
+
+        private static int ToGpoCheckState(bool? checkState)
+        {
+            if (checkState == true)
+                return 1;
+            if (checkState == false)
+                return 0;
+            return 2;
+        }
+
+        private static int ClampIndex(int value, int count)
+        {
+            if (count <= 0 || value < 0 || value >= count)
+                return 0;
+            return value;
         }
 
         private void UpdateNotifyIcon()
@@ -803,6 +1151,13 @@ namespace wumgr.Wpf
             OnPropertyChanged("SelectedAutoUpdateIndex");
             OnPropertyChanged("SelectedSource");
             OnPropertyChanged("CanUseOnlineSource");
+            OnPropertyChanged("BlockMicrosoftServers");
+            OnPropertyChanged("DisableUpdateFacilitators");
+            OnPropertyChanged("HideWindowsUpdatePage");
+            OnPropertyChanged("DisableStoreAutoUpdate");
+            OnPropertyChanged("IncludeDriversInUpdates");
+            OnPropertyChanged("SelectedScheduleDay");
+            OnPropertyChanged("SelectedScheduleTime");
             OnPropertyChanged("PendingLabel");
             OnPropertyChanged("InstalledLabel");
             OnPropertyChanged("HiddenLabel");
@@ -812,6 +1167,8 @@ namespace wumgr.Wpf
             OnPropertyChanged("IsHiddenList");
             OnPropertyChanged("IsHistoryList");
             OnPropertyChanged("HideButtonText");
+            NotifyPolicySelectionChanged();
+            NotifyPolicyOptionStateChanged();
             NotifyActionStateChanged();
         }
 
@@ -825,6 +1182,28 @@ namespace wumgr.Wpf
             OnPropertyChanged("CanHide");
             OnPropertyChanged("CanGetLinks");
             OnPropertyChanged("CanCancel");
+        }
+
+        private void NotifyPolicySelectionChanged()
+        {
+            OnPropertyChanged("IsPolicyDefault");
+            OnPropertyChanged("IsPolicyDisabled");
+            OnPropertyChanged("IsPolicyNotification");
+            OnPropertyChanged("IsPolicyDownload");
+            OnPropertyChanged("IsPolicyScheduled");
+        }
+
+        private void NotifyPolicyOptionStateChanged()
+        {
+            OnPropertyChanged("CanChangeBlockMicrosoft");
+            OnPropertyChanged("CanSelectNotification");
+            OnPropertyChanged("CanSelectDownload");
+            OnPropertyChanged("CanSelectScheduled");
+            OnPropertyChanged("CanChangeSchedule");
+            OnPropertyChanged("CanChangeDisableFacilitators");
+            OnPropertyChanged("CanChangeHideWindowsUpdatePage");
+            OnPropertyChanged("CanChangeStoreAutoUpdate");
+            OnPropertyChanged("CanChangeDrivers");
         }
 
         private bool SetField<T>(ref T field, T value, string propertyName)
