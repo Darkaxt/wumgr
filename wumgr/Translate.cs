@@ -145,6 +145,10 @@ namespace wumgr
             mStrings.Add("wpf_elevated", "Running elevated");
             mStrings.Add("wpf_readonly", "Read-only launch. Admin actions require elevation.");
             mStrings.Add("wpf_initializing_agent", "Initializing Windows Update Agent...");
+            mStrings.Add("wpf_policy_disabled_admin", "Run WuMgr as Administrator to change Auto Update policy settings.");
+            mStrings.Add("wpf_policy_disabled_uwp", "Store app mode cannot write Windows policy registry settings.");
+            mStrings.Add("wpf_policy_disabled_unsupported", "This Windows edition does not support the standard Windows Update policy settings.");
+            mStrings.Add("wpf_policy_disabled_partial", "This Windows edition only partially supports standard Windows Update policy settings, so some controls are limited.");
             mStrings.Add("wpf_unhide", "Unhide");
             mStrings.Add("wpf_open", "Open");
             mStrings.Add("wpf_daily", "Daily");

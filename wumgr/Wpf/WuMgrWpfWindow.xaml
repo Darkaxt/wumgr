@@ -406,6 +406,11 @@
           <TabItem Header="{Binding Text.AutoUpdateTab}">
             <ScrollViewer VerticalScrollBarVisibility="Auto">
               <StackPanel Margin="6">
+                <TextBlock Text="{Binding PolicyOptionsDisabledReason}"
+                           Visibility="{Binding PolicyOptionsDisabledReasonVisibility}"
+                           Foreground="{DynamicResource MutedTextBrush}"
+                           TextWrapping="Wrap"
+                           Margin="0,0,0,8" />
                 <CheckBox Content="{Binding Text.BlockMicrosoftServers}"
                           IsChecked="{Binding BlockMicrosoftServers, Mode=TwoWay}"
                           IsThreeState="True"

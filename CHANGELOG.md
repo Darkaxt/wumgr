@@ -33,6 +33,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
   fixed UI language independent of Windows regional settings.
 - Refreshed repository documentation for current WPF defaults, packaging
   commands, and upstream triage status.
+- Added a WPF Auto Update hint explaining why policy controls are disabled or
+  limited.
 
 ### Fixed
 - Normal non-admin launch no longer opens a UAC prompt unless Skip UAC was

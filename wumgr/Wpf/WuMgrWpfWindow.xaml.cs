@@ -82,7 +82,10 @@ namespace wumgr.Wpf
             private set
             {
                 if (SetField(ref isAdministrator, value, "IsAdministrator"))
+                {
                     OnPropertyChanged("ElevationText");
+                    NotifyPolicyOptionStateChanged();
+                }
             }
         }
 
@@ -420,6 +423,17 @@ namespace wumgr.Wpf
         public bool CanChangeHideWindowsUpdatePage { get { return CurrentPolicyOptionState.CanChangeHideWindowsUpdatePage; } }
         public bool CanChangeStoreAutoUpdate { get { return CurrentPolicyOptionState.CanChangeStoreAutoUpdate; } }
         public bool CanChangeDrivers { get { return CurrentPolicyOptionState.CanChangeDrivers; } }
+        public string PolicyOptionsDisabledReason
+        {
+            get
+            {
+                return WpfPolicyDisabledReason.Get(IsAdministrator, MiscFunc.IsRunningAsUwp(), gpoRespect);
+            }
+        }
+        public Visibility PolicyOptionsDisabledReasonVisibility
+        {
+            get { return string.IsNullOrEmpty(PolicyOptionsDisabledReason) ? Visibility.Collapsed : Visibility.Visible; }
+        }
 
         private WpfActionState CurrentActionState
         {
@@ -1747,6 +1761,8 @@ namespace wumgr.Wpf
             OnPropertyChanged("CanChangeHideWindowsUpdatePage");
             OnPropertyChanged("CanChangeStoreAutoUpdate");
             OnPropertyChanged("CanChangeDrivers");
+            OnPropertyChanged("PolicyOptionsDisabledReason");
+            OnPropertyChanged("PolicyOptionsDisabledReasonVisibility");
         }
 
         private bool SetField<T>(ref T field, T value, string propertyName)
