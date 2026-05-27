@@ -37,6 +37,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
   initialization, including tray startup.
 - The update size column is now labeled Max Size to reflect that it comes from
   the Windows Update API maximum download size.
+- The WPF shell now suppresses duplicate result dialogs while one is already
+  open.
 - WPF startup now creates and shows the shell before initializing the Windows
   Update Agent, so slow WUA startup does not make launch look dead.
 - Restored the original WinForms action icons in the WPF toolbar.

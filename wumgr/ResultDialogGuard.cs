@@ -31,5 +31,22 @@ namespace wumgr
             lock (sync)
                 active = false;
         }
+
+        public bool TryRun(System.Action action)
+        {
+            if (!TryBegin())
+                return false;
+
+            try
+            {
+                action();
+            }
+            finally
+            {
+                End();
+            }
+
+            return true;
+        }
     }
 }

@@ -29,7 +29,6 @@ opened only when the work is actionable for this maintained fork.
 
 ## v1.2.1 candidates
 
-- [#44](https://github.com/DavidXanatos/wumgr/issues/44) Stacked error windows
 - [#58](https://github.com/DavidXanatos/wumgr/issues/58) Select All not updating available actions
 - [#71](https://github.com/DavidXanatos/wumgr/issues/71) Typo in changelog.md
 - [#73](https://github.com/DavidXanatos/wumgr/issues/73) Typo in repository description
@@ -51,6 +50,7 @@ opened only when the work is actionable for this maintained fork.
 - [#69](https://github.com/DavidXanatos/wumgr/issues/69) Progress percentage and download speed; download speed is shown for manual HTTP downloads where the fork controls the transfer
 - [#80](https://github.com/DavidXanatos/wumgr/issues/80) Ability to resize and copy the output/status window
 - [#102](https://github.com/DavidXanatos/wumgr/issues/102) WUMgr logging and resizing
+- [#44](https://github.com/DavidXanatos/wumgr/issues/44) Stacked error windows; guarded in both WinForms and WPF result dialogs
 - [#95](https://github.com/DavidXanatos/wumgr/issues/95) Non-local date format
 - [#121](https://github.com/DavidXanatos/wumgr/issues/121) Update history showing wrong date; mitigated by invariant update-cache dates and legacy localized cache parsing
 - [#133](https://github.com/DavidXanatos/wumgr/issues/133) Cancellation confirmation
