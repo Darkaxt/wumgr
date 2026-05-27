@@ -52,6 +52,7 @@ namespace wumgr.Tests
             Run("Process runner formats command lines", ProcessRunnerFormatsCommandLines);
             Run("Process runner drains redirected output", ProcessRunnerDrainsRedirectedOutput);
             Run("Process runner cancels running processes", ProcessRunnerCancelsRunningProcesses);
+            Run("WUA search criteria uses explicit deployment actions", WuaSearchCriteriaUsesExplicitDeploymentActions);
             Run("WinINet unrecognized scheme error is named", WinInetUnrecognizedSchemeErrorIsNamed);
             Run("Startup elevation only runs when explicitly configured", StartupElevationOnlyRunsWhenConfigured);
             Run("Startup UI defaults to WPF with WinForms fallback", StartupUiDefaultsToWpfWithWinFormsFallback);
@@ -350,6 +351,18 @@ namespace wumgr.Tests
             Assert(result.Canceled, "runner should report cancellation");
             AssertEqual(ProcessTaskResult.CanceledExitCode, result.ExitCode, "canceled process exit code");
             Assert(DateTime.UtcNow - started < TimeSpan.FromSeconds(3), "runner should not wait for a canceled child to exit normally");
+        }
+
+        private static void WuaSearchCriteriaUsesExplicitDeploymentActions()
+        {
+            string legacy = WuaSearchCriteria.Create(true);
+            AssertEqual("(IsInstalled = 0 and IsHidden = 0) or (IsInstalled = 1 and IsHidden = 0) or (IsHidden = 1)", legacy, "legacy search criteria");
+            Assert(!legacy.Contains("DeploymentAction=*"), "legacy query should not use wildcard deployment action");
+
+            string modern = WuaSearchCriteria.Create(false);
+            Assert(modern.Contains("DeploymentAction='OptionalInstallation'"), "modern query should include optional installation");
+            Assert(!modern.Contains("DeploymentAction=*"), "modern query should not use wildcard deployment action");
+            Assert(modern.StartsWith("(IsInstalled = 0 and IsHidden = 0)"), "modern query should keep implicit installation groups");
         }
 
         private static void WinInetUnrecognizedSchemeErrorIsNamed()

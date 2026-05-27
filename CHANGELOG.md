@@ -86,6 +86,9 @@ This project adheres to [Semantic Versioning](http://semver.org/).
   folder/key instead of colliding in one `KBUnknown` folder.
 - Manual SCEP installers named `scepinstaller*` now use `/s /q` instead of the
   default `.exe` silent arguments.
+- WUA search criteria no longer uses the undocumented `DeploymentAction=*`
+  wildcard and instead keeps the documented implicit installation criteria while
+  adding explicit optional-installation groups.
 
 ## [1.2.1] - 2026-05-27
 ### Added
