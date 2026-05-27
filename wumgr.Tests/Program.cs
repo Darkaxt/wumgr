@@ -205,6 +205,9 @@ namespace wumgr.Tests
             Assert(StartupUiMode.ShouldStartMinimized(new[] { "/minimized" }, false), "slash minimized launch should start minimized");
             Assert(StartupUiMode.ShouldStartMinimized(new string[0], true), "persisted option should start minimized");
             Assert(!StartupUiMode.ShouldStartMinimized(new[] { "-tray" }, true), "tray launch should remain hidden instead of minimized");
+            Assert(!StartupUiMode.ShouldSearchOnStartup(new string[0]), "normal launch should not force a search");
+            Assert(StartupUiMode.ShouldSearchOnStartup(new[] { "-update" }), "dash update launch should search on startup");
+            Assert(StartupUiMode.ShouldSearchOnStartup(new[] { "/update" }), "slash update launch should search on startup");
         }
 
         private static void StartupDefersAgentInitForWpfShell()

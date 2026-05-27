@@ -22,6 +22,7 @@ opened only when the work is actionable for this maintained fork.
 ## Partially handled
 
 - [#138](https://github.com/DavidXanatos/wumgr/issues/138) Options documentation and large update size report
+- [#113](https://github.com/DavidXanatos/wumgr/issues/113) Automatic search/startup search; `-update` startup search is restored in the WPF path, while scheduled automatic search still requires the background tray option
 
 ## v1.2.1 candidates
 
@@ -70,7 +71,6 @@ opened only when the work is actionable for this maintained fork.
 - [#100](https://github.com/DavidXanatos/wumgr/issues/100) Hide option does not work in Store update manager
 - [#107](https://github.com/DavidXanatos/wumgr/issues/107) Repeated failures on Windows 10
 - [#112](https://github.com/DavidXanatos/wumgr/issues/112) Update failures reported as applied
-- [#113](https://github.com/DavidXanatos/wumgr/issues/113) Automatic search for updates does not work
 - [#118](https://github.com/DavidXanatos/wumgr/issues/118) Windows Server 2019 hidden update behavior
 - [#137](https://github.com/DavidXanatos/wumgr/issues/137) Packages without a KB cite download but do not appear
 - [#139](https://github.com/DavidXanatos/wumgr/issues/139) Windows 11 upgrade not applied on reboot
