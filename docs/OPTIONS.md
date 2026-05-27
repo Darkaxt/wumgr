@@ -59,6 +59,11 @@ are supplied.
 Use `-update` to start a search after the Windows Update Agent is initialized.
 It can be combined with `-tray` for a hidden startup search.
 
+The legacy WinForms path also recognizes `-online [serviceId]`, `-offline
+[download|no_download]`, `-manual`, and `-provisioned`. Current WPF work stores
+those modes through the options UI/configuration and does not fully reimplement
+every legacy startup switch yet.
+
 ## Language Override
 
 WuMgr chooses the UI language from the installed Windows UI culture by default.

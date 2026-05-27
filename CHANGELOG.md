@@ -35,6 +35,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
   commands, and upstream triage status.
 - Clarified the README release status, WPF preview screenshots, elevation
   behavior, unsigned-binary warning, and source-build commands.
+- Added a focused user guide covering build choice, elevation rules,
+  command-line options, background operation, local files, and troubleshooting.
 - Added a WPF Auto Update hint explaining why policy controls are disabled or
   limited.
 

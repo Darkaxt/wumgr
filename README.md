@@ -34,14 +34,17 @@ Published binaries are unsigned. Windows may show a SmartScreen or publisher
 warning until the project has a signed release path. Release archives include
 `SHA256SUMS.txt` so downloaded artifacts can be checked after extraction.
 
+For day-to-day usage, see [docs/USAGE.md](docs/USAGE.md).
+
 ## Permissions
 
 WuMgr can inspect update state without administrator rights, but changing system
 update state requires elevation.
 
-Current `master` starts read-only without a UAC prompt. Admin-only actions such
-as download, install, uninstall, hide/unhide, service changes, GPO changes, and
-Skip UAC configuration stay unavailable until WuMgr is launched elevated.
+Current `master` starts read-only without a UAC prompt unless Skip UAC was
+explicitly configured. Admin-only actions such as download, install, uninstall,
+hide/unhide, service changes, GPO changes, and Skip UAC configuration stay
+unavailable until WuMgr is launched elevated.
 
 The packaged `v1.2.1` release is the older WinForms maintenance build and does
 not include all unreleased read-only launch changes yet.
@@ -54,6 +57,8 @@ not include all unreleased read-only launch changes yet.
   portable executable.
 - Configure automatic update policy controls, Microsoft Update registration,
   offline scan mode, manual download mode, and startup behavior.
+- Run current `master` without elevation for read-only inspection, then restart
+  elevated only when using admin-only update or policy actions.
 - Use `Translation.ini` next to `wumgr.exe` for portable translations.
 - Force a UI language with `Lang=` in `wumgr.ini` when Windows regional settings
   should not control the app language.
@@ -80,6 +85,7 @@ See [docs/BUILDING.md](docs/BUILDING.md) for packaging and release commands.
 
 ## Documentation
 
+- [User guide](docs/USAGE.md)
 - [Build and release commands](docs/BUILDING.md)
 - [Options reference](docs/OPTIONS.md)
 - [Uninstall and Windows Update recovery](docs/UNINSTALL_AND_RECOVERY.md)
