@@ -15,6 +15,18 @@ This guide describes the maintained fork at `Darkaxt/wumgr`.
 Published binaries are unsigned, so Windows may show a SmartScreen or publisher
 warning.
 
+## UI Modes
+
+Current `master` opens the WPF shell by default. It is intended to become the
+main interface, but it is still part of the unreleased `v1.2.2` work. It
+supports the primary update lists, source selection, search, selected-update
+actions, copy links, cancellation, progress/status reporting, tray behavior,
+startup search, and the migrated Auto Update controls.
+
+The legacy WinForms UI remains available with `-winforms`. Use it as a fallback
+when testing a WPF regression or when comparing behavior against the original
+interface.
+
 ## First Run
 
 1. Extract the zip to a writable folder.
@@ -109,6 +121,21 @@ under the user's Downloads directory for writable state.
   logs them.
 - For policy or uninstall recovery, follow
   [UNINSTALL_AND_RECOVERY.md](UNINSTALL_AND_RECOVERY.md).
+
+## Useful Issue Details
+
+When opening a fork issue, include:
+
+- WuMgr version or commit.
+- Whether you used the packaged release, current `master`, `-wpf`, or
+  `-winforms`.
+- Whether WuMgr was launched as Administrator.
+- Windows version and edition.
+- Update title, KB number, category, and state when available.
+- The relevant status-log lines, including process command lines and exit codes
+  for manual install failures.
+- Whether the same operation works in Windows Settings or with Microsoft's
+  built-in update troubleshooter.
 
 Open focused fork issues for reproducible problems. Upstream issue history is
 tracked in [ISSUE_TRIAGE.md](ISSUE_TRIAGE.md), but the fork does not mirror every

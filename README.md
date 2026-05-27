@@ -18,8 +18,14 @@ published at [Darkaxt/wumgr releases](https://github.com/Darkaxt/wumgr/releases)
 | Current `master` | Unreleased `v1.2.2` work | WPF by default | Preview of the modern shell, read-only launch, and recent security/reliability hardening. |
 | Legacy fallback | Current `master` only | WinForms | Start with `-winforms` when testing behavior against the original UI. |
 
-The WPF UI shown below is from current `master`. It is not the same UI that is
-currently packaged in the `v1.2.1` release zip.
+Use the release zip when you need a stable portable build. Use current `master`
+when you want to test the WPF migration and report feedback before the next
+release.
+
+## Screenshots
+
+The screenshots below show the WPF shell on current `master`. The packaged
+`v1.2.1` release still uses the older WinForms interface.
 
 | Light theme | Dark theme |
 | --- | --- |
@@ -27,8 +33,9 @@ currently packaged in the `v1.2.1` release zip.
 
 ## Download And Run
 
-For normal use, download `WuMgr_v1.2.1.zip` from the fork releases page, unzip
-it to a writable folder, and run `wumgr.exe`.
+For normal use, download `WuMgr_v1.2.1.zip` from
+[Darkaxt/wumgr releases](https://github.com/Darkaxt/wumgr/releases), unzip it
+to a writable folder, and run `wumgr.exe`.
 
 Published binaries are unsigned. Windows may show a SmartScreen or publisher
 warning until the project has a signed release path. Release archives include
@@ -93,6 +100,16 @@ See [docs/BUILDING.md](docs/BUILDING.md) for packaging and release commands.
 - [Upstream issue triage](docs/ISSUE_TRIAGE.md)
 - [Modernization notes](docs/MODERNIZATION.md)
 - [Security reporting](SECURITY.md)
+
+## Reporting Feedback
+
+Open issues in this fork, not upstream, when testing maintained-fork builds.
+Include the WuMgr version, whether you used the packaged release or current
+`master`, the selected UI mode, whether the process was elevated, Windows
+version, the exact update title or KB when available, and the relevant log text.
+
+For WPF feedback, mention whether the same workflow works with `-winforms`.
+That comparison is useful while both shells are available.
 
 ## Security Notes
 
