@@ -30,6 +30,7 @@ namespace wumgr.Tests
             Run("Content-Disposition filename parsing is guarded", ContentDispositionFilenameParsingIsGuarded);
             Run("Command-line argument lookup guards missing values", CommandLineArgumentLookupGuardsMissingValues);
             Run("Manual installer exit codes report failures", ManualInstallerExitCodesReportFailures);
+            Run("Manual installer arguments support SCEP packages", ManualInstallerArgumentsSupportScepPackages);
             Run("WinINet unrecognized scheme error is named", WinInetUnrecognizedSchemeErrorIsNamed);
             Run("Startup elevation only runs when explicitly configured", StartupElevationOnlyRunsWhenConfigured);
             Run("Startup UI defaults to WPF with WinForms fallback", StartupUiDefaultsToWpfWithWinFormsFallback);
@@ -281,6 +282,13 @@ namespace wumgr.Tests
             ManualInstallExitCode genericFailure = ManualInstallExitCode.FromProcessExitCode(1);
             Assert(!genericFailure.Success, "generic exit code 1 should fail");
             Assert(!genericFailure.RebootRequired, "generic exit code 1 should not require reboot");
+        }
+
+        private static void ManualInstallerArgumentsSupportScepPackages()
+        {
+            AssertEqual("/s /q", ManualInstallArguments.GetExeArguments(@"C:\Updates\KB3209361\scepinstaller_amd64.exe"), "SCEP installer arguments");
+            AssertEqual("/q /norestart", ManualInstallArguments.GetExeArguments(@"C:\Updates\ndp48.exe"), ".NET installer arguments");
+            AssertEqual("/q /z", ManualInstallArguments.GetExeArguments(@"C:\Updates\generic.exe"), "default exe installer arguments");
         }
 
         private static void WinInetUnrecognizedSchemeErrorIsNamed()

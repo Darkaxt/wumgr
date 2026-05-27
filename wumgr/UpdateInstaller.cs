@@ -204,14 +204,7 @@ namespace wumgr
             ProcessStartInfo startInfo = new ProcessStartInfo();
             startInfo.FileName = fileName;
 
-            // ToDo: load from file
-            string name = Path.GetFileNameWithoutExtension(fileName);
-            if(name.IndexOf("ndp", StringComparison.CurrentCultureIgnoreCase) == 0 || 
-               name.IndexOf("OFV", StringComparison.CurrentCultureIgnoreCase) == 0 ||
-               name.IndexOf("2553065", StringComparison.CurrentCultureIgnoreCase) == 0)
-                startInfo.Arguments = "/q /norestart";
-            else
-                startInfo.Arguments = "/q /z";
+            startInfo.Arguments = ManualInstallArguments.GetExeArguments(fileName);
 
             return ExecTask(startInfo);
         }

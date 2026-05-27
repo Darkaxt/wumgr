@@ -112,6 +112,7 @@
     <Compile Include="Common\MiscFunc.cs" />
     <Compile Include="Common\ServiceHelper.cs" />
     <Compile Include="ManualDownloadPlanner.cs" />
+    <Compile Include="ManualInstallArguments.cs" />
     <Compile Include="ManualInstallExitCode.cs" />
     <Compile Include="MsUpdate.cs" />
     <Compile Include="ResultDialogGuard.cs" />

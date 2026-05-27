@@ -79,6 +79,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
   an unknown error.
 - Manual downloads for `KBUnknown` updates now use a sanitized package-title
   folder/key instead of colliding in one `KBUnknown` folder.
+- Manual SCEP installers named `scepinstaller*` now use `/s /q` instead of the
+  default `.exe` silent arguments.
 
 ## [1.2.1] - 2026-05-27
 ### Added
