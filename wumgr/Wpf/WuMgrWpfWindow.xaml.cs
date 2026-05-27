@@ -1450,19 +1450,19 @@ namespace wumgr.Wpf
         {
             Dispatcher.BeginInvoke(new Action(() =>
             {
-                StatusText = FormatOperation(Program.Agent.CurOperation());
+                string operation = FormatOperation(Program.Agent.CurOperation());
+                StatusText = operation;
                 if (args.TotalCount == -1)
                 {
                     IsBusyIndeterminate = true;
-                    StatusText += "...";
+                    StatusText = ProgressStatusFormatter.Format(operation, args);
                 }
                 else
                 {
                     IsBusyIndeterminate = false;
                     if (args.TotalPercent >= 0 && args.TotalPercent <= 100)
                         TotalPercent = args.TotalPercent;
-                    if (args.TotalCount > 1)
-                        StatusText += " " + args.CurrentIndex + "/" + args.TotalCount;
+                    StatusText = ProgressStatusFormatter.Format(operation, args);
                 }
                 NotifyActionStateChanged();
             }));

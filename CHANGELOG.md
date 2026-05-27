@@ -24,6 +24,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Added a WPF list filter for finding visible updates by title, category, KB,
   date, size, or state.
 - Added a resizable WPF status/log pane and persist its height between runs.
+- Progress status now shows the current update percentage and manual download
+  speed when transfer speed is available.
 - Made the WPF shell the default UI and added `-winforms` as an explicit
   fallback switch for the legacy UI.
 

@@ -1021,27 +1021,29 @@ namespace wumgr
 
         public class ProgressArgs : EventArgs
         {
-            public ProgressArgs(int TotalCount, int TotalPercent, int CurrentIndex, int CurrentPercent, String Info)
+            public ProgressArgs(int TotalCount, int TotalPercent, int CurrentIndex, int CurrentPercent, String Info, long BytesPerSecond = 0)
             {
                 this.TotalCount = TotalCount;
                 this.TotalPercent = TotalPercent;
                 this.CurrentIndex = CurrentIndex;
                 this.CurrentPercent = CurrentPercent;
                 this.Info = Info;
+                this.BytesPerSecond = BytesPerSecond;
             }
 
             public int TotalCount = 0;
             public int TotalPercent = 0;
             public int CurrentIndex = 0;
             public int CurrentPercent = 0;
+            public long BytesPerSecond = 0;
             public String Info = "";
         }
 
         public event EventHandler<ProgressArgs> Progress;
 
-        protected void OnProgress(int TotalUpdates, int TotalPercent, int CurrentIndex, int UpdatePercent, String Info = "")
+        protected void OnProgress(int TotalUpdates, int TotalPercent, int CurrentIndex, int UpdatePercent, String Info = "", long BytesPerSecond = 0)
         {
-            Progress?.Invoke(this, new ProgressArgs(TotalUpdates, TotalPercent, CurrentIndex, UpdatePercent, Info));
+            Progress?.Invoke(this, new ProgressArgs(TotalUpdates, TotalPercent, CurrentIndex, UpdatePercent, Info, BytesPerSecond));
         }
 
         public class FinishedArgs : EventArgs

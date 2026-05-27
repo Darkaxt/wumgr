@@ -27,6 +27,7 @@ class HttpTask
     private int mOffset = -1;
     private bool Canceled = false;
     private DateTime lastTime;
+    private DateTime downloadStartTime;
 
     public string DlPath { get { return mDlPath; } }
     public string DlName { get { return mDlName; } }
@@ -230,6 +231,7 @@ class HttpTask
                 task.streamResponse = task.response.GetResponseStream();
 
                 task.streamWriter = info.OpenWrite();
+                task.downloadStartTime = DateTime.UtcNow;
 
                 // Begin the Reading of the contents of the HTML page and print it to the console.
                 task.streamResponse.BeginRead(task.BufferRead, 0, BUFFER_SIZE, new AsyncCallback(ReadCallBack), task);
@@ -293,8 +295,9 @@ class HttpTask
                 if (Percent != task.mOldPercent)
                 {
                     task.mOldPercent = Percent;
+                    long bytesPerSecond = task.GetAverageBytesPerSecond();
                     task.mDispatcher.Invoke(new Action(() => {
-                        task.Progress?.Invoke(task, new ProgressEventArgs(Percent));
+                        task.Progress?.Invoke(task, new ProgressEventArgs(Percent, bytesPerSecond));
                     }));
                 }
 
@@ -351,11 +354,22 @@ class HttpTask
 
     public class ProgressEventArgs : EventArgs
     {
-        public ProgressEventArgs(int Percent)
+        public ProgressEventArgs(int Percent, long BytesPerSecond = 0)
         {
             this.Percent = Percent;
+            this.BytesPerSecond = BytesPerSecond;
         }
         public int Percent = 0;
+        public long BytesPerSecond = 0;
     }
     public event EventHandler<ProgressEventArgs> Progress;
+
+    private long GetAverageBytesPerSecond()
+    {
+        double seconds = (DateTime.UtcNow - downloadStartTime).TotalSeconds;
+        if (seconds <= 0)
+            return 0;
+
+        return (long)(mOffset / seconds);
+    }
 }

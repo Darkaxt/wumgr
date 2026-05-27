@@ -105,6 +105,7 @@
     <Compile Include="Common\MultiValueDictionary.cs" />
     <Compile Include="Common\PipeIPC.cs" />
     <Compile Include="Common\PipeSecurityFactory.cs" />
+    <Compile Include="Common\ProgressStatusFormatter.cs" />
     <Compile Include="Common\TokenManipulator.cs" />
     <Compile Include="Common\UpdateDateFormatter.cs" />
     <Compile Include="GPO.cs" />
