@@ -148,10 +148,12 @@ namespace wumgr
             try
             {
                 var subKey = Registry.LocalMachine.CreateSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer", true);
-                if (hide)
-                    subKey.SetValue("SettingsPageVisibility", "hide:windowsupdate");
-                else
+                string currentValue = subKey.GetValue("SettingsPageVisibility", "").ToString();
+                string nextValue = SettingsPageVisibilityPolicy.SetHidden(currentValue, "windowsupdate", hide);
+                if (string.IsNullOrEmpty(nextValue))
                     subKey.DeleteValue("SettingsPageVisibility", false);
+                else
+                    subKey.SetValue("SettingsPageVisibility", nextValue);
             }
             catch { }
         }
@@ -162,7 +164,7 @@ namespace wumgr
             {
                 var subKey = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer");
                 string value = subKey == null ? null : subKey.GetValue("SettingsPageVisibility", "").ToString();
-                return value.Contains("hide:windowsupdate");
+                return SettingsPageVisibilityPolicy.IsHidden(value, "windowsupdate");
             }
             catch { }
             return false;

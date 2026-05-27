@@ -41,6 +41,7 @@ namespace wumgr.Tests
             Run("Update cache dates read legacy localized values", UpdateCacheDatesReadLegacyLocalizedValues);
             Run("App log formats lines with timestamps", AppLogFormatsLinesWithTimestamps);
             Run("Cancel confirmation accepts only affirmative result", CancelConfirmationAcceptsOnlyAffirmativeResult);
+            Run("Settings page visibility preserves unrelated hidden pages", SettingsPageVisibilityPreservesUnrelatedHiddenPages);
             Run("WPF policy options disable writes without elevation", WpfPolicyOptionsDisableWritesWithoutElevation);
             Run("WPF policy options mirror GPO respect rules", WpfPolicyOptionsMirrorGpoRespectRules);
             Run("WPF policy disabled reason explains gated controls", WpfPolicyDisabledReasonExplainsGatedControls);
@@ -401,6 +402,23 @@ namespace wumgr.Tests
             Assert(CancelConfirmation.IsConfirmed(DialogResult.Yes), "yes should confirm cancellation");
             Assert(!CancelConfirmation.IsConfirmed(DialogResult.No), "no should not confirm cancellation");
             Assert(!CancelConfirmation.IsConfirmed(DialogResult.Cancel), "cancel should not confirm cancellation");
+        }
+
+        private static void SettingsPageVisibilityPreservesUnrelatedHiddenPages()
+        {
+            AssertEqual("hide:windowsupdate", SettingsPageVisibilityPolicy.SetHidden("", "windowsupdate", true), "empty hide value");
+            AssertEqual("hide:appsfeatures;windowsupdate", SettingsPageVisibilityPolicy.SetHidden("hide:appsfeatures", "windowsupdate", true), "append hidden page");
+            AssertEqual("hide:appsfeatures;windowsupdate", SettingsPageVisibilityPolicy.SetHidden("hide:appsfeatures;WindowsUpdate", "windowsupdate", true), "avoid duplicate hidden page");
+            AssertEqual("hide:appsfeatures", SettingsPageVisibilityPolicy.SetHidden("hide:appsfeatures;windowsupdate", "windowsupdate", false), "remove only target page");
+            AssertEqual("", SettingsPageVisibilityPolicy.SetHidden("hide:windowsupdate", "windowsupdate", false), "empty hide list removes value");
+
+            Assert(SettingsPageVisibilityPolicy.IsHidden("hide:appsfeatures;windowsupdate", "windowsupdate"), "target page hidden after another page");
+            Assert(!SettingsPageVisibilityPolicy.IsHidden("hide:appsfeatures", "windowsupdate"), "unlisted target is not hidden");
+
+            Assert(SettingsPageVisibilityPolicy.IsHidden("showonly:appsfeatures", "windowsupdate"), "show-only lists hide unlisted pages");
+            Assert(!SettingsPageVisibilityPolicy.IsHidden("showonly:appsfeatures;windowsupdate", "windowsupdate"), "show-only lists expose listed pages");
+            AssertEqual("showonly:appsfeatures", SettingsPageVisibilityPolicy.SetHidden("showonly:appsfeatures;windowsupdate", "windowsupdate", true), "hide removes target from show-only list");
+            AssertEqual("showonly:appsfeatures;windowsupdate", SettingsPageVisibilityPolicy.SetHidden("showonly:appsfeatures", "windowsupdate", false), "unhide adds target to show-only list");
         }
 
         private static void WpfPolicyOptionsDisableWritesWithoutElevation()

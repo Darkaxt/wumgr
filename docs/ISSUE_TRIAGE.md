@@ -28,6 +28,7 @@ opened only when the work is actionable for this maintained fork.
 - [#113](https://github.com/DavidXanatos/wumgr/issues/113) Automatic search/startup search; `-update` startup search is restored in the WPF path, while scheduled automatic search still requires the background tray option
 - [#87](https://github.com/DavidXanatos/wumgr/issues/87) Jittering during large update operations; duplicate dialogs and WPF first-render progress issues are mitigated, but the original install/download failure still needs reproduction data
 - [#10](https://github.com/DavidXanatos/wumgr/issues/10) Unavailable settings; the default WPF Auto Update tab now explains common disabled-control reasons
+- [#14](https://github.com/DavidXanatos/wumgr/issues/14) Disable Windows Update; Hide WU Settings Page now preserves unrelated `SettingsPageVisibility` entries, while the Settings app crash report still needs reproduction data
 - [#129](https://github.com/DavidXanatos/wumgr/issues/129) Disabled facilitator and WU Settings controls are greyed out; the default WPF Auto Update tab now explains common disabled-control reasons
 
 ## Handled after v1.2.0
@@ -60,7 +61,6 @@ opened only when the work is actionable for this maintained fork.
 
 ## Needs reproduction before code changes
 
-- [#14](https://github.com/DavidXanatos/wumgr/issues/14) Disable Windows Update
 - [#41](https://github.com/DavidXanatos/wumgr/issues/41) Does not find available updates
 - [#60](https://github.com/DavidXanatos/wumgr/issues/60) Fresh Windows 8.1 install cannot launch WuMgr
 - [#61](https://github.com/DavidXanatos/wumgr/issues/61) Options page does not apply some settings
