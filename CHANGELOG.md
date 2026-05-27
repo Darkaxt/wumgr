@@ -91,6 +91,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - WUA search criteria no longer uses the undocumented `DeploymentAction=*`
   wildcard and instead keeps the documented implicit installation criteria while
   adding explicit optional-installation groups.
+- Failed hide/unhide attempts now log the affected update and Windows error
+  instead of being swallowed silently.
 
 ## [1.2.1] - 2026-05-27
 ### Added

@@ -814,7 +814,10 @@ namespace wumgr
 
                     OnUpdatesChanged();
                 }
-                catch { } // Hide update may throw an exception, if the user has hidden the update manually while the search was in progress.
+                catch (Exception err) // Hide update may throw if Windows declines it or the update state changed after search.
+                {
+                    AppLog.Line(UpdateHideResultMessage.Failure(Update, Hide, err));
+                }
             }
         }
 

@@ -37,6 +37,7 @@ opened only when the work is actionable for this maintained fork.
 - [#82](https://github.com/DavidXanatos/wumgr/issues/82) SQL Server updates support; manual installer command lines are now logged, redirected child-process output is drained to avoid output-pipe hangs, and Cancel can stop a still-running child installer, while SQL-specific silent switches still need reproduction data
 - [#83](https://github.com/DavidXanatos/wumgr/issues/83) Office 2013 updates are not installed; manual installer command and failure output logging is improved, while Office-specific install handling still needs a reproducible package/exit-code example
 - [#151](https://github.com/DavidXanatos/wumgr/issues/151) Shows 0 updates; search criteria now avoids the undocumented `DeploymentAction=*` wildcard and explicitly includes optional-installation groups, while zero-result environments still need local Windows Update log/repro data
+- [#100](https://github.com/DavidXanatos/wumgr/issues/100) Hide option does not work in Store update manager; failed hide/unhide attempts now log the affected update and Windows error, while Store-specific hide support still needs reproduction data
 
 ## Handled after v1.2.0
 
@@ -71,7 +72,6 @@ opened only when the work is actionable for this maintained fork.
 
 - [#60](https://github.com/DavidXanatos/wumgr/issues/60) Fresh Windows 8.1 install cannot launch WuMgr
 - [#61](https://github.com/DavidXanatos/wumgr/issues/61) Options page does not apply some settings
-- [#100](https://github.com/DavidXanatos/wumgr/issues/100) Hide option does not work in Store update manager
 - [#107](https://github.com/DavidXanatos/wumgr/issues/107) Repeated failures on Windows 10
 - [#118](https://github.com/DavidXanatos/wumgr/issues/118) Windows Server 2019 hidden update behavior
 - [#139](https://github.com/DavidXanatos/wumgr/issues/139) Windows 11 upgrade not applied on reboot
