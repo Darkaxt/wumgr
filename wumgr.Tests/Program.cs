@@ -42,6 +42,7 @@ namespace wumgr.Tests
             Run("WPF progress value clamps percentages", WpfProgressValueClampsPercentages);
             Run("WPF progress fill width mirrors progress state", WpfProgressFillWidthMirrorsProgressState);
             Run("WPF progress visual helpers keep custom bar readable", WpfProgressVisualHelpersKeepCustomBarReadable);
+            Run("WPF progress visibility follows active work", WpfProgressVisibilityFollowsActiveWork);
             Run("Progress status includes current percent and speed", ProgressStatusIncludesCurrentPercentAndSpeed);
             Run("WPF action toolbar uses modern glyph icons", WpfActionToolbarUsesModernGlyphIcons);
             Run("WPF theme settings persist and resolve modes", WpfThemeSettingsPersistAndResolveModes);
@@ -199,6 +200,11 @@ namespace wumgr.Tests
             Assert(!StartupUiMode.ShouldStartInTray(new string[0]), "normal launch should show a window");
             Assert(StartupUiMode.ShouldStartInTray(new[] { "-tray" }), "dash tray launch should start hidden");
             Assert(StartupUiMode.ShouldStartInTray(new[] { "/tray" }), "slash tray launch should start hidden");
+            Assert(!StartupUiMode.ShouldStartMinimized(new string[0], false), "normal launch should not start minimized");
+            Assert(StartupUiMode.ShouldStartMinimized(new[] { "-minimized" }, false), "dash minimized launch should start minimized");
+            Assert(StartupUiMode.ShouldStartMinimized(new[] { "/minimized" }, false), "slash minimized launch should start minimized");
+            Assert(StartupUiMode.ShouldStartMinimized(new string[0], true), "persisted option should start minimized");
+            Assert(!StartupUiMode.ShouldStartMinimized(new[] { "-tray" }, true), "tray launch should remain hidden instead of minimized");
         }
 
         private static void StartupDefersAgentInitForWpfShell()
@@ -361,6 +367,7 @@ namespace wumgr.Tests
             AssertEqual(Translate.fmt("lbl_opt"), text.OptionsTab, "options tab");
             AssertEqual(Translate.fmt("lbl_au"), text.AutoUpdateTab, "auto update tab");
             AssertEqual(Translate.fmt("lbl_auto"), text.RunInBackground, "run in background");
+            AssertEqual(Translate.fmt("lbl_start_min"), text.StartMinimized, "start minimized");
             AssertEqual(Translate.fmt("lbl_ac_week"), text.AutoUpdateOptions[2], "auto update weekly option");
             AssertEqual(Translate.fmt("lbl_block_ms"), text.BlockMicrosoftServers, "block Microsoft servers");
             AssertEqual(Translate.fmt("tip_inst"), text.InstallButton, "install button");
@@ -405,6 +412,14 @@ namespace wumgr.Tests
             AssertEqual(70.0, WpfProgressValue.GetMarqueeLeft(200.0, 60.0, 0.5), "marquee phase");
             AssertEqual(0.0, WpfProgressValue.GetMarqueeLeft(200.0, 60.0, -1.0), "marquee low clamp");
             AssertEqual(140.0, WpfProgressValue.GetMarqueeLeft(200.0, 60.0, 2.0), "marquee high clamp");
+        }
+
+        private static void WpfProgressVisibilityFollowsActiveWork()
+        {
+            Assert(!WpfProgressValue.ShouldShowProgress(false, 0, false), "idle progress should be hidden");
+            Assert(WpfProgressValue.ShouldShowProgress(true, 0, false), "busy progress should show before percent arrives");
+            Assert(WpfProgressValue.ShouldShowProgress(false, 42, false), "nonzero progress should show");
+            Assert(WpfProgressValue.ShouldShowProgress(false, 0, true), "indeterminate progress should show");
         }
 
         private static void ProgressStatusIncludesCurrentPercentAndSpeed()

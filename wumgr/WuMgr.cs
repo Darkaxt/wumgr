@@ -125,6 +125,7 @@ namespace wumgr
         float mSearchBoxHeight = 0.0f;
         string mSearchFilter = null;
         bool bUpdateList = false;
+        bool mStartMinimized = false;
 
         public WuMgr()
         {
@@ -134,11 +135,13 @@ namespace wumgr
             //notifyIcon1.Icon = System.Drawing.Icon.ExtractAssociatedIcon(System.Reflection.Assembly.GetExecutingAssembly().Location);
             notifyIcon.Text = Program.mName;
 
-            if (Program.TestArg("-tray"))
+            if (StartupUiMode.ShouldStartInTray(Program.args))
             {
                 allowshowdisplay = false;
                 notifyIcon.Visible = true;
             }
+            else
+                mStartMinimized = StartupUiMode.ShouldStartMinimized(Program.args, StartupUiMode.IsStartMinimizedConfigured());
 
             if(!MiscFunc.IsRunningAsUwp())
                 this.Text = string.Format("{0} v{1} by David Xanatos", Program.mName, Program.mVersion);
@@ -222,6 +225,7 @@ namespace wumgr
             if (MiscFunc.IsRunningAsUwp() && chkAutoRun.CheckState == CheckState.Checked)
                 chkAutoRun.Enabled = false;
             IdleDelay = MiscFunc.parseInt(GetConfig("IdleDelay", "20"));
+            chkStartMinimized.Checked = StartupUiMode.IsStartMinimizedConfigured();
             chkNoUAC.Checked = Program.IsSkipUacRun();
             chkNoUAC.Enabled = MiscFunc.IsAdministrator();
             chkNoUAC.Visible = chkNoUAC.Enabled || chkNoUAC.Checked || !MiscFunc.IsRunningAsUwp();
@@ -417,7 +421,12 @@ namespace wumgr
         private void WuMgr_Shown(object sender, EventArgs e)
         {
             if (allowshowdisplay)
-                ShowMainWindow();
+            {
+                if (mStartMinimized)
+                    WindowState = FormWindowState.Minimized;
+                else
+                    ShowMainWindow();
+            }
         }
 
         private int GetAutoUpdateDue()
@@ -1297,6 +1306,13 @@ namespace wumgr
             Program.AutoStart(chkAutoRun.Checked);
         }
 
+        private void chkStartMinimized_CheckedChanged(object sender, EventArgs e)
+        {
+            if (mSuspendUpdate)
+                return;
+            SetConfig(StartupUiMode.StartMinimizedConfigKey, chkStartMinimized.Checked ? "1" : "0");
+        }
+
         private void dlAutoCheck_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (mSuspendUpdate)
@@ -1558,6 +1574,7 @@ namespace wumgr
 
             gbStartup.Text = Translate.fmt("lbl_start");
             chkAutoRun.Text = Translate.fmt("lbl_auto");
+            chkStartMinimized.Text = Translate.fmt("lbl_start_min");
             dlAutoCheck.Items.Clear();
             dlAutoCheck.Items.Add(Translate.fmt("lbl_ac_no"));
             dlAutoCheck.Items.Add(Translate.fmt("lbl_ac_day"));

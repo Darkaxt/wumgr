@@ -8,6 +8,7 @@ namespace wumgr.Wpf
         public string OptionsTab { get { return Translate.fmt("lbl_opt"); } }
         public string AutoUpdateTab { get { return Translate.fmt("lbl_au"); } }
         public string RunInBackground { get { return Translate.fmt("lbl_auto"); } }
+        public string StartMinimized { get { return Translate.fmt("lbl_start_min"); } }
         public string UpdateSource { get { return Translate.fmt("wpf_update_source"); } }
         public string OfflineMode { get { return Translate.fmt("lbl_off"); } }
         public string DownloadOfflineCab { get { return Translate.fmt("lbl_dl"); } }

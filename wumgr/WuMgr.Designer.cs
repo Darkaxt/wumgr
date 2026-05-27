@@ -32,6 +32,7 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(WuMgr));
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
             this.chkAutoRun = new System.Windows.Forms.CheckBox();
+            this.chkStartMinimized = new System.Windows.Forms.CheckBox();
             this.notifyIcon = new System.Windows.Forms.NotifyIcon(this.components);
             this.panelList = new System.Windows.Forms.TableLayoutPanel();
             this.tableLayoutPanel7 = new System.Windows.Forms.TableLayoutPanel();
@@ -120,7 +121,18 @@
             this.toolTip.SetToolTip(this.chkAutoRun, "Auto Start with Windows");
             this.chkAutoRun.UseVisualStyleBackColor = true;
             this.chkAutoRun.CheckedChanged += new System.EventHandler(this.chkAutoRun_CheckedChanged);
-            // 
+            //
+            // chkStartMinimized
+            //
+            this.chkStartMinimized.AutoSize = true;
+            this.chkStartMinimized.Location = new System.Drawing.Point(3, 56);
+            this.chkStartMinimized.Name = "chkStartMinimized";
+            this.chkStartMinimized.Size = new System.Drawing.Size(95, 17);
+            this.chkStartMinimized.TabIndex = 3;
+            this.chkStartMinimized.Text = "Start minimized";
+            this.chkStartMinimized.UseVisualStyleBackColor = true;
+            this.chkStartMinimized.CheckedChanged += new System.EventHandler(this.chkStartMinimized_CheckedChanged);
+            //
             // notifyIcon
             // 
             this.notifyIcon.Icon = ((System.Drawing.Icon)(resources.GetObject("notifyIcon.Icon")));
@@ -589,23 +601,24 @@
             this.tabOptions.TabIndex = 0;
             this.tabOptions.Text = "Options";
             this.tabOptions.UseVisualStyleBackColor = true;
-            // 
+            //
             // gbStartup
-            // 
+            //
             this.gbStartup.Controls.Add(this.chkAutoRun);
+            this.gbStartup.Controls.Add(this.chkStartMinimized);
             this.gbStartup.Controls.Add(this.chkNoUAC);
             this.gbStartup.Controls.Add(this.dlAutoCheck);
             this.gbStartup.Location = new System.Drawing.Point(1, 125);
             this.gbStartup.Name = "gbStartup";
-            this.gbStartup.Size = new System.Drawing.Size(170, 75);
+            this.gbStartup.Size = new System.Drawing.Size(170, 96);
             this.gbStartup.TabIndex = 8;
             this.gbStartup.TabStop = false;
             this.gbStartup.Text = "Startup";
-            // 
+            //
             // chkNoUAC
-            // 
+            //
             this.chkNoUAC.AutoSize = true;
-            this.chkNoUAC.Location = new System.Drawing.Point(3, 56);
+            this.chkNoUAC.Location = new System.Drawing.Point(3, 76);
             this.chkNoUAC.Name = "chkNoUAC";
             this.chkNoUAC.Size = new System.Drawing.Size(154, 17);
             this.chkNoUAC.TabIndex = 1;
@@ -1001,6 +1014,7 @@
         private System.Windows.Forms.TabPage tabOptions;
         private System.Windows.Forms.ComboBox dlAutoCheck;
         private System.Windows.Forms.CheckBox chkAutoRun;
+        private System.Windows.Forms.CheckBox chkStartMinimized;
         private System.Windows.Forms.TabPage tabAU;
         private System.Windows.Forms.CheckBox chkStore;
         private System.Windows.Forms.CheckBox chkDisableAU;

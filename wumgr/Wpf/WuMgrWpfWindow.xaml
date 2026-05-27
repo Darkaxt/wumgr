@@ -367,6 +367,9 @@
                           IsChecked="{Binding RunInBackground, Mode=TwoWay}"
                           IsEnabled="{Binding CanChangeRunInBackground}"
                           Margin="0,0,0,5" />
+                <CheckBox Content="{Binding Text.StartMinimized}"
+                          IsChecked="{Binding StartMinimized, Mode=TwoWay}"
+                          Margin="0,0,0,5" />
                 <ComboBox ItemsSource="{Binding AutoUpdateOptions}"
                           SelectedIndex="{Binding SelectedAutoUpdateIndex, Mode=TwoWay}"
                           IsEnabled="{Binding RunInBackground}"
@@ -562,7 +565,13 @@
         <StackPanel DockPanel.Dock="Top" Margin="10,8,10,4">
           <TextBlock Text="{Binding Text.StatusHeader}" FontWeight="SemiBold" />
           <TextBlock Text="{Binding StatusText}" Margin="0,3,0,5" Foreground="{DynamicResource MutedTextBrush}" />
-          <Border Height="16" BorderBrush="{DynamicResource BorderLineBrush}" BorderThickness="1" Background="{DynamicResource ProgressTrackBrush}" CornerRadius="2" ClipToBounds="True">
+          <Border Height="16"
+                  BorderBrush="{DynamicResource BorderLineBrush}"
+                  BorderThickness="1"
+                  Background="{DynamicResource ProgressTrackBrush}"
+                  CornerRadius="2"
+                  ClipToBounds="True"
+                  Visibility="{Binding ProgressVisibility}">
             <Grid x:Name="ProgressTrack" SizeChanged="ProgressTrack_SizeChanged">
               <Border x:Name="ProgressFill" Background="{DynamicResource ProgressFillBrush}" HorizontalAlignment="Left" Width="0" CornerRadius="1" />
               <Border x:Name="ProgressMarquee" Background="{DynamicResource ProgressMarqueeBrush}" HorizontalAlignment="Left" Width="0" CornerRadius="1" Visibility="Collapsed">

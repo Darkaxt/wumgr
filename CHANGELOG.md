@@ -26,6 +26,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Added a resizable WPF status/log pane and persist its height between runs.
 - Progress status now shows the current update percentage and manual download
   speed when transfer speed is available.
+- Added a `-minimized` startup switch and Start minimized option.
 - Made the WPF shell the default UI and added `-winforms` as an explicit
   fallback switch for the legacy UI.
 
@@ -40,6 +41,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
   for selecting all actionable rows.
 - Replaced the WPF status `ProgressBar` with a lightweight progress strip to
   avoid a first-render hang that could leave the WPF window hidden on launch.
+- The WPF progress strip now stays hidden until an update operation is active.
 - Displayed update dates now use the local Windows date format, while cached
   update dates are stored in an invariant format and can still read legacy
   localized cache entries.

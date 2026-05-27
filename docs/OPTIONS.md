@@ -9,6 +9,7 @@
 - Include superseded: include potentially superseded updates in searches.
 - Register Microsoft Update: include Microsoft product updates, not only Windows.
 - Run in background: start WuMgr in the notification area.
+- Start minimized: show WuMgr minimized on launch without hiding it in the tray.
 - Automatic search: search daily, weekly, or monthly when WuMgr is running in the
   tray and the computer has been idle long enough.
 - Always run as Administrator: creates or removes the Skip UAC scheduled task.
@@ -42,6 +43,10 @@ For removal and policy recovery steps, see
 WuMgr opens the WPF shell by default. Use `-winforms` to launch the legacy
 WinForms UI for fallback testing. `-wpf` is still accepted and selects the
 default WPF shell explicitly.
+
+Use `-tray` to start hidden in the notification area. Use `-minimized` to show
+the main window minimized on the taskbar. `-tray` takes precedence when both
+are supplied.
 
 The WPF path supports source selection, search, list switching, selected-update
 actions, progress, cancel, single-instance restore, window placement

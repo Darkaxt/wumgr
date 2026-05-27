@@ -42,6 +42,7 @@ opened only when the work is actionable for this maintained fork.
 ## Handled after v1.2.1
 
 - [#40](https://github.com/DavidXanatos/wumgr/issues/40) Add time marks in log panel
+- [#55](https://github.com/DavidXanatos/wumgr/issues/55) Launch minimized
 - [#65](https://github.com/DavidXanatos/wumgr/issues/65) Search button
 - [#69](https://github.com/DavidXanatos/wumgr/issues/69) Progress percentage and download speed; download speed is shown for manual HTTP downloads where the fork controls the transfer
 - [#80](https://github.com/DavidXanatos/wumgr/issues/80) Ability to resize and copy the output/status window
@@ -81,7 +82,6 @@ opened only when the work is actionable for this maintained fork.
 - [#42](https://github.com/DavidXanatos/wumgr/issues/42) Select remote computers
 - [#50](https://github.com/DavidXanatos/wumgr/issues/50) Installer-based version
 - [#53](https://github.com/DavidXanatos/wumgr/issues/53) Command-line version
-- [#55](https://github.com/DavidXanatos/wumgr/issues/55) Launch minimized
 - [#57](https://github.com/DavidXanatos/wumgr/issues/57) MMC snap-in and Control Panel object
 - [#63](https://github.com/DavidXanatos/wumgr/issues/63) Check certificates and repair Windows Update
 - [#79](https://github.com/DavidXanatos/wumgr/issues/79) Feature update version options

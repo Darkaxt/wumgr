@@ -24,6 +24,11 @@ namespace wumgr.Wpf
             return trackWidth * NormalizePercent(percent);
         }
 
+        public static bool ShouldShowProgress(bool isBusy, int percent, bool isIndeterminate)
+        {
+            return isBusy || isIndeterminate || NormalizePercent(percent) > 0.0;
+        }
+
         public static string GetDisplayText(int percent, bool isIndeterminate)
         {
             if (isIndeterminate)
