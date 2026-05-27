@@ -459,8 +459,10 @@ namespace wumgr.Tests
         {
             Assert(!WpfProgressValue.ShouldShowProgress(false, 0, false), "idle progress should be hidden");
             Assert(WpfProgressValue.ShouldShowProgress(true, 0, false), "busy progress should show before percent arrives");
-            Assert(WpfProgressValue.ShouldShowProgress(false, 42, false), "nonzero progress should show");
-            Assert(WpfProgressValue.ShouldShowProgress(false, 0, true), "indeterminate progress should show");
+            Assert(!WpfProgressValue.ShouldShowProgress(false, 42, false), "stale progress should be hidden");
+            Assert(!WpfProgressValue.ShouldShowProgress(false, 0, true), "stale indeterminate progress should be hidden");
+            Assert(WpfProgressValue.ShouldShowProgress(true, 42, false), "active determinate progress should show");
+            Assert(WpfProgressValue.ShouldShowProgress(true, 0, true), "active indeterminate progress should show");
         }
 
         private static void ProgressStatusIncludesCurrentPercentAndSpeed()
