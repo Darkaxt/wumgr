@@ -2,8 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Drawing;
+using System.Globalization;
 using System.Linq;
+using System.Reflection;
 using System.Windows;
+using Forms = System.Windows.Forms;
 using WUApiLib;
 
 namespace wumgr.Wpf
@@ -18,11 +22,14 @@ namespace wumgr.Wpf
         private bool includeSuperseded;
         private bool registerMicrosoftUpdate;
         private bool skipUacEnabled;
+        private bool runInBackground;
         private string selectedSource;
         private string statusText;
         private string statusLog;
         private int totalPercent;
         private bool isBusyIndeterminate;
+        private bool allowShowDisplay = true;
+        private Forms.NotifyIcon notifyIcon;
 
         public ObservableCollection<WpfUpdateRow> Updates { get; private set; }
         public ObservableCollection<string> Sources { get; private set; }
@@ -113,6 +120,21 @@ namespace wumgr.Wpf
             }
         }
 
+        public bool RunInBackground
+        {
+            get { return runInBackground; }
+            set
+            {
+                if (!SetField(ref runInBackground, value, "RunInBackground"))
+                    return;
+
+                if (!MiscFunc.IsRunningAsUwp())
+                    Program.AutoStart(value);
+                UpdateNotifyIcon();
+                OnPropertyChanged("CanChangeRunInBackground");
+            }
+        }
+
         public string SelectedSource
         {
             get { return selectedSource; }
@@ -149,6 +171,7 @@ namespace wumgr.Wpf
 
         public bool HasSelection { get { return Updates.Any(update => update.Selected); } }
         public bool CanUseOnlineSource { get { return !OfflineMode; } }
+        public bool CanChangeRunInBackground { get { return !MiscFunc.IsRunningAsUwp() || !RunInBackground; } }
         public bool IsPendingList { get { return currentList == WpfUpdateListKind.Pending; } }
         public bool IsInstalledList { get { return currentList == WpfUpdateListKind.Installed; } }
         public bool IsHiddenList { get { return currentList == WpfUpdateListKind.Hidden; } }
@@ -189,8 +212,11 @@ namespace wumgr.Wpf
             manualMode = MiscFunc.parseInt(GetConfig("Manual", "0")) != 0;
             includeSuperseded = MiscFunc.parseInt(GetConfig("IncludeOld", "0")) != 0;
             registerMicrosoftUpdate = Program.Agent.IsActive() && Program.Agent.TestService(WuAgent.MsUpdGUID);
+            runInBackground = Program.IsAutoStart();
 
             LoadSources(GetConfig("Source", "Windows Update"));
+            LoadWindowSettings();
+            CreateNotifyIcon();
             AttachAgentEvents();
             Program.ipc.PipeMessage += PipesMessageHandler;
             Program.ipc.Listen();
@@ -204,7 +230,21 @@ namespace wumgr.Wpf
             Program.Agent.Progress += Agent_Progress;
             Program.Agent.UpdatesChaged += Agent_UpdatesChanged;
             Program.Agent.Finished += Agent_Finished;
+            Closing += WuMgrWpfWindow_Closing;
             Closed += WuMgrWpfWindow_Closed;
+        }
+
+        private void WuMgrWpfWindow_Closing(object sender, CancelEventArgs e)
+        {
+            if (RunInBackground && allowShowDisplay)
+            {
+                e.Cancel = true;
+                allowShowDisplay = false;
+                Hide();
+                return;
+            }
+
+            SaveWindowSettings();
         }
 
         private void WuMgrWpfWindow_Closed(object sender, EventArgs e)
@@ -213,6 +253,13 @@ namespace wumgr.Wpf
             Program.Agent.UpdatesChaged -= Agent_UpdatesChanged;
             Program.Agent.Finished -= Agent_Finished;
             Program.ipc.PipeMessage -= PipesMessageHandler;
+
+            if (notifyIcon != null)
+            {
+                notifyIcon.Visible = false;
+                notifyIcon.Dispose();
+                notifyIcon = null;
+            }
         }
 
         private void PipesMessageHandler(PipeIPC.PipeServer pipe, string data)
@@ -230,10 +277,53 @@ namespace wumgr.Wpf
 
         private void ShowMainWindow()
         {
+            allowShowDisplay = true;
             if (WindowState == WindowState.Minimized)
                 WindowState = WindowState.Normal;
             Show();
+            ShowInTaskbar = true;
             Activate();
+        }
+
+        private void CreateNotifyIcon()
+        {
+            notifyIcon = new Forms.NotifyIcon();
+            notifyIcon.Text = Program.mName;
+            notifyIcon.Icon = System.Drawing.Icon.ExtractAssociatedIcon(Assembly.GetExecutingAssembly().Location);
+            notifyIcon.MouseDoubleClick += NotifyIcon_MouseDoubleClick;
+            notifyIcon.BalloonTipClicked += NotifyIcon_BalloonTipClicked;
+
+            Forms.MenuItem open = new Forms.MenuItem("Open", NotifyIcon_Open);
+            Forms.MenuItem exit = new Forms.MenuItem("Exit", NotifyIcon_Exit);
+            notifyIcon.ContextMenu = new Forms.ContextMenu(new Forms.MenuItem[] { open, exit });
+            UpdateNotifyIcon();
+        }
+
+        private void UpdateNotifyIcon()
+        {
+            if (notifyIcon != null)
+                notifyIcon.Visible = RunInBackground;
+        }
+
+        private void NotifyIcon_MouseDoubleClick(object sender, Forms.MouseEventArgs e)
+        {
+            ShowMainWindow();
+        }
+
+        private void NotifyIcon_BalloonTipClicked(object sender, EventArgs e)
+        {
+            ShowMainWindow();
+        }
+
+        private void NotifyIcon_Open(object sender, EventArgs e)
+        {
+            ShowMainWindow();
+        }
+
+        private void NotifyIcon_Exit(object sender, EventArgs e)
+        {
+            allowShowDisplay = false;
+            Close();
         }
 
         private void LoadSources(string preferredSource)
@@ -408,6 +498,51 @@ namespace wumgr.Wpf
             MessageBox.Show("Close this WPF window and launch WuMgr without -wpf to use the WinForms UI.", Program.mName);
         }
 
+        private void LoadWindowSettings()
+        {
+            WpfWindowPlacement placement;
+            if (!WpfWindowPlacement.TryCreate(
+                    GetConfig("WindowLeft", ""),
+                    GetConfig("WindowTop", ""),
+                    GetConfig("WindowWidth", ""),
+                    GetConfig("WindowHeight", ""),
+                    GetConfig("WindowState", ""),
+                    MinWidth,
+                    MinHeight,
+                    out placement))
+                return;
+
+            System.Drawing.Rectangle bounds = new System.Drawing.Rectangle((int)placement.Left, (int)placement.Top, (int)placement.Width, (int)placement.Height);
+            bool visibleOnAnyScreen = Forms.Screen.AllScreens.Any(screen => screen.WorkingArea.IntersectsWith(bounds));
+            if (!visibleOnAnyScreen)
+            {
+                System.Drawing.Rectangle workingArea = Forms.Screen.PrimaryScreen.WorkingArea;
+                placement.Left = workingArea.Left;
+                placement.Top = workingArea.Top;
+            }
+
+            WindowStartupLocation = WindowStartupLocation.Manual;
+            Left = placement.Left;
+            Top = placement.Top;
+            Width = placement.Width;
+            Height = placement.Height;
+
+            if (placement.Maximized)
+                WindowState = WindowState.Maximized;
+        }
+
+        private void SaveWindowSettings()
+        {
+            WindowState state = WindowState == WindowState.Minimized ? WindowState.Normal : WindowState;
+            Rect bounds = state == WindowState.Normal ? new Rect(Left, Top, Width, Height) : RestoreBounds;
+
+            SetConfig("WindowLeft", bounds.Left.ToString("0", CultureInfo.InvariantCulture));
+            SetConfig("WindowTop", bounds.Top.ToString("0", CultureInfo.InvariantCulture));
+            SetConfig("WindowWidth", bounds.Width.ToString("0", CultureInfo.InvariantCulture));
+            SetConfig("WindowHeight", bounds.Height.ToString("0", CultureInfo.InvariantCulture));
+            SetConfig("WindowState", state.ToString());
+        }
+
         private void Agent_Progress(object sender, WuAgent.ProgressArgs args)
         {
             Dispatcher.BeginInvoke(new Action(() =>
@@ -527,6 +662,8 @@ namespace wumgr.Wpf
             OnPropertyChanged("IncludeSuperseded");
             OnPropertyChanged("RegisterMicrosoftUpdate");
             OnPropertyChanged("SkipUacEnabled");
+            OnPropertyChanged("RunInBackground");
+            OnPropertyChanged("CanChangeRunInBackground");
             OnPropertyChanged("SelectedSource");
             OnPropertyChanged("CanUseOnlineSource");
             OnPropertyChanged("PendingLabel");

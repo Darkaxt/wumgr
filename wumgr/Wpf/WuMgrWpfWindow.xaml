@@ -50,6 +50,10 @@
       <DockPanel Margin="12">
         <StackPanel DockPanel.Dock="Bottom">
           <TextBlock Text="Options" FontWeight="SemiBold" Margin="0,0,0,8" />
+          <CheckBox Content="Run in background"
+                    IsChecked="{Binding RunInBackground, Mode=TwoWay}"
+                    IsEnabled="{Binding CanChangeRunInBackground}"
+                    Margin="0,0,0,10" />
           <TextBlock Text="Update source" FontWeight="SemiBold" Margin="0,0,0,6" />
           <ComboBox ItemsSource="{Binding Sources}"
                     SelectedItem="{Binding SelectedSource, Mode=TwoWay}"
