@@ -112,6 +112,7 @@
     <Compile Include="MsUpdate.cs" />
     <Compile Include="ResultDialogGuard.cs" />
     <Compile Include="StartupElevationPolicy.cs" />
+    <Compile Include="StartupUiMode.cs" />
     <Compile Include="Translate.cs" />
     <Compile Include="UpdateDownloader.cs" />
     <Compile Include="UpdateSelectionHelper.cs" />

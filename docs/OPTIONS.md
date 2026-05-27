@@ -37,12 +37,15 @@ when WuMgr is not elevated.
 For removal and policy recovery steps, see
 [UNINSTALL_AND_RECOVERY.md](UNINSTALL_AND_RECOVERY.md).
 
-## WPF Preview
+## UI Mode
 
-Launch with `-wpf` to open the opt-in WPF shell. The WPF path supports source
-selection, search, list switching, selected-update actions, progress, cancel,
-single-instance restore, window placement persistence, and basic tray
-restore/exit behavior. It also supports automatic search scheduling while the
-background tray option is enabled, plus Auto Update policy/options controls.
-The migrated WPF controls use the same translation keys as the WinForms UI
-where available.
+WuMgr opens the WPF shell by default. Use `-winforms` to launch the legacy
+WinForms UI for fallback testing. `-wpf` is still accepted and selects the
+default WPF shell explicitly.
+
+The WPF path supports source selection, search, list switching, selected-update
+actions, progress, cancel, single-instance restore, window placement
+persistence, and tray restore/exit behavior. It also supports automatic search
+scheduling while the background tray option is enabled, plus Auto Update
+policy/options controls. The migrated WPF controls use the same translation keys
+as the WinForms UI where available.

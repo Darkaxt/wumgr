@@ -139,7 +139,7 @@ namespace wumgr
 
             Agent.Init();
 
-            if (TestArg("-wpf"))
+            if (StartupUiMode.Select(args) == StartupUiKind.Wpf)
             {
                 System.Windows.Application wpfApp = new System.Windows.Application();
                 wpfApp.ShutdownMode = System.Windows.ShutdownMode.OnMainWindowClose;
@@ -427,6 +427,8 @@ namespace wumgr
             string[] Help = {"-tray\t\tStart in Tray",
                                     "-onclose [cmd]\tExecute commands when closing",
                                     "-update\t\tSearch for updates on start",
+                                    "-winforms\tUse the legacy WinForms UI",
+                                    "-wpf\t\tUse the WPF UI (default)",
                                     "-console\t\tshow console (for debugging)",
                                     "-help\t\tShow this help message" };
             if (!mConsole)

@@ -25,6 +25,7 @@ namespace wumgr.Tests
             Run("Download file names are sanitized", DownloadFileNamesAreSanitized);
             Run("Content-Disposition filename parsing is guarded", ContentDispositionFilenameParsingIsGuarded);
             Run("Startup elevation only runs when explicitly configured", StartupElevationOnlyRunsWhenConfigured);
+            Run("Startup UI defaults to WPF with WinForms fallback", StartupUiDefaultsToWpfWithWinFormsFallback);
             Run("WPF action state mirrors admin and list rules", WpfActionStateMirrorsAdminAndListRules);
             Run("WPF window placement rejects missing and tiny persisted bounds", WpfWindowPlacementRejectsInvalidBounds);
             Run("Auto update schedule reports due days", AutoUpdateScheduleReportsDueDays);
@@ -168,6 +169,15 @@ namespace wumgr.Tests
             Assert(StartupElevationPolicy.ShouldAttemptStartupElevation(false, false, true), "non-admin startup with Skip UAC should attempt configured elevation");
             Assert(!StartupElevationPolicy.ShouldAttemptStartupElevation(true, false, true), "already-admin startup should not re-elevate");
             Assert(!StartupElevationPolicy.ShouldAttemptStartupElevation(false, true, true), "debug startup should not auto-elevate");
+        }
+
+        private static void StartupUiDefaultsToWpfWithWinFormsFallback()
+        {
+            AssertEqual(StartupUiKind.Wpf, StartupUiMode.Select(new string[0]), "default UI mode");
+            AssertEqual(StartupUiKind.Wpf, StartupUiMode.Select(new[] { "-wpf" }), "explicit WPF UI mode");
+            AssertEqual(StartupUiKind.WinForms, StartupUiMode.Select(new[] { "-winforms" }), "explicit WinForms fallback");
+            AssertEqual(StartupUiKind.WinForms, StartupUiMode.Select(new[] { "/winforms" }), "slash WinForms fallback");
+            AssertEqual(StartupUiKind.WinForms, StartupUiMode.Select(new[] { "-wpf", "-winforms" }), "fallback should override WPF when both are present");
         }
 
         private static void WpfActionStateMirrorsAdminAndListRules()
