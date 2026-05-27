@@ -33,6 +33,8 @@ opened only when the work is actionable for this maintained fork.
 - [#129](https://github.com/DavidXanatos/wumgr/issues/129) Disabled facilitator and WU Settings controls are greyed out; the default WPF Auto Update tab now explains common disabled-control reasons
 - [#112](https://github.com/DavidXanatos/wumgr/issues/112) Update failures reported as applied; manual installer exit code `1` is now treated as failure instead of success, while broader Windows Update applicability failures still need reproduction data
 - [#137](https://github.com/DavidXanatos/wumgr/issues/137) Packages without a KB cite download but do not appear; manual downloads now use the package title as the folder/key for `KBUnknown` updates, while the requested separate Drivers folder remains a deferred UX change
+- [#82](https://github.com/DavidXanatos/wumgr/issues/82) SQL Server updates support; manual installer command lines are now logged, redirected child-process output is drained to avoid output-pipe hangs, and Cancel can stop a still-running child installer, while SQL-specific silent switches still need reproduction data
+- [#83](https://github.com/DavidXanatos/wumgr/issues/83) Office 2013 updates are not installed; manual installer command and failure output logging is improved, while Office-specific install handling still needs a reproducible package/exit-code example
 
 ## Handled after v1.2.0
 
@@ -68,8 +70,6 @@ opened only when the work is actionable for this maintained fork.
 - [#41](https://github.com/DavidXanatos/wumgr/issues/41) Does not find available updates
 - [#60](https://github.com/DavidXanatos/wumgr/issues/60) Fresh Windows 8.1 install cannot launch WuMgr
 - [#61](https://github.com/DavidXanatos/wumgr/issues/61) Options page does not apply some settings
-- [#82](https://github.com/DavidXanatos/wumgr/issues/82) SQL Server updates support
-- [#83](https://github.com/DavidXanatos/wumgr/issues/83) Office 2013 updates are not installed
 - [#100](https://github.com/DavidXanatos/wumgr/issues/100) Hide option does not work in Store update manager
 - [#107](https://github.com/DavidXanatos/wumgr/issues/107) Repeated failures on Windows 10
 - [#118](https://github.com/DavidXanatos/wumgr/issues/118) Windows Server 2019 hidden update behavior

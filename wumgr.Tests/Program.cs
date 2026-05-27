@@ -4,6 +4,8 @@ using System.Globalization;
 using System.IO.Pipes;
 using System.Linq;
 using System.IO;
+using System.Diagnostics;
+using System.Threading;
 using System.Security.AccessControl;
 using System.Security.Principal;
 using System.Windows.Forms;
@@ -13,11 +15,27 @@ namespace wumgr.Tests
 {
     internal static class Program
     {
+        private const string WriteLargeOutputArg = "--write-large-output";
+        private const string SleepArg = "--sleep-for-cancel";
         private static int failures;
         private static bool englishTranslationsLoaded;
 
-        private static int Main()
+        private static int Main(string[] args)
         {
+            if (args.Length == 1 && args[0] == WriteLargeOutputArg)
+            {
+                for (int i = 0; i < 20000; i++)
+                    Console.WriteLine("line {0}", i);
+
+                return 0;
+            }
+
+            if (args.Length == 1 && args[0] == SleepArg)
+            {
+                Thread.Sleep(5000);
+                return 0;
+            }
+
             Run("Create skips updates without download URLs", CreateSkipsUpdatesWithoutDownloadUrls);
             Run("Create treats empty download URLs as missing", CreateTreatsEmptyDownloadUrlsAsMissing);
             Run("Create uses package title keys for KBUnknown downloads", CreateUsesPackageTitleKeysForKbUnknownDownloads);
@@ -31,6 +49,9 @@ namespace wumgr.Tests
             Run("Command-line argument lookup guards missing values", CommandLineArgumentLookupGuardsMissingValues);
             Run("Manual installer exit codes report failures", ManualInstallerExitCodesReportFailures);
             Run("Manual installer arguments support SCEP packages", ManualInstallerArgumentsSupportScepPackages);
+            Run("Process runner formats command lines", ProcessRunnerFormatsCommandLines);
+            Run("Process runner drains redirected output", ProcessRunnerDrainsRedirectedOutput);
+            Run("Process runner cancels running processes", ProcessRunnerCancelsRunningProcesses);
             Run("WinINet unrecognized scheme error is named", WinInetUnrecognizedSchemeErrorIsNamed);
             Run("Startup elevation only runs when explicitly configured", StartupElevationOnlyRunsWhenConfigured);
             Run("Startup UI defaults to WPF with WinForms fallback", StartupUiDefaultsToWpfWithWinFormsFallback);
@@ -289,6 +310,46 @@ namespace wumgr.Tests
             AssertEqual("/s /q", ManualInstallArguments.GetExeArguments(@"C:\Updates\KB3209361\scepinstaller_amd64.exe"), "SCEP installer arguments");
             AssertEqual("/q /norestart", ManualInstallArguments.GetExeArguments(@"C:\Updates\ndp48.exe"), ".NET installer arguments");
             AssertEqual("/q /z", ManualInstallArguments.GetExeArguments(@"C:\Updates\generic.exe"), "default exe installer arguments");
+        }
+
+        private static void ProcessRunnerFormatsCommandLines()
+        {
+            var startInfo = new ProcessStartInfo();
+            startInfo.FileName = @"C:\Program Files\Package\setup.exe";
+            startInfo.Arguments = "/q /z";
+
+            AssertEqual("\"C:\\Program Files\\Package\\setup.exe\" /q /z", ProcessTaskRunner.FormatCommandLine(startInfo), "quoted command line with arguments");
+
+            startInfo.Arguments = "";
+            AssertEqual("\"C:\\Program Files\\Package\\setup.exe\"", ProcessTaskRunner.FormatCommandLine(startInfo), "quoted command line without arguments");
+        }
+
+        private static void ProcessRunnerDrainsRedirectedOutput()
+        {
+            var startInfo = new ProcessStartInfo();
+            startInfo.FileName = Process.GetCurrentProcess().MainModule.FileName;
+            startInfo.Arguments = WriteLargeOutputArg;
+
+            ProcessTaskResult result = ProcessTaskRunner.Run(startInfo, () => false, true);
+
+            AssertEqual(0, result.ExitCode, "child exit code");
+            Assert(result.StandardOutput.Contains("line 19999"), "runner should capture output produced near the end of a large stream");
+            AssertEqual("", result.StandardError.Trim(), "child stderr");
+            Assert(!result.Canceled, "normal process should not be marked canceled");
+        }
+
+        private static void ProcessRunnerCancelsRunningProcesses()
+        {
+            var startInfo = new ProcessStartInfo();
+            startInfo.FileName = Process.GetCurrentProcess().MainModule.FileName;
+            startInfo.Arguments = SleepArg;
+
+            DateTime started = DateTime.UtcNow;
+            ProcessTaskResult result = ProcessTaskRunner.Run(startInfo, () => true, true);
+
+            Assert(result.Canceled, "runner should report cancellation");
+            AssertEqual(ProcessTaskResult.CanceledExitCode, result.ExitCode, "canceled process exit code");
+            Assert(DateTime.UtcNow - started < TimeSpan.FromSeconds(3), "runner should not wait for a canceled child to exit normally");
         }
 
         private static void WinInetUnrecognizedSchemeErrorIsNamed()
