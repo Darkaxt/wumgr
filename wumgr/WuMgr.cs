@@ -330,7 +330,7 @@ namespace wumgr
             UpdateCounts();
             SwitchList(UpdateLists.UpdateHistory);
 
-            doUpdte = Program.TestArg("-update");
+            doUpdte = StartupUiMode.ShouldSearchOnStartup(Program.args);
 
             mTimer = new Timer();
             mTimer.Interval = 250; // 4 times per second

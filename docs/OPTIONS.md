@@ -48,6 +48,9 @@ Use `-tray` to start hidden in the notification area. Use `-minimized` to show
 the main window minimized on the taskbar. `-tray` takes precedence when both
 are supplied.
 
+Use `-update` to start a search after the Windows Update Agent is initialized.
+It can be combined with `-tray` for a hidden startup search.
+
 The WPF path supports source selection, search, list switching, selected-update
 actions, progress, cancel, single-instance restore, window placement
 persistence, and tray restore/exit behavior. It also supports automatic search

@@ -807,6 +807,17 @@ namespace wumgr.Wpf
 
             RefreshAgentBackedState();
             StatusText = "";
+            StartSearchOnStartupIfRequested();
+        }
+
+        private void StartSearchOnStartupIfRequested()
+        {
+            if (!StartupUiMode.ShouldSearchOnStartup(Program.args))
+                return;
+            if (!Program.Agent.IsActive() || Program.Agent.IsBusy())
+                return;
+
+            StartSearch();
         }
 
         private void RefreshAgentBackedState()

@@ -30,6 +30,11 @@ namespace wumgr
             return HasArg(args, "-tray") || HasArg(args, "/tray");
         }
 
+        public static bool ShouldSearchOnStartup(string[] args)
+        {
+            return HasArg(args, "-update") || HasArg(args, "/update");
+        }
+
         public static bool ShouldStartMinimized(string[] args, bool configured)
         {
             if (ShouldStartInTray(args))
