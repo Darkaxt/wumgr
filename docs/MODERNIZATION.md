@@ -1,15 +1,15 @@
 # Modernization Notes
 
-WuMgr remains a .NET Framework WinForms application for the current maintenance
-track. The goal for the maintained fork is to stabilize security, release
-packaging, and reliability before changing the UI framework.
+WuMgr remains a .NET Framework WinForms application for the default maintenance
+track. The maintained fork is adding WPF incrementally so the working update
+tool remains usable while the UI is migrated.
 
 ## WPF Track
 
-A WPF migration is a future major modernization project, not a v1.2.x
-maintenance task. It should happen on a separate branch with its own design and
-test plan because it would touch most UI code, persistence behavior, translation
-loading, and manual smoke-test coverage.
+The first WPF slice is an opt-in preview shell launched with `-wpf`. It provides
+the target layout structure and reads the current agent cache, but full update
+operations still belong to the default WinForms UI while migration continues.
 
 The existing WinForms UI, command-line options, portable zip format, and .NET
-Framework target remain unchanged for v1.2.x security releases.
+Framework target remain unchanged for normal v1.2.x releases until the WPF path
+has equivalent behavior and smoke-test coverage.

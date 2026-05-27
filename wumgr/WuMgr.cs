@@ -719,7 +719,7 @@ namespace wumgr
             bool isValid = agent.IsValid();
             bool isValid2 = isValid || chkManual.Checked;
 
-            bool admin = MiscFunc.IsAdministrator() || !MiscFunc.IsRunningAsUwp();
+            bool admin = MiscFunc.IsAdministrator();
 
             bool enable = agent.IsActive() && !busy;
             btnSearch.Enabled = enable;

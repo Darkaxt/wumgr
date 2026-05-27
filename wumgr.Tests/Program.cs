@@ -22,6 +22,7 @@ namespace wumgr.Tests
             Run("Pipe security avoids World access", PipeSecurityAvoidsWorldAccess);
             Run("Download file names are sanitized", DownloadFileNamesAreSanitized);
             Run("Content-Disposition filename parsing is guarded", ContentDispositionFilenameParsingIsGuarded);
+            Run("Startup elevation only runs when explicitly configured", StartupElevationOnlyRunsWhenConfigured);
 
             if (failures != 0)
                 Console.Error.WriteLine("{0} test(s) failed.", failures);
@@ -151,6 +152,14 @@ namespace wumgr.Tests
             AssertEqual("safe.msu", DownloadFileNameHelper.GetContentDispositionFileName(@"attachment; filename=""..\safe.msu"""), "path filename sanitized");
             AssertEqual(null, DownloadFileNameHelper.GetContentDispositionFileName("attachment; name=\"package.msu\""), "missing filename ignored");
             AssertEqual(null, DownloadFileNameHelper.GetContentDispositionFileName("attachment; filename=\"..\""), "directory filename ignored");
+        }
+
+        private static void StartupElevationOnlyRunsWhenConfigured()
+        {
+            Assert(!StartupElevationPolicy.ShouldAttemptStartupElevation(false, false, false), "non-admin startup without Skip UAC should not auto-elevate");
+            Assert(StartupElevationPolicy.ShouldAttemptStartupElevation(false, false, true), "non-admin startup with Skip UAC should attempt configured elevation");
+            Assert(!StartupElevationPolicy.ShouldAttemptStartupElevation(true, false, true), "already-admin startup should not re-elevate");
+            Assert(!StartupElevationPolicy.ShouldAttemptStartupElevation(false, true, true), "debug startup should not auto-elevate");
         }
 
         private static void Assert(bool condition, string message)
