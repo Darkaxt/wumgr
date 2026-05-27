@@ -33,6 +33,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
   fixed UI language independent of Windows regional settings.
 - Refreshed repository documentation for current WPF defaults, packaging
   commands, and upstream triage status.
+- Clarified the README release status, WPF preview screenshots, elevation
+  behavior, unsigned-binary warning, and source-build commands.
 - Added a WPF Auto Update hint explaining why policy controls are disabled or
   limited.
 

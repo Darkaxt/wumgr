@@ -1,43 +1,50 @@
 # WuMgr
 
-WuMgr (Update Manager for Windows) is a portable Windows Update manager for
-Windows 10 and Windows 11. It uses the
+WuMgr, short for Update Manager for Windows, is a portable Windows Update
+manager for Windows 10 and Windows 11. It uses the
 [Windows Update Agent API](https://learn.microsoft.com/windows/win32/wua_sdk/portal-client)
 to search, download, install, hide, and review Microsoft product updates with
 more direct control than the built-in Settings app exposes.
 
 This repository is a public maintained fork of
-[DavidXanatos/wumgr](https://github.com/DavidXanatos/wumgr). Current fork
-releases are published at
-[Darkaxt/wumgr releases](https://github.com/Darkaxt/wumgr/releases), with the
-latest packaged maintenance release tagged `v1.2.1`. Current `master` includes
-unreleased WPF modernization work for the next maintenance release.
+[DavidXanatos/wumgr](https://github.com/DavidXanatos/wumgr). Fork releases are
+published at [Darkaxt/wumgr releases](https://github.com/Darkaxt/wumgr/releases).
 
-## Quick Start
+## Status At A Glance
 
-1. Download `WuMgr_v1.2.1.zip` from the fork releases page.
-2. Unzip it to a writable folder.
-3. Run `wumgr.exe`.
+| Track | Status | UI | Notes |
+| --- | --- | --- | --- |
+| Latest packaged release | `v1.2.1` | WinForms | Conservative maintenance release. Use this if you want the current stable zip. |
+| Current `master` | Unreleased `v1.2.2` work | WPF by default | Preview of the modern shell, read-only launch, and recent security/reliability hardening. |
+| Legacy fallback | Current `master` only | WinForms | Start with `-winforms` when testing behavior against the original UI. |
 
-The latest packaged release uses the maintained WinForms UI. Current `master`
-starts read-only by default and opens the WPF shell unless `-winforms` is used.
-Search and review flows can run without elevation, while download, install,
-uninstall, policy, service, and Skip UAC changes require an elevated launch.
+The WPF UI shown below is from current `master`. It is not the same UI that is
+currently packaged in the `v1.2.1` release zip.
 
-## Current Master Preview
+| Light theme | Dark theme |
+| --- | --- |
+| ![WuMgr WPF light theme](docs/assets/wumgr-wpf-light.png) | ![WuMgr WPF dark theme](docs/assets/wumgr-wpf-dark.png) |
 
-The maintained fork keeps the original lightweight desktop-tool shape while
-modernizing the default WPF shell. This work is currently unreleased. It
-supports light mode, dark mode, and following the Windows app theme.
+## Download And Run
 
-![WuMgr light mode](docs/assets/wumgr-wpf-light.png)
+For normal use, download `WuMgr_v1.2.1.zip` from the fork releases page, unzip
+it to a writable folder, and run `wumgr.exe`.
 
-![WuMgr dark mode](docs/assets/wumgr-wpf-dark.png)
+Published binaries are unsigned. Windows may show a SmartScreen or publisher
+warning until the project has a signed release path. Release archives include
+`SHA256SUMS.txt` so downloaded artifacts can be checked after extraction.
 
-The WPF path is wired to the main update lists and actions, restores the
-original action icons, uses a progress strip only while work is active, and
-keeps the legacy WinForms UI available with `-winforms` while migration testing
-continues.
+## Permissions
+
+WuMgr can inspect update state without administrator rights, but changing system
+update state requires elevation.
+
+Current `master` starts read-only without a UAC prompt. Admin-only actions such
+as download, install, uninstall, hide/unhide, service changes, GPO changes, and
+Skip UAC configuration stay unavailable until WuMgr is launched elevated.
+
+The packaged `v1.2.1` release is the older WinForms maintenance build and does
+not include all unreleased read-only launch changes yet.
 
 ## Features
 
@@ -45,13 +52,31 @@ continues.
   and update history.
 - Download, install, uninstall, hide, unhide, and copy update links from a
   portable executable.
-- Run current `master` read-only without elevation, then elevate only for
-  admin-only actions.
 - Configure automatic update policy controls, Microsoft Update registration,
   offline scan mode, manual download mode, and startup behavior.
-- Use a portable release zip with `Translation.ini` next to `wumgr.exe`.
-- Force a UI language with `Lang=` in `wumgr.ini` when Windows regional
-  settings should not control the app language.
+- Use `Translation.ini` next to `wumgr.exe` for portable translations.
+- Force a UI language with `Lang=` in `wumgr.ini` when Windows regional settings
+  should not control the app language.
+- Use `-winforms` on current `master` to compare the WPF shell with the legacy
+  WinForms UI.
+
+## Building From Source
+
+WuMgr targets .NET Framework 4.6.1 and builds on Windows with Visual Studio 2022
+or the Visual Studio Build Tools.
+
+```powershell
+& "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\MSBuild\Current\Bin\MSBuild.exe" wumgr.sln /restore /p:Configuration=Release /p:Platform="Any CPU" /m
+```
+
+Run the focused test harness with:
+
+```powershell
+& "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\MSBuild\Current\Bin\MSBuild.exe" wumgr.Tests\wumgr.Tests.csproj /restore /p:Configuration=Debug /p:Platform=AnyCPU
+.\wumgr.Tests\bin\Debug\wumgr.Tests.exe
+```
+
+See [docs/BUILDING.md](docs/BUILDING.md) for packaging and release commands.
 
 ## Documentation
 
@@ -62,6 +87,16 @@ continues.
 - [Upstream issue triage](docs/ISSUE_TRIAGE.md)
 - [Modernization notes](docs/MODERNIZATION.md)
 - [Security reporting](SECURITY.md)
+
+## Security Notes
+
+WuMgr touches sensitive Windows Update surfaces: scheduled tasks, Windows Update
+services, policy registry keys, manual update downloads, named-pipe IPC, and
+optional command hooks. Review [docs/SECURITY_REVIEW.md](docs/SECURITY_REVIEW.md)
+before enabling Skip UAC or custom command-hook behavior.
+
+Report vulnerabilities using [SECURITY.md](SECURITY.md). Avoid posting exploit
+payloads in public issues.
 
 ## Attribution
 
