@@ -23,6 +23,7 @@ namespace wumgr.Tests
             Run("Download file names are sanitized", DownloadFileNamesAreSanitized);
             Run("Content-Disposition filename parsing is guarded", ContentDispositionFilenameParsingIsGuarded);
             Run("Startup elevation only runs when explicitly configured", StartupElevationOnlyRunsWhenConfigured);
+            Run("WPF action state mirrors admin and list rules", WpfActionStateMirrorsAdminAndListRules);
 
             if (failures != 0)
                 Console.Error.WriteLine("{0} test(s) failed.", failures);
@@ -160,6 +161,30 @@ namespace wumgr.Tests
             Assert(StartupElevationPolicy.ShouldAttemptStartupElevation(false, false, true), "non-admin startup with Skip UAC should attempt configured elevation");
             Assert(!StartupElevationPolicy.ShouldAttemptStartupElevation(true, false, true), "already-admin startup should not re-elevate");
             Assert(!StartupElevationPolicy.ShouldAttemptStartupElevation(false, true, true), "debug startup should not auto-elevate");
+        }
+
+        private static void WpfActionStateMirrorsAdminAndListRules()
+        {
+            WpfActionState pendingNonAdmin = WpfActionState.Create(true, false, true, false, true, false, WpfUpdateListKind.Pending);
+            Assert(pendingNonAdmin.CanSearch, "active non-busy agent can search");
+            Assert(pendingNonAdmin.CanDownload, "selected pending updates can be downloaded");
+            Assert(!pendingNonAdmin.CanInstall, "non-admin user cannot install");
+            Assert(pendingNonAdmin.CanHide, "selected pending updates can be hidden");
+
+            WpfActionState pendingAdmin = WpfActionState.Create(true, true, true, false, true, false, WpfUpdateListKind.Pending);
+            Assert(pendingAdmin.CanInstall, "admin user can install selected pending updates");
+
+            WpfActionState installedAdmin = WpfActionState.Create(true, true, true, false, true, false, WpfUpdateListKind.Installed);
+            Assert(installedAdmin.CanUninstall, "admin user can uninstall selected installed updates");
+            Assert(!installedAdmin.CanDownload, "installed updates cannot be downloaded");
+
+            WpfActionState hidden = WpfActionState.Create(true, false, true, false, true, false, WpfUpdateListKind.Hidden);
+            Assert(hidden.CanHide, "selected hidden updates can be unhidden");
+
+            WpfActionState busy = WpfActionState.Create(true, true, true, true, true, true, WpfUpdateListKind.Pending);
+            Assert(!busy.CanSearch, "busy agent cannot search");
+            Assert(!busy.CanDownload, "busy agent cannot download");
+            Assert(busy.CanCancel, "busy agent can be cancelled");
         }
 
         private static void Assert(bool condition, string message)

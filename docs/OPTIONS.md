@@ -39,6 +39,8 @@ For removal and policy recovery steps, see
 
 ## WPF Preview
 
-Launch with `-wpf` to open the opt-in WPF preview shell. The preview uses the
-new layout direction and reads the current update cache, but full update
-operations still use the default WinForms UI while migration continues.
+Launch with `-wpf` to open the opt-in WPF shell. The WPF path supports source
+selection, search, list switching, selected-update actions, progress, cancel,
+and single-instance restore. Tray behavior, automatic search, full policy/options
+parity, and persisted WPF layout settings are still handled by the default
+WinForms UI while migration continues.

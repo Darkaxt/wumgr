@@ -127,6 +127,7 @@
     <Compile Include="Wpf\WuMgrWpfWindow.xaml.cs">
       <DependentUpon>WuMgrWpfWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Wpf\WpfActionState.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
