@@ -34,6 +34,7 @@ namespace wumgr.Tests
             Run("WPF policy options mirror GPO respect rules", WpfPolicyOptionsMirrorGpoRespectRules);
             Run("WPF progress value clamps percentages", WpfProgressValueClampsPercentages);
             Run("WPF progress fill width mirrors progress state", WpfProgressFillWidthMirrorsProgressState);
+            Run("WPF progress visual helpers keep custom bar readable", WpfProgressVisualHelpersKeepCustomBarReadable);
             Run("WPF action toolbar uses original icon resources", WpfActionToolbarUsesOriginalIconResources);
             Run("WPF list selection policy hides history selectors", WpfListSelectionPolicyHidesHistorySelectors);
             Run("WPF status text avoids implementation labels", WpfStatusTextAvoidsImplementationLabels);
@@ -320,6 +321,18 @@ namespace wumgr.Tests
             AssertEqual(200.0, WpfProgressValue.GetFillWidth(200.0, 100, false), "complete determinate progress");
             AssertEqual(200.0, WpfProgressValue.GetFillWidth(200.0, 0, true), "indeterminate progress");
             AssertEqual(0.0, WpfProgressValue.GetFillWidth(0.0, 50, false), "zero-width track");
+        }
+
+        private static void WpfProgressVisualHelpersKeepCustomBarReadable()
+        {
+            AssertEqual("", WpfProgressValue.GetDisplayText(0, false), "idle label");
+            AssertEqual("42%", WpfProgressValue.GetDisplayText(42, false), "determinate label");
+            AssertEqual("Working...", WpfProgressValue.GetDisplayText(0, true), "indeterminate label");
+            AssertEqual(60.0, WpfProgressValue.GetMarqueeWidth(200.0), "normal marquee width");
+            AssertEqual(0.0, WpfProgressValue.GetMarqueeWidth(0.0), "zero marquee width");
+            AssertEqual(70.0, WpfProgressValue.GetMarqueeLeft(200.0, 60.0, 0.5), "marquee phase");
+            AssertEqual(0.0, WpfProgressValue.GetMarqueeLeft(200.0, 60.0, -1.0), "marquee low clamp");
+            AssertEqual(140.0, WpfProgressValue.GetMarqueeLeft(200.0, 60.0, 2.0), "marquee high clamp");
         }
 
         private static void WpfActionToolbarUsesOriginalIconResources()

@@ -28,7 +28,7 @@
       <Setter Property="Height" Value="30" />
       <Setter Property="MinHeight" Value="30" />
       <Setter Property="Padding" Value="2" />
-      <Setter Property="Margin" Value="0" />
+      <Setter Property="Margin" Value="0,0,4,0" />
     </Style>
   </Window.Resources>
 
@@ -166,13 +166,13 @@
           <ToggleButton Content="{Binding HistoryLabel}" IsChecked="{Binding IsHistoryList, Mode=OneWay}" Click="HistoryList_Click" />
           <Separator Margin="0,10" />
           <StackPanel Orientation="Horizontal">
-            <Button x:Name="SearchActionButton" Style="{StaticResource ActionIconButtonStyle}" Content="{Binding Text.SearchButton}" Click="Search_Click" IsEnabled="{Binding CanSearch}" />
-            <Button x:Name="DownloadActionButton" Style="{StaticResource ActionIconButtonStyle}" Content="{Binding Text.DownloadButton}" Click="Download_Click" IsEnabled="{Binding CanDownload}" />
-            <Button x:Name="InstallActionButton" Style="{StaticResource ActionIconButtonStyle}" Content="{Binding Text.InstallButton}" Click="Install_Click" IsEnabled="{Binding CanInstall}" />
-            <Button x:Name="UninstallActionButton" Style="{StaticResource ActionIconButtonStyle}" Content="{Binding Text.UninstallButton}" Click="Uninstall_Click" IsEnabled="{Binding CanUninstall}" />
-            <Button x:Name="HideActionButton" Style="{StaticResource ActionIconButtonStyle}" Content="{Binding HideButtonText}" Click="Hide_Click" IsEnabled="{Binding CanHide}" />
-            <Button x:Name="GetLinksActionButton" Style="{StaticResource ActionIconButtonStyle}" Content="{Binding Text.GetLinksButton}" Click="GetLinks_Click" IsEnabled="{Binding CanGetLinks}" />
-            <Button x:Name="CancelActionButton" Style="{StaticResource ActionIconButtonStyle}" Content="{Binding Text.CancelButton}" Click="Cancel_Click" IsEnabled="{Binding CanCancel}" />
+            <Button x:Name="SearchActionButton" Style="{StaticResource ActionIconButtonStyle}" Click="Search_Click" IsEnabled="{Binding CanSearch}" />
+            <Button x:Name="DownloadActionButton" Style="{StaticResource ActionIconButtonStyle}" Click="Download_Click" IsEnabled="{Binding CanDownload}" />
+            <Button x:Name="InstallActionButton" Style="{StaticResource ActionIconButtonStyle}" Click="Install_Click" IsEnabled="{Binding CanInstall}" />
+            <Button x:Name="UninstallActionButton" Style="{StaticResource ActionIconButtonStyle}" Click="Uninstall_Click" IsEnabled="{Binding CanUninstall}" />
+            <Button x:Name="HideActionButton" Style="{StaticResource ActionIconButtonStyle}" Click="Hide_Click" IsEnabled="{Binding CanHide}" />
+            <Button x:Name="GetLinksActionButton" Style="{StaticResource ActionIconButtonStyle}" Click="GetLinks_Click" IsEnabled="{Binding CanGetLinks}" />
+            <Button x:Name="CancelActionButton" Style="{StaticResource ActionIconButtonStyle}" Click="Cancel_Click" IsEnabled="{Binding CanCancel}" />
           </StackPanel>
         </StackPanel>
       </DockPanel>
@@ -189,7 +189,6 @@
         <StackPanel Orientation="Horizontal" DockPanel.Dock="Right">
           <Button x:Name="RefreshActionButton"
                   Style="{StaticResource ActionIconButtonStyle}"
-                  Content="{Binding Text.RefreshButton}"
                   Click="Refresh_Click" />
         </StackPanel>
       </DockPanel>
@@ -228,9 +227,20 @@
         <StackPanel DockPanel.Dock="Top" Margin="10,8,10,4">
           <TextBlock Text="{Binding Text.StatusHeader}" FontWeight="SemiBold" />
           <TextBlock Text="{Binding StatusText}" Margin="0,3,0,5" Foreground="#52616f" />
-          <Border Height="10" BorderBrush="#b8c2cc" BorderThickness="1" Background="#d8dee6">
+          <Border Height="16" BorderBrush="#aab6c2" BorderThickness="1" Background="#d8dee6" CornerRadius="2" ClipToBounds="True">
             <Grid x:Name="ProgressTrack" SizeChanged="ProgressTrack_SizeChanged">
-              <Border x:Name="ProgressFill" Background="#1f9d35" HorizontalAlignment="Left" Width="0" />
+              <Border x:Name="ProgressFill" Background="#1f9d35" HorizontalAlignment="Left" Width="0" CornerRadius="1" />
+              <Border x:Name="ProgressMarquee" Background="#46a4ff" HorizontalAlignment="Left" Width="0" CornerRadius="1" Visibility="Collapsed">
+                <Border.RenderTransform>
+                  <TranslateTransform x:Name="ProgressMarqueeTransform" />
+                </Border.RenderTransform>
+              </Border>
+              <TextBlock x:Name="ProgressLabel"
+                         HorizontalAlignment="Center"
+                         VerticalAlignment="Center"
+                         FontSize="10"
+                         FontWeight="SemiBold"
+                         Foreground="#1f2933" />
             </Grid>
           </Border>
         </StackPanel>

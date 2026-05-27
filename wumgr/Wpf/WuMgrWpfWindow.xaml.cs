@@ -42,8 +42,10 @@ namespace wumgr.Wpf
         private bool allowShowDisplay = true;
         private Forms.NotifyIcon notifyIcon;
         private DispatcherTimer autoUpdateTimer;
+        private DispatcherTimer progressAnimationTimer;
         private int selectedAutoUpdateIndex;
         private int idleDelay;
+        private double progressAnimationPhase;
         private DateTime lastCheck = DateTime.MinValue;
         private DateTime lastBalloon = DateTime.MinValue;
         private GPO.Respect gpoRespect = GPO.Respect.Unknown;
@@ -331,7 +333,10 @@ namespace wumgr.Wpf
             private set
             {
                 if (SetField(ref isBusyIndeterminate, value, "IsBusyIndeterminate"))
+                {
+                    UpdateProgressAnimationState();
                     UpdateProgressFill();
+                }
             }
         }
 
@@ -389,6 +394,7 @@ namespace wumgr.Wpf
             StatusText = "";
 
             InitializeComponent();
+            CreateProgressAnimationTimer();
             DataContext = this;
             Title = Program.mName;
             ApplyLocalizedText();
@@ -558,6 +564,13 @@ namespace wumgr.Wpf
             {
                 autoUpdateTimer.Stop();
                 autoUpdateTimer = null;
+            }
+
+            if (progressAnimationTimer != null)
+            {
+                progressAnimationTimer.Stop();
+                progressAnimationTimer.Tick -= ProgressAnimationTimer_Tick;
+                progressAnimationTimer = null;
             }
         }
 
@@ -1118,14 +1131,53 @@ namespace wumgr.Wpf
             UpdateProgressFill();
         }
 
-        private void UpdateProgressFill()
+        private void CreateProgressAnimationTimer()
         {
-            if (ProgressTrack == null || ProgressFill == null)
+            progressAnimationTimer = new DispatcherTimer();
+            progressAnimationTimer.Interval = TimeSpan.FromMilliseconds(90);
+            progressAnimationTimer.Tick += ProgressAnimationTimer_Tick;
+        }
+
+        private void ProgressAnimationTimer_Tick(object sender, EventArgs e)
+        {
+            progressAnimationPhase += 0.04;
+            if (progressAnimationPhase > 1.0)
+                progressAnimationPhase = 0.0;
+
+            UpdateProgressFill();
+        }
+
+        private void UpdateProgressAnimationState()
+        {
+            if (progressAnimationTimer == null)
                 return;
 
-            double width = WpfProgressValue.GetFillWidth(ProgressTrack.ActualWidth, totalPercent, isBusyIndeterminate);
+            if (isBusyIndeterminate)
+            {
+                if (!progressAnimationTimer.IsEnabled)
+                    progressAnimationTimer.Start();
+            }
+            else
+            {
+                progressAnimationTimer.Stop();
+                progressAnimationPhase = 0.0;
+            }
+        }
+
+        private void UpdateProgressFill()
+        {
+            if (ProgressTrack == null || ProgressFill == null || ProgressMarquee == null || ProgressLabel == null)
+                return;
+
+            double width = isBusyIndeterminate ? 0.0 : WpfProgressValue.GetFillWidth(ProgressTrack.ActualWidth, totalPercent, false);
             ProgressFill.Width = width;
             ProgressFill.Visibility = width > 0 ? Visibility.Visible : Visibility.Collapsed;
+
+            double marqueeWidth = WpfProgressValue.GetMarqueeWidth(ProgressTrack.ActualWidth);
+            ProgressMarquee.Width = marqueeWidth;
+            ProgressMarquee.Visibility = isBusyIndeterminate && marqueeWidth > 0 ? Visibility.Visible : Visibility.Collapsed;
+            ProgressMarqueeTransform.X = WpfProgressValue.GetMarqueeLeft(ProgressTrack.ActualWidth, marqueeWidth, progressAnimationPhase);
+            ProgressLabel.Text = WpfProgressValue.GetDisplayText(totalPercent, isBusyIndeterminate);
         }
 
         private void LoadWindowSettings()
