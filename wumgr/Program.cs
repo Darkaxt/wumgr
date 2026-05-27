@@ -84,9 +84,9 @@ namespace wumgr
                 return;
             }
 
-            if (!MiscFunc.IsAdministrator() && !MiscFunc.IsDebugging())
+            if (StartupElevationPolicy.ShouldAttemptStartupElevation(MiscFunc.IsAdministrator(), MiscFunc.IsDebugging(), IsSkipUacRun()))
             {
-                Console.WriteLine("Trying to get admin privileges...");
+                Console.WriteLine("Trying to use configured Skip UAC task...");
 
                 if (SkipUacRun())
                 {
@@ -94,27 +94,7 @@ namespace wumgr
                     return;
                 }
 
-                if (!MiscFunc.IsRunningAsUwp())
-                {
-                    Console.WriteLine("Trying to start with 'runas'...");
-                    // Restart program and run as admin
-                    var exeName = Process.GetCurrentProcess().MainModule.FileName;
-                    string arguments = "\"" + string.Join("\" \"", args) + "\"";
-                    ProcessStartInfo startInfo = new ProcessStartInfo(exeName, arguments);
-                    startInfo.UseShellExecute = true;
-                    startInfo.Verb = "runas";
-                    try
-                    {
-                        Process.Start(startInfo);
-                        Application.Exit();
-                        return;
-                    }
-                    catch
-                    {
-                        //MessageBox.Show(Translate.fmt("msg_admin_req", mName), mName);
-                        AppLog.Line("Administrator privileges are required in order to install updates.");
-                    }
-                }
+                AppLog.Line("Configured Skip UAC task could not be used; continuing without elevation.");
             }
 
             if (!FileOps.TestWrite(GetINIPath()))
@@ -159,9 +139,18 @@ namespace wumgr
 
             Agent.Init();
 
-            Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new WuMgr());
+            if (TestArg("-wpf"))
+            {
+                System.Windows.Application wpfApp = new System.Windows.Application();
+                wpfApp.ShutdownMode = System.Windows.ShutdownMode.OnMainWindowClose;
+                wpfApp.Run(new Wpf.WuMgrWpfWindow());
+            }
+            else
+            {
+                Application.EnableVisualStyles();
+                Application.SetCompatibleTextRenderingDefault(false);
+                Application.Run(new WuMgr());
+            }
 
             Agent.UnInit();
 

@@ -6,10 +6,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 - Added v1.2.2 security review notes covering command hooks, Skip UAC, IPC,
   manual downloads, service/GPO writes, and WPF deferral.
-- Added modernization notes documenting that WPF migration is deferred until
-  after security and reliability stabilization.
+- Added an opt-in WPF preview shell behind `-wpf` to start the UI migration
+  without replacing the working WinForms interface.
 
 ### Fixed
+- Normal non-admin launch no longer opens a UAC prompt unless Skip UAC was
+  explicitly configured.
 - Restricted named-pipe IPC ACLs to the current user, local Administrators, and
   Local System instead of granting `World` full control.
 - Sanitized manual download filenames derived from redirects and

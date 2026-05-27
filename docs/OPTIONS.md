@@ -12,6 +12,8 @@
 - Automatic search: search daily, weekly, or monthly when WuMgr is running in the
   tray and the computer has been idle long enough.
 - Always run as Administrator: creates or removes the Skip UAC scheduled task.
+  When unchecked, WuMgr starts without prompting and admin-only actions remain
+  unavailable until the user launches WuMgr elevated.
 
 ## Auto Update Tab
 
@@ -34,3 +36,9 @@ when WuMgr is not elevated.
 
 For removal and policy recovery steps, see
 [UNINSTALL_AND_RECOVERY.md](UNINSTALL_AND_RECOVERY.md).
+
+## WPF Preview
+
+Launch with `-wpf` to open the opt-in WPF preview shell. The preview uses the
+new layout direction and reads the current update cache, but full update
+operations still use the default WinForms UI while migration continues.
