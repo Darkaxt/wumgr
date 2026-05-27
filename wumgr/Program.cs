@@ -137,13 +137,21 @@ namespace wumgr
 
             ExecOnStart();
 
-            Agent.Init();
+            StartupUiKind uiKind = StartupUiMode.Select(args);
+            if (StartupUiMode.ShouldInitializeAgentBeforeWindow(uiKind))
+                Agent.Init();
 
-            if (StartupUiMode.Select(args) == StartupUiKind.Wpf)
+            if (uiKind == StartupUiKind.Wpf)
             {
                 System.Windows.Application wpfApp = new System.Windows.Application();
                 wpfApp.ShutdownMode = System.Windows.ShutdownMode.OnMainWindowClose;
-                wpfApp.Run(new Wpf.WuMgrWpfWindow());
+                Wpf.WuMgrWpfWindow window = new Wpf.WuMgrWpfWindow();
+                wpfApp.MainWindow = window;
+                if (!StartupUiMode.ShouldStartInTray(args))
+                    wpfApp.Startup += (sender, eventArgs) => window.ShowMainWindow();
+                else
+                    wpfApp.Startup += (sender, eventArgs) => window.InitializeAgentAfterStartup();
+                wpfApp.Run();
             }
             else
             {

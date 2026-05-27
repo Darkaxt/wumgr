@@ -6,8 +6,13 @@ using System.Drawing;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Windows;
+using Controls = System.Windows.Controls;
 using Forms = System.Windows.Forms;
+using System.Windows.Interop;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using WUApiLib;
 
@@ -47,6 +52,7 @@ namespace wumgr.Wpf
         private int selectedScheduleDay;
         private int selectedScheduleTime;
         private bool suspendPolicyUpdate;
+        private bool agentInitializationStarted;
         private readonly WpfLocalizedText text = new WpfLocalizedText();
 
         public ObservableCollection<WpfUpdateRow> Updates { get; private set; }
@@ -310,13 +316,21 @@ namespace wumgr.Wpf
         public int TotalPercent
         {
             get { return totalPercent; }
-            private set { SetField(ref totalPercent, value, "TotalPercent"); }
+            private set
+            {
+                if (SetField(ref totalPercent, value, "TotalPercent"))
+                    UpdateProgressFill();
+            }
         }
 
         public bool IsBusyIndeterminate
         {
             get { return isBusyIndeterminate; }
-            private set { SetField(ref isBusyIndeterminate, value, "IsBusyIndeterminate"); }
+            private set
+            {
+                if (SetField(ref isBusyIndeterminate, value, "IsBusyIndeterminate"))
+                    UpdateProgressFill();
+            }
         }
 
         public bool HasSelection { get { return Updates.Any(update => update.Selected); } }
@@ -376,6 +390,7 @@ namespace wumgr.Wpf
             DataContext = this;
             Title = Program.mName;
             ApplyLocalizedText();
+            ApplyActionButtonIcons();
 
             IsAdministrator = MiscFunc.IsAdministrator();
             skipUacEnabled = Program.IsSkipUacRun();
@@ -409,6 +424,7 @@ namespace wumgr.Wpf
             Program.Agent.Progress += Agent_Progress;
             Program.Agent.UpdatesChaged += Agent_UpdatesChanged;
             Program.Agent.Finished += Agent_Finished;
+            ContentRendered += WuMgrWpfWindow_ContentRendered;
             Closing += WuMgrWpfWindow_Closing;
             Closed += WuMgrWpfWindow_Closed;
         }
@@ -423,9 +439,92 @@ namespace wumgr.Wpf
             StateColumn.Header = text.StateColumn;
         }
 
+        private void ApplyActionButtonIcons()
+        {
+            foreach (WpfActionButtonSpec spec in WpfActionButtonSpec.CreateDefault())
+            {
+                Controls.Button button = GetActionButton(spec.Kind);
+                button.Content = CreateActionIcon(spec.ResourceName);
+            }
+
+            RefreshActionButtonTooltips();
+        }
+
+        private Controls.Button GetActionButton(WpfActionButtonKind kind)
+        {
+            switch (kind)
+            {
+                case WpfActionButtonKind.Search: return SearchActionButton;
+                case WpfActionButtonKind.Download: return DownloadActionButton;
+                case WpfActionButtonKind.Install: return InstallActionButton;
+                case WpfActionButtonKind.Uninstall: return UninstallActionButton;
+                case WpfActionButtonKind.Hide: return HideActionButton;
+                case WpfActionButtonKind.GetLinks: return GetLinksActionButton;
+                case WpfActionButtonKind.Cancel: return CancelActionButton;
+                default: throw new ArgumentOutOfRangeException("kind");
+            }
+        }
+
+        private string GetActionButtonText(WpfActionButtonKind kind)
+        {
+            switch (kind)
+            {
+                case WpfActionButtonKind.Search: return text.SearchButton;
+                case WpfActionButtonKind.Download: return text.DownloadButton;
+                case WpfActionButtonKind.Install: return text.InstallButton;
+                case WpfActionButtonKind.Uninstall: return text.UninstallButton;
+                case WpfActionButtonKind.Hide: return HideButtonText;
+                case WpfActionButtonKind.GetLinks: return text.GetLinksButton;
+                case WpfActionButtonKind.Cancel: return text.CancelButton;
+                default: throw new ArgumentOutOfRangeException("kind");
+            }
+        }
+
+        private void RefreshActionButtonTooltips()
+        {
+            foreach (WpfActionButtonSpec spec in WpfActionButtonSpec.CreateDefault())
+            {
+                Controls.Button button = GetActionButton(spec.Kind);
+                string label = GetActionButtonText(spec.Kind);
+                button.ToolTip = label;
+                System.Windows.Automation.AutomationProperties.SetName(button, label);
+            }
+        }
+
+        private static Controls.Image CreateActionIcon(string resourceName)
+        {
+            Bitmap bitmap = Properties.Resources.ResourceManager.GetObject(resourceName) as Bitmap;
+            if (bitmap == null)
+                return null;
+
+            BitmapSource source = CreateBitmapSource(bitmap);
+            return new Controls.Image
+            {
+                Source = source,
+                Width = 24,
+                Height = 24,
+                Stretch = Stretch.Uniform
+            };
+        }
+
+        private static BitmapSource CreateBitmapSource(Bitmap bitmap)
+        {
+            IntPtr handle = bitmap.GetHbitmap();
+            try
+            {
+                BitmapSource source = Imaging.CreateBitmapSourceFromHBitmap(handle, IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromWidthAndHeight(24, 24));
+                source.Freeze();
+                return source;
+            }
+            finally
+            {
+                DeleteObject(handle);
+            }
+        }
+
         private void WuMgrWpfWindow_Closing(object sender, CancelEventArgs e)
         {
-            if (RunInBackground && allowShowDisplay)
+            if (ShouldUseTray() && allowShowDisplay)
             {
                 e.Cancel = true;
                 allowShowDisplay = false;
@@ -441,6 +540,7 @@ namespace wumgr.Wpf
             Program.Agent.Progress -= Agent_Progress;
             Program.Agent.UpdatesChaged -= Agent_UpdatesChanged;
             Program.Agent.Finished -= Agent_Finished;
+            ContentRendered -= WuMgrWpfWindow_ContentRendered;
             Program.ipc.PipeMessage -= PipesMessageHandler;
 
             if (notifyIcon != null)
@@ -457,6 +557,42 @@ namespace wumgr.Wpf
             }
         }
 
+        private void WuMgrWpfWindow_ContentRendered(object sender, EventArgs e)
+        {
+            InitializeAgentAfterStartup();
+        }
+
+        public void InitializeAgentAfterStartup()
+        {
+            if (agentInitializationStarted)
+                return;
+
+            agentInitializationStarted = true;
+            Dispatcher.BeginInvoke(new Action(InitializeAgentAfterWindowShown), DispatcherPriority.ApplicationIdle);
+        }
+
+        private void InitializeAgentAfterWindowShown()
+        {
+            if (!Program.Agent.IsActive())
+            {
+                StatusText = text.InitializingAgent;
+                Program.Agent.Init();
+            }
+
+            RefreshAgentBackedState();
+            StatusText = "";
+        }
+
+        private void RefreshAgentBackedState()
+        {
+            string source = SelectedSource;
+            registerMicrosoftUpdate = Program.Agent.IsActive() && Program.Agent.TestService(WuAgent.MsUpdGUID);
+            OnPropertyChanged("RegisterMicrosoftUpdate");
+            LoadSources(string.IsNullOrEmpty(source) ? GetConfig("Source", "Windows Update") : source);
+            LoadList();
+            NotifyAllStateChanged();
+        }
+
         private void PipesMessageHandler(PipeIPC.PipeServer pipe, string data)
         {
             if (data.Equals("show", StringComparison.CurrentCultureIgnoreCase))
@@ -470,7 +606,7 @@ namespace wumgr.Wpf
             }
         }
 
-        private void ShowMainWindow()
+        public void ShowMainWindow()
         {
             allowShowDisplay = true;
             if (WindowState == WindowState.Minimized)
@@ -722,7 +858,12 @@ namespace wumgr.Wpf
         private void UpdateNotifyIcon()
         {
             if (notifyIcon != null)
-                notifyIcon.Visible = RunInBackground;
+                notifyIcon.Visible = ShouldUseTray();
+        }
+
+        private bool ShouldUseTray()
+        {
+            return RunInBackground || StartupUiMode.ShouldStartInTray(Program.args);
         }
 
         private void NotifyIcon_MouseDoubleClick(object sender, Forms.MouseEventArgs e)
@@ -918,9 +1059,24 @@ namespace wumgr.Wpf
             Program.Agent.CancelOperations();
         }
 
+        private void ProgressTrack_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            UpdateProgressFill();
+        }
+
+        private void UpdateProgressFill()
+        {
+            if (ProgressTrack == null || ProgressFill == null)
+                return;
+
+            double width = WpfProgressValue.GetFillWidth(ProgressTrack.ActualWidth, totalPercent, isBusyIndeterminate);
+            ProgressFill.Width = width;
+            ProgressFill.Visibility = width > 0 ? Visibility.Visible : Visibility.Collapsed;
+        }
+
         private void OpenWinForms_Click(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show("Close this WPF window and launch WuMgr without -wpf to use the WinForms UI.", Program.mName);
+            MessageBox.Show(text.OpenWinFormsHint, Program.mName);
         }
 
         private void LoadWindowSettings()
@@ -1177,6 +1333,7 @@ namespace wumgr.Wpf
             OnPropertyChanged("IsHiddenList");
             OnPropertyChanged("IsHistoryList");
             OnPropertyChanged("HideButtonText");
+            RefreshActionButtonTooltips();
             NotifyPolicySelectionChanged();
             NotifyPolicyOptionStateChanged();
             NotifyActionStateChanged();
@@ -1241,6 +1398,9 @@ namespace wumgr.Wpf
             if (PropertyChanged != null)
                 PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
         }
+
+        [DllImport("gdi32.dll")]
+        private static extern bool DeleteObject(IntPtr hObject);
     }
 
     public class WpfUpdateRow : INotifyPropertyChanged

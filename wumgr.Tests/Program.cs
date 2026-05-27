@@ -26,11 +26,15 @@ namespace wumgr.Tests
             Run("Content-Disposition filename parsing is guarded", ContentDispositionFilenameParsingIsGuarded);
             Run("Startup elevation only runs when explicitly configured", StartupElevationOnlyRunsWhenConfigured);
             Run("Startup UI defaults to WPF with WinForms fallback", StartupUiDefaultsToWpfWithWinFormsFallback);
+            Run("Startup defers agent init for WPF shell", StartupDefersAgentInitForWpfShell);
             Run("WPF action state mirrors admin and list rules", WpfActionStateMirrorsAdminAndListRules);
             Run("WPF window placement rejects missing and tiny persisted bounds", WpfWindowPlacementRejectsInvalidBounds);
             Run("Auto update schedule reports due days", AutoUpdateScheduleReportsDueDays);
             Run("WPF policy options disable writes without elevation", WpfPolicyOptionsDisableWritesWithoutElevation);
             Run("WPF policy options mirror GPO respect rules", WpfPolicyOptionsMirrorGpoRespectRules);
+            Run("WPF progress value clamps percentages", WpfProgressValueClampsPercentages);
+            Run("WPF progress fill width mirrors progress state", WpfProgressFillWidthMirrorsProgressState);
+            Run("WPF action toolbar uses original icon resources", WpfActionToolbarUsesOriginalIconResources);
             Run("WPF localized text mirrors shared translations", WpfLocalizedTextMirrorsSharedTranslations);
 
             if (failures != 0)
@@ -178,6 +182,15 @@ namespace wumgr.Tests
             AssertEqual(StartupUiKind.WinForms, StartupUiMode.Select(new[] { "-winforms" }), "explicit WinForms fallback");
             AssertEqual(StartupUiKind.WinForms, StartupUiMode.Select(new[] { "/winforms" }), "slash WinForms fallback");
             AssertEqual(StartupUiKind.WinForms, StartupUiMode.Select(new[] { "-wpf", "-winforms" }), "fallback should override WPF when both are present");
+            Assert(!StartupUiMode.ShouldStartInTray(new string[0]), "normal launch should show a window");
+            Assert(StartupUiMode.ShouldStartInTray(new[] { "-tray" }), "dash tray launch should start hidden");
+            Assert(StartupUiMode.ShouldStartInTray(new[] { "/tray" }), "slash tray launch should start hidden");
+        }
+
+        private static void StartupDefersAgentInitForWpfShell()
+        {
+            Assert(!StartupUiMode.ShouldInitializeAgentBeforeWindow(StartupUiKind.Wpf), "WPF should show the window before slow WUA initialization");
+            Assert(StartupUiMode.ShouldInitializeAgentBeforeWindow(StartupUiKind.WinForms), "WinForms should preserve the legacy initialization order");
         }
 
         private static void WpfActionStateMirrorsAdminAndListRules()
@@ -286,7 +299,42 @@ namespace wumgr.Tests
             AssertEqual("Refresh", text.RefreshButton, "WPF button text should strip WinForms mnemonic markers");
             AssertEqual("Exit", text.ExitMenu, "WPF tray menu text should strip WinForms mnemonic markers");
             AssertEqual("Open WinForms UI", text.OpenWinFormsButton, "WPF-specific open WinForms text");
+            AssertEqual("Close this WPF window and launch WuMgr with -winforms to use the legacy UI.", text.OpenWinFormsHint, "WPF-specific WinForms hint text");
+            AssertEqual("Initializing Windows Update Agent...", text.InitializingAgent, "WPF startup status text");
             AssertEqual("Wednesday", text.ScheduleDays[4], "WPF schedule day text");
+        }
+
+        private static void WpfProgressValueClampsPercentages()
+        {
+            AssertEqual(0.0, WpfProgressValue.NormalizePercent(-25), "negative percent");
+            AssertEqual(0.0, WpfProgressValue.NormalizePercent(0), "zero percent");
+            AssertEqual(0.42, WpfProgressValue.NormalizePercent(42), "mid percent");
+            AssertEqual(1.0, WpfProgressValue.NormalizePercent(100), "full percent");
+            AssertEqual(1.0, WpfProgressValue.NormalizePercent(150), "overfull percent");
+        }
+
+        private static void WpfProgressFillWidthMirrorsProgressState()
+        {
+            AssertEqual(0.0, WpfProgressValue.GetFillWidth(200.0, 0, false), "empty determinate progress");
+            AssertEqual(84.0, WpfProgressValue.GetFillWidth(200.0, 42, false), "partial determinate progress");
+            AssertEqual(200.0, WpfProgressValue.GetFillWidth(200.0, 100, false), "complete determinate progress");
+            AssertEqual(200.0, WpfProgressValue.GetFillWidth(200.0, 0, true), "indeterminate progress");
+            AssertEqual(0.0, WpfProgressValue.GetFillWidth(0.0, 50, false), "zero-width track");
+        }
+
+        private static void WpfActionToolbarUsesOriginalIconResources()
+        {
+            WpfActionButtonSpec[] specs = WpfActionButtonSpec.CreateDefault();
+
+            AssertEqual(7, specs.Length, "toolbar action count");
+            AssertEqual(WpfActionButtonKind.Search, specs[0].Kind, "search action order");
+            AssertEqual("icons8_available_updates_32", specs[0].ResourceName, "search icon");
+            AssertEqual("icons8_downloading_updates_32", specs[1].ResourceName, "download icon");
+            AssertEqual("icons8_software_installer_32", specs[2].ResourceName, "install icon");
+            AssertEqual("icons8_trash_32", specs[3].ResourceName, "uninstall icon");
+            AssertEqual("icons8_hide_32", specs[4].ResourceName, "hide icon");
+            AssertEqual("icons8_link_32", specs[5].ResourceName, "link icon");
+            AssertEqual("icons8_cancel_32", specs[6].ResourceName, "cancel icon");
         }
 
         private static void Assert(bool condition, string message)

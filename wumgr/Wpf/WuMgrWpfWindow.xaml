@@ -23,6 +23,13 @@
     <Style TargetType="TextBlock">
       <Setter Property="Foreground" Value="#1f2933" />
     </Style>
+    <Style x:Key="ActionIconButtonStyle" TargetType="Button">
+      <Setter Property="Width" Value="30" />
+      <Setter Property="Height" Value="30" />
+      <Setter Property="MinHeight" Value="30" />
+      <Setter Property="Padding" Value="2" />
+      <Setter Property="Margin" Value="0" />
+    </Style>
   </Window.Resources>
 
   <Grid>
@@ -158,13 +165,15 @@
           <ToggleButton Content="{Binding HiddenLabel}" IsChecked="{Binding IsHiddenList, Mode=OneWay}" Click="HiddenList_Click" />
           <ToggleButton Content="{Binding HistoryLabel}" IsChecked="{Binding IsHistoryList, Mode=OneWay}" Click="HistoryList_Click" />
           <Separator Margin="0,10" />
-          <Button Content="{Binding Text.SearchButton}" Click="Search_Click" IsEnabled="{Binding CanSearch}" />
-          <Button Content="{Binding Text.DownloadButton}" Click="Download_Click" IsEnabled="{Binding CanDownload}" />
-          <Button Content="{Binding Text.InstallButton}" Click="Install_Click" IsEnabled="{Binding CanInstall}" />
-          <Button Content="{Binding Text.UninstallButton}" Click="Uninstall_Click" IsEnabled="{Binding CanUninstall}" />
-          <Button Content="{Binding HideButtonText}" Click="Hide_Click" IsEnabled="{Binding CanHide}" />
-          <Button Content="{Binding Text.GetLinksButton}" Click="GetLinks_Click" IsEnabled="{Binding CanGetLinks}" />
-          <Button Content="{Binding Text.CancelButton}" Click="Cancel_Click" IsEnabled="{Binding CanCancel}" />
+          <StackPanel Orientation="Horizontal">
+            <Button x:Name="SearchActionButton" Style="{StaticResource ActionIconButtonStyle}" Content="{Binding Text.SearchButton}" Click="Search_Click" IsEnabled="{Binding CanSearch}" />
+            <Button x:Name="DownloadActionButton" Style="{StaticResource ActionIconButtonStyle}" Content="{Binding Text.DownloadButton}" Click="Download_Click" IsEnabled="{Binding CanDownload}" />
+            <Button x:Name="InstallActionButton" Style="{StaticResource ActionIconButtonStyle}" Content="{Binding Text.InstallButton}" Click="Install_Click" IsEnabled="{Binding CanInstall}" />
+            <Button x:Name="UninstallActionButton" Style="{StaticResource ActionIconButtonStyle}" Content="{Binding Text.UninstallButton}" Click="Uninstall_Click" IsEnabled="{Binding CanUninstall}" />
+            <Button x:Name="HideActionButton" Style="{StaticResource ActionIconButtonStyle}" Content="{Binding HideButtonText}" Click="Hide_Click" IsEnabled="{Binding CanHide}" />
+            <Button x:Name="GetLinksActionButton" Style="{StaticResource ActionIconButtonStyle}" Content="{Binding Text.GetLinksButton}" Click="GetLinks_Click" IsEnabled="{Binding CanGetLinks}" />
+            <Button x:Name="CancelActionButton" Style="{StaticResource ActionIconButtonStyle}" Content="{Binding Text.CancelButton}" Click="Cancel_Click" IsEnabled="{Binding CanCancel}" />
+          </StackPanel>
         </StackPanel>
       </DockPanel>
     </Border>
@@ -209,11 +218,11 @@
         <StackPanel DockPanel.Dock="Top" Margin="10,8,10,4">
           <TextBlock Text="{Binding Text.StatusHeader}" FontWeight="SemiBold" />
           <TextBlock Text="{Binding StatusText}" Margin="0,3,0,5" Foreground="#52616f" />
-          <ProgressBar Height="8"
-                       Minimum="0"
-                       Maximum="100"
-                       Value="{Binding TotalPercent}"
-                       IsIndeterminate="{Binding IsBusyIndeterminate}" />
+          <Border Height="10" BorderBrush="#b8c2cc" BorderThickness="1" Background="#d8dee6">
+            <Grid x:Name="ProgressTrack" SizeChanged="ProgressTrack_SizeChanged">
+              <Border x:Name="ProgressFill" Background="#1f9d35" HorizontalAlignment="Left" Width="0" />
+            </Grid>
+          </Border>
         </StackPanel>
         <TextBox Text="{Binding StatusLog, Mode=OneWay}"
                  Margin="10,0,10,10"
