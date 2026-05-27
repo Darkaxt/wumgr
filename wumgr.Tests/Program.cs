@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO.Pipes;
 using System.Linq;
 using System.IO;
@@ -30,6 +31,9 @@ namespace wumgr.Tests
             Run("WPF action state mirrors admin and list rules", WpfActionStateMirrorsAdminAndListRules);
             Run("WPF window placement rejects missing and tiny persisted bounds", WpfWindowPlacementRejectsInvalidBounds);
             Run("Auto update schedule reports due days", AutoUpdateScheduleReportsDueDays);
+            Run("Update dates display with local culture", UpdateDatesDisplayWithLocalCulture);
+            Run("Update cache dates round-trip invariantly", UpdateCacheDatesRoundTripInvariantly);
+            Run("Update cache dates read legacy localized values", UpdateCacheDatesReadLegacyLocalizedValues);
             Run("WPF policy options disable writes without elevation", WpfPolicyOptionsDisableWritesWithoutElevation);
             Run("WPF policy options mirror GPO respect rules", WpfPolicyOptionsMirrorGpoRespectRules);
             Run("WPF progress value clamps percentages", WpfProgressValueClampsPercentages);
@@ -247,6 +251,34 @@ namespace wumgr.Tests
             AssertEqual(2, AutoUpdateSchedule.GetDueDays(AutoUpdateMode.EveryMonth, now.AddMonths(-1).AddDays(-2), now), "monthly overdue two days");
             AssertEqual(3, AutoUpdateSchedule.GetGraceDays(AutoUpdateMode.EveryDay), "daily grace");
             AssertEqual(15, AutoUpdateSchedule.GetGraceDays(AutoUpdateMode.EveryMonth), "monthly grace");
+        }
+
+        private static void UpdateDatesDisplayWithLocalCulture()
+        {
+            DateTime date = new DateTime(2021, 5, 14, 9, 30, 0);
+
+            AssertEqual("14/05/2021", UpdateDateFormatter.FormatForDisplay(date, new CultureInfo("en-GB")), "British short date");
+            AssertEqual("5/14/2021", UpdateDateFormatter.FormatForDisplay(date, new CultureInfo("en-US")), "US short date");
+            AssertEqual("", UpdateDateFormatter.FormatForDisplay(DateTime.MinValue, new CultureInfo("en-US")), "empty minimum date");
+        }
+
+        private static void UpdateCacheDatesRoundTripInvariantly()
+        {
+            DateTime date = new DateTime(2021, 5, 14, 9, 30, 0, DateTimeKind.Local);
+            string value = UpdateDateFormatter.SerializeForCache(date);
+
+            DateTime parsed;
+            Assert(UpdateDateFormatter.TryDeserializeFromCache(value, new CultureInfo("de-DE"), out parsed), "serialized cache date should parse");
+            AssertEqual(date, parsed, "serialized cache date should round-trip");
+        }
+
+        private static void UpdateCacheDatesReadLegacyLocalizedValues()
+        {
+            DateTime parsed;
+            Assert(UpdateDateFormatter.TryDeserializeFromCache("15.05.2021", new CultureInfo("de-DE"), out parsed), "legacy German cache date should parse");
+            AssertEqual(new DateTime(2021, 5, 15), parsed.Date, "legacy German cache date");
+            Assert(!UpdateDateFormatter.TryDeserializeFromCache("", new CultureInfo("en-US"), out parsed), "empty cache date should fail");
+            Assert(!UpdateDateFormatter.TryDeserializeFromCache("not a date", new CultureInfo("en-US"), out parsed), "invalid cache date should fail");
         }
 
         private static void WpfPolicyOptionsDisableWritesWithoutElevation()

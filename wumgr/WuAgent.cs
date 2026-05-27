@@ -1105,7 +1105,7 @@ namespace wumgr
                 Program.IniWriteValue(Update.KB, "Info", Update.Description, INIPath);
                 Program.IniWriteValue(Update.KB, "Category", Update.Category, INIPath);
 
-                Program.IniWriteValue(Update.KB, "Date", Update.Date.ToString(CultureInfo.CurrentUICulture.DateTimeFormat.ShortDatePattern), INIPath);
+                Program.IniWriteValue(Update.KB, "Date", UpdateDateFormatter.SerializeForCache(Update.Date), INIPath);
                 Program.IniWriteValue(Update.KB, "Size", Update.Size.ToString(), INIPath);
 
                 Program.IniWriteValue(Update.KB, "SupportUrl", Update.SupportUrl, INIPath);
@@ -1135,7 +1135,9 @@ namespace wumgr
                 Update.Description = Program.IniReadValue(Update.KB, "Info", "", INIPath);
                 Update.Category = Program.IniReadValue(Update.KB, "Category", "", INIPath);
 
-                try { Update.Date = DateTime.Parse(Program.IniReadValue(Update.KB, "Date", "", INIPath)); } catch { }
+                DateTime date;
+                if (UpdateDateFormatter.TryDeserializeFromCache(Program.IniReadValue(Update.KB, "Date", "", INIPath), CultureInfo.CurrentUICulture, out date))
+                    Update.Date = date;
                 Update.Size = (decimal)MiscFunc.parseInt(Program.IniReadValue(Update.KB, "Size", "0", INIPath));
 
                 Update.SupportUrl = Program.IniReadValue(Update.KB, "SupportUrl", "", INIPath);

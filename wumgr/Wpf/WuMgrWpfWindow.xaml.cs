@@ -1705,7 +1705,7 @@ namespace wumgr.Wpf
             Title = update.Title;
             Category = update.Category;
             KB = update.State == MsUpdate.UpdateState.History ? update.ApplicationID : update.KB;
-            Date = update.Date == DateTime.MinValue ? "" : update.Date.ToShortDateString();
+            Date = UpdateDateFormatter.FormatForDisplay(update.Date);
             Size = FileOps.FormatSize(update.Size);
             State = FormatState(update);
         }

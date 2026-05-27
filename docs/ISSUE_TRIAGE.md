@@ -41,6 +41,12 @@ opened only when the work is actionable for this maintained fork.
 - [#149](https://github.com/DavidXanatos/wumgr/issues/149) Typo: "managemetn"
 - [#152](https://github.com/DavidXanatos/wumgr/issues/152) SAST analysis results
 
+## Handled after v1.2.1
+
+- [#95](https://github.com/DavidXanatos/wumgr/issues/95) Non-local date format
+- [#121](https://github.com/DavidXanatos/wumgr/issues/121) Update history showing wrong date; mitigated by invariant update-cache dates and legacy localized cache parsing
+- [#143](https://github.com/DavidXanatos/wumgr/issues/143) Honor system dark mode
+
 ## Needs reproduction before code changes
 
 - [#14](https://github.com/DavidXanatos/wumgr/issues/14) Disable Windows Update
@@ -55,14 +61,12 @@ opened only when the work is actionable for this maintained fork.
 - [#85](https://github.com/DavidXanatos/wumgr/issues/85) Internal error downloading updates
 - [#87](https://github.com/DavidXanatos/wumgr/issues/87) Jittering during large update operations
 - [#91](https://github.com/DavidXanatos/wumgr/issues/91) SCEP update KB3209361 install error
-- [#95](https://github.com/DavidXanatos/wumgr/issues/95) Non-local date format
 - [#99](https://github.com/DavidXanatos/wumgr/issues/99) Update size 84.77 GB
 - [#100](https://github.com/DavidXanatos/wumgr/issues/100) Hide option does not work in Store update manager
 - [#107](https://github.com/DavidXanatos/wumgr/issues/107) Repeated failures on Windows 10
 - [#112](https://github.com/DavidXanatos/wumgr/issues/112) Update failures reported as applied
 - [#113](https://github.com/DavidXanatos/wumgr/issues/113) Automatic search for updates does not work
 - [#118](https://github.com/DavidXanatos/wumgr/issues/118) Windows Server 2019 hidden update behavior
-- [#121](https://github.com/DavidXanatos/wumgr/issues/121) Update history showing wrong date
 - [#137](https://github.com/DavidXanatos/wumgr/issues/137) Packages without a KB cite download but do not appear
 - [#139](https://github.com/DavidXanatos/wumgr/issues/139) Windows 11 upgrade not applied on reboot
 - [#151](https://github.com/DavidXanatos/wumgr/issues/151) Shows 0 updates
@@ -85,7 +89,6 @@ opened only when the work is actionable for this maintained fork.
 - [#110](https://github.com/DavidXanatos/wumgr/issues/110) Defer updates
 - [#116](https://github.com/DavidXanatos/wumgr/issues/116) Manage apps and app updates
 - [#133](https://github.com/DavidXanatos/wumgr/issues/133) Cancellation confirmation
-- [#143](https://github.com/DavidXanatos/wumgr/issues/143) Honor system dark mode
 
 ## Support or meta
 
