@@ -6,8 +6,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 - Added v1.2.2 security review notes covering command hooks, Skip UAC, IPC,
   manual downloads, service/GPO writes, and WPF deferral.
-- Added an opt-in WPF preview shell behind `-wpf` to start the UI migration
-  without replacing the working WinForms interface.
+- Added a WPF shell to start the UI migration while keeping the working
+  WinForms interface available as a fallback.
 - Wired the WPF shell to core update actions: provider selection, search,
   list switching, download/install/uninstall, hide/unhide, link copying,
   cancel, progress, and single-instance restore.
@@ -19,6 +19,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
   facilitator-service, Store auto-update, Settings-page, and driver policies.
 - Added WPF localized text bindings for migrated tabs, buttons, columns, tray
   menu labels, and option controls.
+- Made the WPF shell the default UI and added `-winforms` as an explicit
+  fallback switch for the legacy UI.
 
 ### Fixed
 - Normal non-admin launch no longer opens a UAC prompt unless Skip UAC was

@@ -1,13 +1,13 @@
 # Modernization Notes
 
-WuMgr remains a .NET Framework WinForms application for the default maintenance
-track. The maintained fork is adding WPF incrementally so the working update
-tool remains usable while the UI is migrated.
+WuMgr remains a .NET Framework desktop application for the default maintenance
+track. The maintained fork has migrated the default shell to WPF while keeping
+the legacy WinForms UI available as a fallback.
 
 ## WPF Track
 
-The WPF path is an opt-in shell launched with `-wpf`. It provides the target
-layout structure and is now wired to core update operations: source selection,
+The WPF path is the default shell. It provides the target layout structure and
+is wired to core update operations: source selection,
 search, list switching, selection, download/install/uninstall, hide/unhide,
 link copying, cancellation, progress, single-instance restore, window placement
 persistence, tray restore/exit behavior, automatic search scheduling, idle
@@ -17,9 +17,9 @@ driver policies. Migrated WPF tabs, buttons, columns, tray menu labels, and
 option controls now use the same translation keys as the WinForms UI where
 available.
 
-The existing WinForms UI, command-line options, portable zip format, and .NET
-Framework target remain unchanged for normal v1.2.x releases until the WPF path
-has equivalent behavior and smoke-test coverage.
+The existing WinForms UI remains available with `-winforms` for fallback
+testing. The executable name, portable zip format, and .NET Framework target are
+unchanged.
 
-Remaining WPF migration work includes manual smoke coverage before making WPF
-the default UI.
+Remaining WPF migration work includes broader manual smoke coverage before the
+next release.
