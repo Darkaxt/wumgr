@@ -55,6 +55,7 @@ opened only when the work is actionable for this maintained fork.
 - [#121](https://github.com/DavidXanatos/wumgr/issues/121) Update history showing wrong date; mitigated by invariant update-cache dates and legacy localized cache parsing
 - [#133](https://github.com/DavidXanatos/wumgr/issues/133) Cancellation confirmation
 - [#143](https://github.com/DavidXanatos/wumgr/issues/143) Honor system dark mode
+- [#105](https://github.com/DavidXanatos/wumgr/issues/105) Switch GUI language from German to English; documented the existing `Lang=en` override
 
 ## Needs reproduction before code changes
 
@@ -104,4 +105,3 @@ opened only when the work is actionable for this maintained fork.
 
 - [#92](https://github.com/DavidXanatos/wumgr/issues/92) KB4549951
 - [#101](https://github.com/DavidXanatos/wumgr/issues/101) General pre-test questions
-- [#105](https://github.com/DavidXanatos/wumgr/issues/105) Switch GUI language from German to English

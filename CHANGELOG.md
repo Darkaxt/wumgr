@@ -29,6 +29,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Added a `-minimized` startup switch and Start minimized option.
 - Made the WPF shell the default UI and added `-winforms` as an explicit
   fallback switch for the legacy UI.
+- Documented the existing `wumgr.ini` language override for users who want a
+  fixed UI language independent of Windows regional settings.
 
 ### Fixed
 - Normal non-admin launch no longer opens a UAC prompt unless Skip UAC was
