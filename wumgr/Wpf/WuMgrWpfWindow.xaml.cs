@@ -454,6 +454,7 @@ namespace wumgr.Wpf
             LoadPolicyOptions();
             LoadSources(GetConfig("Source", "Windows Update"));
             LoadWindowSettings();
+            LoadStatusPaneSettings();
             CreateNotifyIcon();
             CreateAutoUpdateTimer();
             AttachAgentEvents();
@@ -1423,6 +1424,26 @@ namespace wumgr.Wpf
             SetConfig("WindowWidth", bounds.Width.ToString("0", CultureInfo.InvariantCulture));
             SetConfig("WindowHeight", bounds.Height.ToString("0", CultureInfo.InvariantCulture));
             SetConfig("WindowState", state.ToString());
+            SaveStatusPaneSettings();
+        }
+
+        private void LoadStatusPaneSettings()
+        {
+            if (StatusPaneRow == null)
+                return;
+
+            WpfStatusPaneHeight height;
+            if (WpfStatusPaneHeight.TryCreate(GetConfig("StatusPaneHeight", ""), out height))
+                StatusPaneRow.Height = new GridLength(height.Height);
+        }
+
+        private void SaveStatusPaneSettings()
+        {
+            if (StatusPaneRow == null)
+                return;
+
+            double height = WpfStatusPaneHeight.Coerce(StatusPaneRow.ActualHeight);
+            SetConfig("StatusPaneHeight", height.ToString("0", CultureInfo.InvariantCulture));
         }
 
         private void Agent_Progress(object sender, WuAgent.ProgressArgs args)
