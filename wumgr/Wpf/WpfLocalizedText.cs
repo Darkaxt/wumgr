@@ -37,6 +37,7 @@ namespace wumgr.Wpf
         public string CancelButton { get { return Translate.fmt("tip_cancel"); } }
         public string RefreshButton { get { return StripWinFormsMnemonic(Translate.fmt("menu_refresh")); } }
         public string SelectAllRows { get { return Translate.fmt("lbl_all"); } }
+        public string ThemeLabel { get { return Translate.fmt("wpf_theme"); } }
         public string WindowsUpdateHeading { get { return Translate.fmt("wpf_updates_heading"); } }
         public string StatusHeader { get { return Translate.fmt("wpf_status"); } }
         public string ElevatedStatus { get { return Translate.fmt("wpf_elevated"); } }
@@ -59,6 +60,19 @@ namespace wumgr.Wpf
                     Translate.fmt("lbl_ac_day"),
                     Translate.fmt("lbl_ac_week"),
                     Translate.fmt("lbl_ac_month")
+                };
+            }
+        }
+
+        public IReadOnlyList<string> ThemeOptions
+        {
+            get
+            {
+                return new[]
+                {
+                    Translate.fmt("wpf_theme_system"),
+                    Translate.fmt("wpf_theme_light"),
+                    Translate.fmt("wpf_theme_dark")
                 };
             }
         }

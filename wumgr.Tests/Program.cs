@@ -35,7 +35,9 @@ namespace wumgr.Tests
             Run("WPF progress value clamps percentages", WpfProgressValueClampsPercentages);
             Run("WPF progress fill width mirrors progress state", WpfProgressFillWidthMirrorsProgressState);
             Run("WPF progress visual helpers keep custom bar readable", WpfProgressVisualHelpersKeepCustomBarReadable);
-            Run("WPF action toolbar uses original icon resources", WpfActionToolbarUsesOriginalIconResources);
+            Run("WPF action toolbar uses modern glyph icons", WpfActionToolbarUsesModernGlyphIcons);
+            Run("WPF theme settings persist and resolve modes", WpfThemeSettingsPersistAndResolveModes);
+            Run("WPF caption glyphs reflect window state", WpfCaptionGlyphsReflectWindowState);
             Run("WPF list selection policy hides history selectors", WpfListSelectionPolicyHidesHistorySelectors);
             Run("WPF status text avoids implementation labels", WpfStatusTextAvoidsImplementationLabels);
             Run("WPF localized text mirrors shared translations", WpfLocalizedTextMirrorsSharedTranslations);
@@ -303,6 +305,10 @@ namespace wumgr.Tests
             AssertEqual("Exit", text.ExitMenu, "WPF tray menu text should strip WinForms mnemonic markers");
             AssertEqual("Initializing Windows Update Agent...", text.InitializingAgent, "WPF startup status text");
             AssertEqual("Wednesday", text.ScheduleDays[4], "WPF schedule day text");
+            AssertEqual("Theme", text.ThemeLabel, "WPF theme label");
+            AssertEqual("Follow system setting", text.ThemeOptions[0], "WPF system theme option");
+            AssertEqual("Light", text.ThemeOptions[1], "WPF light theme option");
+            AssertEqual("Dark", text.ThemeOptions[2], "WPF dark theme option");
         }
 
         private static void WpfProgressValueClampsPercentages()
@@ -335,21 +341,54 @@ namespace wumgr.Tests
             AssertEqual(140.0, WpfProgressValue.GetMarqueeLeft(200.0, 60.0, 2.0), "marquee high clamp");
         }
 
-        private static void WpfActionToolbarUsesOriginalIconResources()
+        private static void WpfActionToolbarUsesModernGlyphIcons()
         {
             WpfActionButtonSpec[] specs = WpfActionButtonSpec.CreateDefault();
 
             AssertEqual(8, specs.Length, "toolbar action count");
             AssertEqual(WpfActionButtonKind.Refresh, specs[0].Kind, "refresh action order");
-            AssertEqual("icons8_refresh_32", specs[0].ResourceName, "refresh icon");
+            AssertEqual("\uE72C", specs[0].Glyph, "refresh icon");
             AssertEqual(WpfActionButtonKind.Search, specs[1].Kind, "search action order");
-            AssertEqual("icons8_available_updates_32", specs[1].ResourceName, "search icon");
-            AssertEqual("icons8_downloading_updates_32", specs[2].ResourceName, "download icon");
-            AssertEqual("icons8_software_installer_32", specs[3].ResourceName, "install icon");
-            AssertEqual("icons8_trash_32", specs[4].ResourceName, "uninstall icon");
-            AssertEqual("icons8_hide_32", specs[5].ResourceName, "hide icon");
-            AssertEqual("icons8_link_32", specs[6].ResourceName, "link icon");
-            AssertEqual("icons8_cancel_32", specs[7].ResourceName, "cancel icon");
+            AssertEqual("\uE721", specs[1].Glyph, "search icon");
+            AssertEqual("\uE896", specs[2].Glyph, "download icon");
+            AssertEqual("\uE7B8", specs[3].Glyph, "install icon");
+            AssertEqual("\uE74D", specs[4].Glyph, "uninstall icon");
+            AssertEqual("\uE8C5", specs[5].Glyph, "hide icon");
+            AssertEqual("\uE71B", specs[6].Glyph, "link icon");
+            AssertEqual("\uE711", specs[7].Glyph, "cancel icon");
+            AssertEqual("Segoe Fluent Icons, Segoe MDL2 Assets", WpfActionButtonSpec.IconFontFamily, "icon font fallback");
+        }
+
+        private static void WpfThemeSettingsPersistAndResolveModes()
+        {
+            AssertEqual(WpfThemeMode.System, WpfThemeSettings.Parse(null), "null config");
+            AssertEqual(WpfThemeMode.System, WpfThemeSettings.Parse(""), "empty config");
+            AssertEqual(WpfThemeMode.System, WpfThemeSettings.Parse("unknown"), "unknown config");
+            AssertEqual(WpfThemeMode.Light, WpfThemeSettings.Parse("LIGHT"), "light config");
+            AssertEqual(WpfThemeMode.Dark, WpfThemeSettings.Parse("dark"), "dark config");
+
+            AssertEqual("system", WpfThemeSettings.ToConfigValue(WpfThemeMode.System), "system config value");
+            AssertEqual("light", WpfThemeSettings.ToConfigValue(WpfThemeMode.Light), "light config value");
+            AssertEqual("dark", WpfThemeSettings.ToConfigValue(WpfThemeMode.Dark), "dark config value");
+
+            AssertEqual(0, WpfThemeSettings.ToSelectedIndex(WpfThemeMode.System), "system index");
+            AssertEqual(1, WpfThemeSettings.ToSelectedIndex(WpfThemeMode.Light), "light index");
+            AssertEqual(2, WpfThemeSettings.ToSelectedIndex(WpfThemeMode.Dark), "dark index");
+            AssertEqual(WpfThemeMode.System, WpfThemeSettings.FromSelectedIndex(-1), "low index");
+            AssertEqual(WpfThemeMode.System, WpfThemeSettings.FromSelectedIndex(3), "high index");
+
+            AssertEqual(WpfThemeMode.Light, WpfThemeSettings.ResolveEffectiveMode(WpfThemeMode.System, true), "system light");
+            AssertEqual(WpfThemeMode.Dark, WpfThemeSettings.ResolveEffectiveMode(WpfThemeMode.System, false), "system dark");
+            AssertEqual(WpfThemeMode.Light, WpfThemeSettings.ResolveEffectiveMode(WpfThemeMode.Light, false), "forced light");
+            AssertEqual(WpfThemeMode.Dark, WpfThemeSettings.ResolveEffectiveMode(WpfThemeMode.Dark, true), "forced dark");
+        }
+
+        private static void WpfCaptionGlyphsReflectWindowState()
+        {
+            AssertEqual("\uE921", WpfWindowCaptionGlyph.Minimize, "minimize glyph");
+            AssertEqual("\uE8BB", WpfWindowCaptionGlyph.Close, "close glyph");
+            AssertEqual("\uE922", WpfWindowCaptionGlyph.GetMaximizeRestoreGlyph(false), "maximize glyph");
+            AssertEqual("\uE923", WpfWindowCaptionGlyph.GetMaximizeRestoreGlyph(true), "restore glyph");
         }
 
         private static void WpfListSelectionPolicyHidesHistorySelectors()

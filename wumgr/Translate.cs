@@ -135,6 +135,10 @@ namespace wumgr
             mStrings.Add("wpf_update_source", "Update source");
             mStrings.Add("wpf_updates_heading", "Windows Update");
             mStrings.Add("wpf_status", "Status");
+            mStrings.Add("wpf_theme", "Theme");
+            mStrings.Add("wpf_theme_system", "Follow system setting");
+            mStrings.Add("wpf_theme_light", "Light");
+            mStrings.Add("wpf_theme_dark", "Dark");
             mStrings.Add("wpf_elevated", "Running elevated");
             mStrings.Add("wpf_readonly", "Read-only launch. Admin actions require elevation.");
             mStrings.Add("wpf_initializing_agent", "Initializing Windows Update Agent...");
