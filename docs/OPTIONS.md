@@ -42,6 +42,7 @@ For removal and policy recovery steps, see
 Launch with `-wpf` to open the opt-in WPF shell. The WPF path supports source
 selection, search, list switching, selected-update actions, progress, cancel,
 single-instance restore, window placement persistence, and basic tray
-restore/exit behavior. Automatic search, full policy/options parity, and richer
-tray notifications are still handled by the default WinForms UI while migration
-continues.
+restore/exit behavior. It also supports automatic search scheduling while the
+background tray option is enabled. Full Auto Update policy/options parity and
+translation cleanup for WPF-only labels are still handled by the default
+WinForms UI while migration continues.

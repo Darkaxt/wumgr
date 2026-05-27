@@ -25,6 +25,7 @@ namespace wumgr.Tests
             Run("Startup elevation only runs when explicitly configured", StartupElevationOnlyRunsWhenConfigured);
             Run("WPF action state mirrors admin and list rules", WpfActionStateMirrorsAdminAndListRules);
             Run("WPF window placement rejects missing and tiny persisted bounds", WpfWindowPlacementRejectsInvalidBounds);
+            Run("Auto update schedule reports due days", AutoUpdateScheduleReportsDueDays);
 
             if (failures != 0)
                 Console.Error.WriteLine("{0} test(s) failed.", failures);
@@ -200,6 +201,19 @@ namespace wumgr.Tests
             AssertEqual(1200.0, placement.Width, "width");
             AssertEqual(800.0, placement.Height, "height");
             Assert(placement.Maximized, "maximized state should be retained");
+        }
+
+        private static void AutoUpdateScheduleReportsDueDays()
+        {
+            DateTime now = new DateTime(2026, 5, 27, 12, 0, 0);
+
+            AssertEqual(0, AutoUpdateSchedule.GetDueDays(AutoUpdateMode.No, now.AddYears(-1), now), "disabled mode");
+            AssertEqual(0, AutoUpdateSchedule.GetDueDays(AutoUpdateMode.EveryDay, now.AddHours(-12), now), "not due daily");
+            AssertEqual(1, AutoUpdateSchedule.GetDueDays(AutoUpdateMode.EveryDay, now.AddDays(-2), now), "daily overdue one day");
+            AssertEqual(1, AutoUpdateSchedule.GetDueDays(AutoUpdateMode.EveryWeek, now.AddDays(-8), now), "weekly overdue one day");
+            AssertEqual(2, AutoUpdateSchedule.GetDueDays(AutoUpdateMode.EveryMonth, now.AddMonths(-1).AddDays(-2), now), "monthly overdue two days");
+            AssertEqual(3, AutoUpdateSchedule.GetGraceDays(AutoUpdateMode.EveryDay), "daily grace");
+            AssertEqual(15, AutoUpdateSchedule.GetGraceDays(AutoUpdateMode.EveryMonth), "monthly grace");
         }
 
         private static void Assert(bool condition, string message)

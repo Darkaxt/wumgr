@@ -8,6 +8,7 @@ using System.Linq;
 using System.Reflection;
 using System.Windows;
 using Forms = System.Windows.Forms;
+using System.Windows.Threading;
 using WUApiLib;
 
 namespace wumgr.Wpf
@@ -30,9 +31,15 @@ namespace wumgr.Wpf
         private bool isBusyIndeterminate;
         private bool allowShowDisplay = true;
         private Forms.NotifyIcon notifyIcon;
+        private DispatcherTimer autoUpdateTimer;
+        private int selectedAutoUpdateIndex;
+        private int idleDelay;
+        private DateTime lastCheck = DateTime.MinValue;
+        private DateTime lastBalloon = DateTime.MinValue;
 
         public ObservableCollection<WpfUpdateRow> Updates { get; private set; }
         public ObservableCollection<string> Sources { get; private set; }
+        public ObservableCollection<string> AutoUpdateOptions { get; private set; }
 
         public string VersionText { get { return "v" + Program.mVersion; } }
         public string ElevationText { get { return IsAdministrator ? "Running elevated" : "Read-only launch. Admin actions require elevation."; } }
@@ -132,6 +139,20 @@ namespace wumgr.Wpf
                     Program.AutoStart(value);
                 UpdateNotifyIcon();
                 OnPropertyChanged("CanChangeRunInBackground");
+                OnPropertyChanged("SelectedAutoUpdateIndex");
+            }
+        }
+
+        public int SelectedAutoUpdateIndex
+        {
+            get { return selectedAutoUpdateIndex; }
+            set
+            {
+                if (value < 0 || value >= AutoUpdateOptions.Count)
+                    value = 0;
+
+                if (SetField(ref selectedAutoUpdateIndex, value, "SelectedAutoUpdateIndex"))
+                    SetConfig("AutoUpdate", value.ToString(CultureInfo.InvariantCulture));
             }
         }
 
@@ -199,6 +220,7 @@ namespace wumgr.Wpf
         {
             Updates = new ObservableCollection<WpfUpdateRow>();
             Sources = new ObservableCollection<string>();
+            AutoUpdateOptions = new ObservableCollection<string>();
             StatusLog = "";
             StatusText = "";
 
@@ -213,10 +235,15 @@ namespace wumgr.Wpf
             includeSuperseded = MiscFunc.parseInt(GetConfig("IncludeOld", "0")) != 0;
             registerMicrosoftUpdate = Program.Agent.IsActive() && Program.Agent.TestService(WuAgent.MsUpdGUID);
             runInBackground = Program.IsAutoStart();
+            idleDelay = MiscFunc.parseInt(GetConfig("IdleDelay", "20"));
+            selectedAutoUpdateIndex = MiscFunc.parseInt(GetConfig("AutoUpdate", "0"));
+            LoadLastCheck();
 
+            LoadAutoUpdateOptions();
             LoadSources(GetConfig("Source", "Windows Update"));
             LoadWindowSettings();
             CreateNotifyIcon();
+            CreateAutoUpdateTimer();
             AttachAgentEvents();
             Program.ipc.PipeMessage += PipesMessageHandler;
             Program.ipc.Listen();
@@ -260,6 +287,12 @@ namespace wumgr.Wpf
                 notifyIcon.Dispose();
                 notifyIcon = null;
             }
+
+            if (autoUpdateTimer != null)
+            {
+                autoUpdateTimer.Stop();
+                autoUpdateTimer = null;
+            }
         }
 
         private void PipesMessageHandler(PipeIPC.PipeServer pipe, string data)
@@ -297,6 +330,35 @@ namespace wumgr.Wpf
             Forms.MenuItem exit = new Forms.MenuItem("Exit", NotifyIcon_Exit);
             notifyIcon.ContextMenu = new Forms.ContextMenu(new Forms.MenuItem[] { open, exit });
             UpdateNotifyIcon();
+        }
+
+        private void CreateAutoUpdateTimer()
+        {
+            autoUpdateTimer = new DispatcherTimer();
+            autoUpdateTimer.Interval = TimeSpan.FromSeconds(30);
+            autoUpdateTimer.Tick += AutoUpdateTimer_Tick;
+            autoUpdateTimer.Start();
+        }
+
+        private void LoadAutoUpdateOptions()
+        {
+            AutoUpdateOptions.Clear();
+            AutoUpdateOptions.Add("No automatic search");
+            AutoUpdateOptions.Add("Every day");
+            AutoUpdateOptions.Add("Every week");
+            AutoUpdateOptions.Add("Every month");
+
+            if (selectedAutoUpdateIndex < 0 || selectedAutoUpdateIndex >= AutoUpdateOptions.Count)
+                selectedAutoUpdateIndex = 0;
+        }
+
+        private void LoadLastCheck()
+        {
+            DateTime parsed;
+            if (DateTime.TryParse(GetConfig("LastCheck", ""), out parsed))
+                lastCheck = parsed;
+            else
+                lastCheck = DateTime.Now;
         }
 
         private void UpdateNotifyIcon()
@@ -413,6 +475,11 @@ namespace wumgr.Wpf
             if (!Program.Agent.IsActive() || Program.Agent.IsBusy())
                 return;
 
+            StartSearch();
+        }
+
+        private void StartSearch()
+        {
             WuAgent.RetCodes ret = OfflineMode
                 ? Program.Agent.SearchForUpdates(DownloadOfflineCab, IncludeSuperseded)
                 : Program.Agent.SearchForUpdates(SelectedSource, IncludeSuperseded);
@@ -571,7 +638,8 @@ namespace wumgr.Wpf
             {
                 if (args.Found)
                 {
-                    SetConfig("LastCheck", DateTime.Now.ToString());
+                    lastCheck = DateTime.Now;
+                    SetConfig("LastCheck", lastCheck.ToString());
                     currentList = WpfUpdateListKind.Pending;
                 }
                 LoadList();
@@ -614,6 +682,74 @@ namespace wumgr.Wpf
 
             if (reboot)
                 AppendLog("A reboot is required to finish the operation.");
+        }
+
+        private void AutoUpdateTimer_Tick(object sender, EventArgs e)
+        {
+            if (!RunInBackground || !Program.Agent.IsActive())
+                return;
+
+            AutoUpdateMode mode = GetAutoUpdateMode();
+            int daysDue = AutoUpdateSchedule.GetDueDays(mode, lastCheck, DateTime.Now);
+            if (daysDue != 0 && !Program.Agent.IsBusy())
+            {
+                uint idleTime = MiscFunc.GetIdleTime();
+                if (idleDelay * 60 < idleTime)
+                {
+                    AppendLog("Starting automatic search for updates.");
+                    StartSearch();
+                    return;
+                }
+
+                if (daysDue > AutoUpdateSchedule.GetGraceDays(mode))
+                    ShowBalloon(Translate.fmt("cap_chk_upd"), Translate.fmt("msg_chk_upd", Program.mName, daysDue), Forms.ToolTipIcon.Warning);
+            }
+
+            if (Program.Agent.mPendingUpdates.Count > 0)
+                ShowBalloon(Translate.fmt("cap_new_upd"), GetPendingUpdatesBalloonText(), Forms.ToolTipIcon.Info);
+        }
+
+        private AutoUpdateMode GetAutoUpdateMode()
+        {
+            if (SelectedAutoUpdateIndex < 0 || SelectedAutoUpdateIndex > (int)AutoUpdateMode.EveryMonth)
+                return AutoUpdateMode.No;
+
+            return (AutoUpdateMode)SelectedAutoUpdateIndex;
+        }
+
+        private void ShowBalloon(string title, string text, Forms.ToolTipIcon icon)
+        {
+            if (notifyIcon == null || !notifyIcon.Visible)
+                return;
+
+            if (LastBalloonWasRecent())
+                return;
+
+            lastBalloon = DateTime.Now;
+            notifyIcon.ShowBalloonTip(int.MaxValue, title, text, icon);
+        }
+
+        private bool LastBalloonWasRecent()
+        {
+            return lastBalloon >= DateTime.Now.AddHours(-4);
+        }
+
+        private string GetPendingUpdatesBalloonText()
+        {
+            string text = Translate.fmt("msg_new_upd", Program.mName, Program.Agent.mPendingUpdates.Count);
+            List<string> titles = Program.Agent.mPendingUpdates
+                .Take(5)
+                .Select(update => "- " + update.Title)
+                .ToList();
+
+            if (titles.Count > 0)
+                text += Environment.NewLine + string.Join(Environment.NewLine, titles.ToArray());
+
+            int remaining = Program.Agent.mPendingUpdates.Count - titles.Count;
+            if (remaining > 0)
+                text += Environment.NewLine + string.Format("...and {0} more", remaining);
+
+            return text;
         }
 
         private static string FormatOperation(WuAgent.AgentOperation operation)
@@ -664,6 +800,7 @@ namespace wumgr.Wpf
             OnPropertyChanged("SkipUacEnabled");
             OnPropertyChanged("RunInBackground");
             OnPropertyChanged("CanChangeRunInBackground");
+            OnPropertyChanged("SelectedAutoUpdateIndex");
             OnPropertyChanged("SelectedSource");
             OnPropertyChanged("CanUseOnlineSource");
             OnPropertyChanged("PendingLabel");
