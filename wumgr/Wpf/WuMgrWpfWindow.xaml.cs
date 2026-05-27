@@ -1268,7 +1268,16 @@ namespace wumgr.Wpf
 
         private void Cancel_Click(object sender, RoutedEventArgs e)
         {
+            if (!ConfirmCancelOperation())
+                return;
+
             Program.Agent.CancelOperations();
+        }
+
+        private bool ConfirmCancelOperation()
+        {
+            System.Media.SystemSounds.Exclamation.Play();
+            return MessageBox.Show(this, CancelConfirmation.Message, CancelConfirmation.Title, MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.No) == MessageBoxResult.Yes;
         }
 
         private void SelectAllRows_Click(object sender, RoutedEventArgs e)

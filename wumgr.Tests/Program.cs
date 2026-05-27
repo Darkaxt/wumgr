@@ -35,6 +35,7 @@ namespace wumgr.Tests
             Run("Update cache dates round-trip invariantly", UpdateCacheDatesRoundTripInvariantly);
             Run("Update cache dates read legacy localized values", UpdateCacheDatesReadLegacyLocalizedValues);
             Run("App log formats lines with timestamps", AppLogFormatsLinesWithTimestamps);
+            Run("Cancel confirmation accepts only affirmative result", CancelConfirmationAcceptsOnlyAffirmativeResult);
             Run("WPF policy options disable writes without elevation", WpfPolicyOptionsDisableWritesWithoutElevation);
             Run("WPF policy options mirror GPO respect rules", WpfPolicyOptionsMirrorGpoRespectRules);
             Run("WPF progress value clamps percentages", WpfProgressValueClampsPercentages);
@@ -288,6 +289,13 @@ namespace wumgr.Tests
             DateTime timestamp = new DateTime(2026, 5, 27, 13, 4, 5);
 
             AssertEqual("[13:04:05] Searching for updates", AppLog.FormatLine("Searching for updates", timestamp), "timestamped line");
+        }
+
+        private static void CancelConfirmationAcceptsOnlyAffirmativeResult()
+        {
+            Assert(CancelConfirmation.IsConfirmed(DialogResult.Yes), "yes should confirm cancellation");
+            Assert(!CancelConfirmation.IsConfirmed(DialogResult.No), "no should not confirm cancellation");
+            Assert(!CancelConfirmation.IsConfirmed(DialogResult.Cancel), "cancel should not confirm cancellation");
         }
 
         private static void WpfPolicyOptionsDisableWritesWithoutElevation()
