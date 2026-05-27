@@ -142,6 +142,16 @@ namespace wumgr.Tests
 
             Assert(guard.TryBegin(), "dialog should be allowed after previous dialog ends");
             guard.End();
+
+            int shown = 0;
+            Assert(guard.TryRun(() =>
+            {
+                shown++;
+                Assert(!guard.TryRun(() => shown++), "nested dialog should be suppressed");
+            }), "first guarded callback should run");
+            AssertEqual(1, shown, "suppressed callback should not run");
+            Assert(guard.TryRun(() => shown++), "guard should reset after callback");
+            AssertEqual(2, shown, "second callback should run after reset");
         }
 
         private static void PipeSecurityAvoidsWorldAccess()

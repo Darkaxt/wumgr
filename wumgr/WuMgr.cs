@@ -1110,19 +1110,10 @@ namespace wumgr
 
         private void ShowResultDialog(string message, MessageBoxIcon icon, string duplicateDescription)
         {
-            if (!mResultDialogGuard.TryBegin())
+            if (!mResultDialogGuard.TryRun(() => MessageBox.Show(message, Program.mName, MessageBoxButtons.OK, icon)))
             {
                 AppLog.Line("Suppressed duplicate result dialog: {0}", duplicateDescription);
                 return;
-            }
-
-            try
-            {
-                MessageBox.Show(message, Program.mName, MessageBoxButtons.OK, icon);
-            }
-            finally
-            {
-                mResultDialogGuard.End();
             }
         }
 

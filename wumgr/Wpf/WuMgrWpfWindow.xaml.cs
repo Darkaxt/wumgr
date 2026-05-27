@@ -58,6 +58,7 @@ namespace wumgr.Wpf
         private bool agentInitializationStarted;
         private bool suppressSelectAllRowsChange;
         private bool? selectAllRowsState;
+        private readonly ResultDialogGuard resultDialogGuard = new ResultDialogGuard();
         private readonly WpfLocalizedText text = new WpfLocalizedText();
 
         public ObservableCollection<WpfUpdateRow> Updates { get; private set; }
@@ -1557,10 +1558,18 @@ namespace wumgr.Wpf
 
             string message = FormatRetCode(ret);
             AppendLog(message);
-            MessageBox.Show(message, Program.mName);
+            ShowResultDialog(message, FormatOperation(operation) + ": " + message);
 
             if (reboot)
                 AppendLog("A reboot is required to finish the operation.");
+        }
+
+        private void ShowResultDialog(string message, string duplicateDescription)
+        {
+            if (!resultDialogGuard.TryRun(() => MessageBox.Show(message, Program.mName)))
+            {
+                AppendLog("Suppressed duplicate result dialog: " + duplicateDescription);
+            }
         }
 
         private void AutoUpdateTimer_Tick(object sender, EventArgs e)
