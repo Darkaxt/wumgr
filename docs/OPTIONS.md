@@ -28,7 +28,8 @@ administrator rights.
   update behavior on some editions.
 - Notification Only, Download Only, Scheduled & Installation, Automatic Update:
   configure Windows Update automatic update policy.
-- Hide WU Settings Page: hides the Windows Update Settings page.
+- Hide WU Settings Page: hides the Windows Update Settings page while
+  preserving unrelated `SettingsPageVisibility` policy entries.
 - Disable Store Auto Update: disables automatic Store app updates.
 - Include Drivers: controls driver inclusion in Windows Update policy.
 

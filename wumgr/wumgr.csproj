@@ -114,6 +114,7 @@
     <Compile Include="ManualDownloadPlanner.cs" />
     <Compile Include="MsUpdate.cs" />
     <Compile Include="ResultDialogGuard.cs" />
+    <Compile Include="SettingsPageVisibilityPolicy.cs" />
     <Compile Include="StartupElevationPolicy.cs" />
     <Compile Include="StartupUiMode.cs" />
     <Compile Include="Translate.cs" />
