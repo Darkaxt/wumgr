@@ -28,6 +28,7 @@ namespace wumgr.Tests
             Run("Download file names are sanitized", DownloadFileNamesAreSanitized);
             Run("Content-Disposition filename parsing is guarded", ContentDispositionFilenameParsingIsGuarded);
             Run("Command-line argument lookup guards missing values", CommandLineArgumentLookupGuardsMissingValues);
+            Run("Manual installer exit codes report failures", ManualInstallerExitCodesReportFailures);
             Run("Startup elevation only runs when explicitly configured", StartupElevationOnlyRunsWhenConfigured);
             Run("Startup UI defaults to WPF with WinForms fallback", StartupUiDefaultsToWpfWithWinFormsFallback);
             Run("Startup defers agent init for WPF shell", StartupDefersAgentInitForWpfShell);
@@ -246,6 +247,25 @@ namespace wumgr.Tests
             {
                 wumgr.Program.args = savedArgs;
             }
+        }
+
+        private static void ManualInstallerExitCodesReportFailures()
+        {
+            ManualInstallExitCode success = ManualInstallExitCode.FromProcessExitCode(0);
+            Assert(success.Success, "zero exit code should succeed");
+            Assert(!success.RebootRequired, "zero exit code should not require reboot");
+
+            ManualInstallExitCode rebootRequired = ManualInstallExitCode.FromProcessExitCode(3010);
+            Assert(rebootRequired.Success, "3010 should succeed");
+            Assert(rebootRequired.RebootRequired, "3010 should require reboot");
+
+            ManualInstallExitCode rebootInitiated = ManualInstallExitCode.FromProcessExitCode(1641);
+            Assert(rebootInitiated.Success, "1641 should succeed");
+            Assert(rebootInitiated.RebootRequired, "1641 should require reboot");
+
+            ManualInstallExitCode genericFailure = ManualInstallExitCode.FromProcessExitCode(1);
+            Assert(!genericFailure.Success, "generic exit code 1 should fail");
+            Assert(!genericFailure.RebootRequired, "generic exit code 1 should not require reboot");
         }
 
         private static void StartupUiDefaultsToWpfWithWinFormsFallback()

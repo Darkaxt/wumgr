@@ -30,6 +30,7 @@ opened only when the work is actionable for this maintained fork.
 - [#10](https://github.com/DavidXanatos/wumgr/issues/10) Unavailable settings; the default WPF Auto Update tab now explains common disabled-control reasons
 - [#14](https://github.com/DavidXanatos/wumgr/issues/14) Disable Windows Update; Hide WU Settings Page now preserves unrelated `SettingsPageVisibility` entries, while the Settings app crash report still needs reproduction data
 - [#129](https://github.com/DavidXanatos/wumgr/issues/129) Disabled facilitator and WU Settings controls are greyed out; the default WPF Auto Update tab now explains common disabled-control reasons
+- [#112](https://github.com/DavidXanatos/wumgr/issues/112) Update failures reported as applied; manual installer exit code `1` is now treated as failure instead of success, while broader Windows Update applicability failures still need reproduction data
 
 ## Handled after v1.2.0
 
@@ -70,7 +71,6 @@ opened only when the work is actionable for this maintained fork.
 - [#91](https://github.com/DavidXanatos/wumgr/issues/91) SCEP update KB3209361 install error
 - [#100](https://github.com/DavidXanatos/wumgr/issues/100) Hide option does not work in Store update manager
 - [#107](https://github.com/DavidXanatos/wumgr/issues/107) Repeated failures on Windows 10
-- [#112](https://github.com/DavidXanatos/wumgr/issues/112) Update failures reported as applied
 - [#118](https://github.com/DavidXanatos/wumgr/issues/118) Windows Server 2019 hidden update behavior
 - [#137](https://github.com/DavidXanatos/wumgr/issues/137) Packages without a KB cite download but do not appear
 - [#139](https://github.com/DavidXanatos/wumgr/issues/139) Windows 11 upgrade not applied on reboot

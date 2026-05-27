@@ -177,16 +177,15 @@ namespace wumgr
                     else
                         throw new System.IO.FileFormatException("Unknown Update format: " + ext);
 
-                    if (exitCode == 3010)
-                        reboot = true; // reboot requires
-                    else if (exitCode == 1641)
+                    ManualInstallExitCode result = ManualInstallExitCode.FromProcessExitCode(exitCode);
+                    if (result.RebootRequired)
+                        reboot = true;
+
+                    if (!result.Success)
                     {
-                        AppLog.Line("Error, reboot got initiated: {0}", File);
-                        reboot = true; // reboot in initiated, WTF !!!!
+                        AppLog.Line("Installer failed with exit code {0}: {1}", exitCode, File);
                         ok = false;
                     }
-                    else if (exitCode != 1 && exitCode != 0)
-                        ok = false; // some error
                 }
                 catch (Exception e)
                 {
@@ -318,14 +317,14 @@ namespace wumgr
 
                 int exitCode = ExecTask(startInfo);
 
-                if (exitCode == 3010 || exitCode == 3010 || exitCode == 1641)
-                {
+                ManualInstallExitCode result = ManualInstallExitCode.FromProcessExitCode(exitCode);
+                if (result.RebootRequired)
                     reboot = true;
-                }
-                else if (exitCode != 1 && exitCode != 0)
+
+                if (!result.Success)
                 {
-                    AppLog.Line("Error, exit coded: {0}", exitCode);
-                    ok = false; // some error
+                    AppLog.Line("Uninstaller failed with exit code {0}: {1}", exitCode, KB);
+                    ok = false;
                 }
             }
             catch (Exception e)

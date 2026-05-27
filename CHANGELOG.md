@@ -73,6 +73,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
   Local System instead of granting `World` full control.
 - Sanitized manual download filenames derived from redirects and
   `Content-Disposition` headers before writing files.
+- Manual install and uninstall now treat generic process exit code `1` as a
+  failure instead of reporting success.
 
 ## [1.2.1] - 2026-05-27
 ### Added
