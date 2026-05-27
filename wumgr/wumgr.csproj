@@ -93,6 +93,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AutoUpdateSchedule.cs" />
+    <Compile Include="Common\CancelConfirmation.cs" />
     <Compile Include="Common\HttpTask.cs" />
     <Compile Include="Common\DownloadFileNameHelper.cs" />
     <Compile Include="Common\FileOps.cs" />

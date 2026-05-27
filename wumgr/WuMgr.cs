@@ -963,7 +963,16 @@ namespace wumgr
 
         private void btnCancel_Click(object sender, EventArgs e)
         {
+            if (!ConfirmCancelOperation())
+                return;
+
             agent.CancelOperations();
+        }
+
+        private bool ConfirmCancelOperation()
+        {
+            System.Media.SystemSounds.Exclamation.Play();
+            return CancelConfirmation.IsConfirmed(MessageBox.Show(this, CancelConfirmation.Message, CancelConfirmation.Title, MessageBoxButtons.YesNo, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2));
         }
 
         string GetOpStr(WuAgent.AgentOperation op)

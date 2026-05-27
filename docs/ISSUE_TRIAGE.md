@@ -47,6 +47,7 @@ opened only when the work is actionable for this maintained fork.
 - [#65](https://github.com/DavidXanatos/wumgr/issues/65) Search button
 - [#95](https://github.com/DavidXanatos/wumgr/issues/95) Non-local date format
 - [#121](https://github.com/DavidXanatos/wumgr/issues/121) Update history showing wrong date; mitigated by invariant update-cache dates and legacy localized cache parsing
+- [#133](https://github.com/DavidXanatos/wumgr/issues/133) Cancellation confirmation
 - [#143](https://github.com/DavidXanatos/wumgr/issues/143) Honor system dark mode
 
 ## Needs reproduction before code changes
@@ -89,7 +90,6 @@ opened only when the work is actionable for this maintained fork.
 - [#98](https://github.com/DavidXanatos/wumgr/issues/98) 32-bit version
 - [#110](https://github.com/DavidXanatos/wumgr/issues/110) Defer updates
 - [#116](https://github.com/DavidXanatos/wumgr/issues/116) Manage apps and app updates
-- [#133](https://github.com/DavidXanatos/wumgr/issues/133) Cancellation confirmation
 
 ## Support or meta
 

@@ -37,6 +37,8 @@ namespace wumgr
             mStrings.Add("msg_chk_upd", "{0} couldn't check for updates for {1} days, please check for updates manually and resolve possible issues");
             mStrings.Add("cap_new_upd", "New Updates found");
             mStrings.Add("msg_new_upd", "{0} has found {1} new updates, please review the updates and install them");
+            mStrings.Add("cap_cancel_op", "Cancel operation?");
+            mStrings.Add("msg_cancel_op", "Cancel the current update operation? Windows Update can take a long time to stop once cancellation starts.");
             mStrings.Add("lbl_fnd_upd", "Windows Update ({0})");
             mStrings.Add("lbl_inst_upd", "Installed Updates ({0})");
             mStrings.Add("lbl_block_upd", "Hidden Updates ({0})");

@@ -40,6 +40,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Displayed update dates now use the local Windows date format, while cached
   update dates are stored in an invariant format and can still read legacy
   localized cache entries.
+- Cancel now asks for confirmation before stopping an active update operation.
 - Restricted named-pipe IPC ACLs to the current user, local Administrators, and
   Local System instead of granting `World` full control.
 - Sanitized manual download filenames derived from redirects and
