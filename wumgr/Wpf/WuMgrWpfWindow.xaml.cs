@@ -27,6 +27,7 @@ namespace wumgr.Wpf
         private bool registerMicrosoftUpdate;
         private bool skipUacEnabled;
         private bool runInBackground;
+        private bool startMinimized;
         private bool? blockMicrosoftServers;
         private bool disableUpdateFacilitators;
         private bool hideWindowsUpdatePage;
@@ -170,6 +171,16 @@ namespace wumgr.Wpf
                 UpdateNotifyIcon();
                 OnPropertyChanged("CanChangeRunInBackground");
                 OnPropertyChanged("SelectedAutoUpdateIndex");
+            }
+        }
+
+        public bool StartMinimized
+        {
+            get { return startMinimized; }
+            set
+            {
+                if (SetField(ref startMinimized, value, "StartMinimized"))
+                    SetConfig(StartupUiMode.StartMinimizedConfigKey, value ? "1" : "0");
             }
         }
 
@@ -353,7 +364,10 @@ namespace wumgr.Wpf
             private set
             {
                 if (SetField(ref totalPercent, value, "TotalPercent"))
+                {
                     UpdateProgressFill();
+                    OnPropertyChanged("ProgressVisibility");
+                }
             }
         }
 
@@ -366,7 +380,17 @@ namespace wumgr.Wpf
                 {
                     UpdateProgressAnimationState();
                     UpdateProgressFill();
+                    OnPropertyChanged("ProgressVisibility");
                 }
+            }
+        }
+
+        public Visibility ProgressVisibility
+        {
+            get
+            {
+                bool isBusy = Program.Agent != null && Program.Agent.IsBusy();
+                return WpfProgressValue.ShouldShowProgress(isBusy, TotalPercent, IsBusyIndeterminate) ? Visibility.Visible : Visibility.Collapsed;
             }
         }
 
@@ -445,6 +469,7 @@ namespace wumgr.Wpf
             includeSuperseded = MiscFunc.parseInt(GetConfig("IncludeOld", "0")) != 0;
             registerMicrosoftUpdate = Program.Agent.IsActive() && Program.Agent.TestService(WuAgent.MsUpdGUID);
             runInBackground = Program.IsAutoStart();
+            startMinimized = StartupUiMode.IsStartMinimizedConfigured();
             idleDelay = MiscFunc.parseInt(GetConfig("IdleDelay", "20"));
             selectedAutoUpdateIndex = MiscFunc.parseInt(GetConfig("AutoUpdate", "0"));
             LoadLastCheck();
@@ -798,7 +823,7 @@ namespace wumgr.Wpf
         {
             if (data.Equals("show", StringComparison.CurrentCultureIgnoreCase))
             {
-                Dispatcher.BeginInvoke(new Action(ShowMainWindow));
+                Dispatcher.BeginInvoke(new Action(() => ShowMainWindow()));
                 pipe.Send("ok");
             }
             else
@@ -807,13 +832,20 @@ namespace wumgr.Wpf
             }
         }
 
-        public void ShowMainWindow()
+        public void ShowMainWindow(bool startMinimized = false)
         {
             allowShowDisplay = true;
-            if (WindowState == WindowState.Minimized)
-                WindowState = WindowState.Normal;
             Show();
             ShowInTaskbar = true;
+
+            if (startMinimized)
+            {
+                WindowState = WindowState.Minimized;
+                return;
+            }
+
+            if (WindowState == WindowState.Minimized)
+                WindowState = WindowState.Normal;
             Activate();
         }
 
@@ -1635,6 +1667,7 @@ namespace wumgr.Wpf
             OnPropertyChanged("RegisterMicrosoftUpdate");
             OnPropertyChanged("SkipUacEnabled");
             OnPropertyChanged("RunInBackground");
+            OnPropertyChanged("StartMinimized");
             OnPropertyChanged("CanChangeRunInBackground");
             OnPropertyChanged("SelectedAutoUpdateIndex");
             OnPropertyChanged("SelectedSource");
@@ -1671,6 +1704,7 @@ namespace wumgr.Wpf
             OnPropertyChanged("CanHide");
             OnPropertyChanged("CanGetLinks");
             OnPropertyChanged("CanCancel");
+            OnPropertyChanged("ProgressVisibility");
         }
 
         private void NotifyPolicySelectionChanged()

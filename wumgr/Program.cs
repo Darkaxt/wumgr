@@ -148,7 +148,7 @@ namespace wumgr
                 Wpf.WuMgrWpfWindow window = new Wpf.WuMgrWpfWindow();
                 wpfApp.MainWindow = window;
                 if (!StartupUiMode.ShouldStartInTray(args))
-                    wpfApp.Startup += (sender, eventArgs) => window.ShowMainWindow();
+                    wpfApp.Startup += (sender, eventArgs) => window.ShowMainWindow(StartupUiMode.ShouldStartMinimized(args, StartupUiMode.IsStartMinimizedConfigured()));
                 else
                     wpfApp.Startup += (sender, eventArgs) => window.InitializeAgentAfterStartup();
                 wpfApp.Run();
@@ -314,7 +314,7 @@ namespace wumgr
         }
 
         public static bool IsAutoStart()
-        { 
+        {
             var subKey = Registry.CurrentUser.CreateSubKey(@"Software\Microsoft\Windows\CurrentVersion\Run", false);
             return (subKey != null && subKey.GetValue("wumgr") != null);
         }
@@ -433,6 +433,7 @@ namespace wumgr
         {
             string Message = "Available command line options\r\n";
             string[] Help = {"-tray\t\tStart in Tray",
+                                    "-minimized\tStart minimized",
                                     "-onclose [cmd]\tExecute commands when closing",
                                     "-update\t\tSearch for updates on start",
                                     "-winforms\tUse the legacy WinForms UI",

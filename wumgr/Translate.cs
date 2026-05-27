@@ -118,6 +118,7 @@ namespace wumgr
             mStrings.Add("lbl_ac_day", "Search for updates every day");
             mStrings.Add("lbl_ac_week", "Search for updates once a week");
             mStrings.Add("lbl_ac_month", "Search for updates every month");
+            mStrings.Add("lbl_start_min", "Start minimized");
             mStrings.Add("lbl_uac", "Always run as Administrator");
             mStrings.Add("lbl_block_ms", "Block Access to WU Servers");
             mStrings.Add("lbl_au_off", "Disable Automatic Update");
