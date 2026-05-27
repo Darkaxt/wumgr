@@ -21,6 +21,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
   menu labels, and option controls.
 - Added timestamps to log entries so update searches and operations can be
   timed from the log panel.
+- Added a WPF list filter for finding visible updates by title, category, KB,
+  date, size, or state.
 - Made the WPF shell the default UI and added `-winforms` as an explicit
   fallback switch for the legacy UI.
 

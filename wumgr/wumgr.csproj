@@ -138,6 +138,7 @@
     <Compile Include="Wpf\WpfProgressValue.cs" />
     <Compile Include="Wpf\WpfStatusText.cs" />
     <Compile Include="Wpf\WpfThemeSettings.cs" />
+    <Compile Include="Wpf\WpfUpdateFilter.cs" />
     <Compile Include="Wpf\WpfWindowCaptionGlyph.cs" />
     <Compile Include="Wpf\WpfWindowPlacement.cs" />
     <Compile Include="Program.cs" />

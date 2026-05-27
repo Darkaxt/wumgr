@@ -44,6 +44,7 @@ namespace wumgr.Tests
             Run("WPF theme settings persist and resolve modes", WpfThemeSettingsPersistAndResolveModes);
             Run("WPF caption glyphs reflect window state", WpfCaptionGlyphsReflectWindowState);
             Run("WPF list selection policy hides history selectors", WpfListSelectionPolicyHidesHistorySelectors);
+            Run("WPF update filter matches visible columns", WpfUpdateFilterMatchesVisibleColumns);
             Run("WPF status text avoids implementation labels", WpfStatusTextAvoidsImplementationLabels);
             Run("WPF localized text mirrors shared translations", WpfLocalizedTextMirrorsSharedTranslations);
 
@@ -346,6 +347,8 @@ namespace wumgr.Tests
             AssertEqual("Initializing Windows Update Agent...", text.InitializingAgent, "WPF startup status text");
             AssertEqual("Wednesday", text.ScheduleDays[4], "WPF schedule day text");
             AssertEqual("Theme", text.ThemeLabel, "WPF theme label");
+            AssertEqual("Search filter:", text.SearchFilter, "WPF search filter label");
+            AssertEqual("Clear filter", text.ClearFilter, "WPF clear filter label");
             AssertEqual("Follow system setting", text.ThemeOptions[0], "WPF system theme option");
             AssertEqual("Light", text.ThemeOptions[1], "WPF light theme option");
             AssertEqual("Dark", text.ThemeOptions[2], "WPF dark theme option");
@@ -437,6 +440,25 @@ namespace wumgr.Tests
             Assert(WpfListSelectionPolicy.CanSelectRows(WpfUpdateListKind.Installed), "installed updates should be selectable");
             Assert(WpfListSelectionPolicy.CanSelectRows(WpfUpdateListKind.Hidden), "hidden updates should be selectable");
             Assert(!WpfListSelectionPolicy.CanSelectRows(WpfUpdateListKind.History), "history rows should not expose purposeless selection checkboxes");
+        }
+
+        private static void WpfUpdateFilterMatchesVisibleColumns()
+        {
+            var update = new MsUpdate
+            {
+                Title = "Cumulative Update for Windows",
+                Category = "Security Updates",
+                KB = "KB5001234",
+                Date = new DateTime(2026, 5, 27),
+                Size = 1024,
+                State = MsUpdate.UpdateState.Pending
+            };
+            var row = new WpfUpdateRow(update);
+
+            Assert(WpfUpdateFilter.Matches(row, ""), "empty filter should match");
+            Assert(WpfUpdateFilter.Matches(row, "kb500"), "filter should match KB case-insensitively");
+            Assert(WpfUpdateFilter.Matches(row, "security"), "filter should match category");
+            Assert(!WpfUpdateFilter.Matches(row, "office"), "unmatched filter should exclude row");
         }
 
         private static void WpfStatusTextAvoidsImplementationLabels()

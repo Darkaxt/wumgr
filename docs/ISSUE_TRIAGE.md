@@ -44,6 +44,7 @@ opened only when the work is actionable for this maintained fork.
 ## Handled after v1.2.1
 
 - [#40](https://github.com/DavidXanatos/wumgr/issues/40) Add time marks in log panel
+- [#65](https://github.com/DavidXanatos/wumgr/issues/65) Search button
 - [#95](https://github.com/DavidXanatos/wumgr/issues/95) Non-local date format
 - [#121](https://github.com/DavidXanatos/wumgr/issues/121) Update history showing wrong date; mitigated by invariant update-cache dates and legacy localized cache parsing
 - [#143](https://github.com/DavidXanatos/wumgr/issues/143) Honor system dark mode
@@ -81,7 +82,6 @@ opened only when the work is actionable for this maintained fork.
 - [#55](https://github.com/DavidXanatos/wumgr/issues/55) Launch minimized
 - [#57](https://github.com/DavidXanatos/wumgr/issues/57) MMC snap-in and Control Panel object
 - [#63](https://github.com/DavidXanatos/wumgr/issues/63) Check certificates and repair Windows Update
-- [#65](https://github.com/DavidXanatos/wumgr/issues/65) Search button
 - [#69](https://github.com/DavidXanatos/wumgr/issues/69) Progress percentage and download speed
 - [#79](https://github.com/DavidXanatos/wumgr/issues/79) Feature update version options
 - [#93](https://github.com/DavidXanatos/wumgr/issues/93) Block specific updates and filter by size

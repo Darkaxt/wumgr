@@ -37,6 +37,8 @@ namespace wumgr.Wpf
         public string CancelButton { get { return Translate.fmt("tip_cancel"); } }
         public string RefreshButton { get { return StripWinFormsMnemonic(Translate.fmt("menu_refresh")); } }
         public string SelectAllRows { get { return Translate.fmt("lbl_all"); } }
+        public string SearchFilter { get { return StripWinFormsMnemonic(Translate.fmt("lbl_search")); } }
+        public string ClearFilter { get { return "Clear filter"; } }
         public string ThemeLabel { get { return Translate.fmt("wpf_theme"); } }
         public string WindowsUpdateHeading { get { return Translate.fmt("wpf_updates_heading"); } }
         public string StatusHeader { get { return Translate.fmt("wpf_status"); } }
