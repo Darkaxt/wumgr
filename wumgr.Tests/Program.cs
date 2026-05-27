@@ -2,9 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.IO.Pipes;
 using System.Linq;
+using System.IO;
 using System.Security.AccessControl;
 using System.Security.Principal;
 using System.Windows.Forms;
+using wumgr.Wpf;
 
 namespace wumgr.Tests
 {
@@ -28,6 +30,7 @@ namespace wumgr.Tests
             Run("Auto update schedule reports due days", AutoUpdateScheduleReportsDueDays);
             Run("WPF policy options disable writes without elevation", WpfPolicyOptionsDisableWritesWithoutElevation);
             Run("WPF policy options mirror GPO respect rules", WpfPolicyOptionsMirrorGpoRespectRules);
+            Run("WPF localized text mirrors shared translations", WpfLocalizedTextMirrorsSharedTranslations);
 
             if (failures != 0)
                 Console.Error.WriteLine("{0} test(s) failed.", failures);
@@ -254,6 +257,26 @@ namespace wumgr.Tests
             WpfPolicyOptionState windows7 = WpfPolicyOptionState.Create(true, GPO.Respect.Full, 6.1f, GPO.AUOptions.Default, false, false);
             Assert(!windows7.CanChangeHideWindowsUpdatePage, "pre-Windows 10 cannot hide WU Settings page");
             Assert(!windows7.CanChangeStoreAutoUpdate, "pre-Windows 8 cannot change Store auto-update policy");
+        }
+
+        private static void WpfLocalizedTextMirrorsSharedTranslations()
+        {
+            wumgr.Program.appPath = Path.Combine(Directory.GetCurrentDirectory(), "wumgr");
+            Translate.Load("en");
+
+            var text = new WpfLocalizedText();
+
+            AssertEqual(Translate.fmt("lbl_opt"), text.OptionsTab, "options tab");
+            AssertEqual(Translate.fmt("lbl_au"), text.AutoUpdateTab, "auto update tab");
+            AssertEqual(Translate.fmt("lbl_auto"), text.RunInBackground, "run in background");
+            AssertEqual(Translate.fmt("lbl_ac_week"), text.AutoUpdateOptions[2], "auto update weekly option");
+            AssertEqual(Translate.fmt("lbl_block_ms"), text.BlockMicrosoftServers, "block Microsoft servers");
+            AssertEqual(Translate.fmt("tip_inst"), text.InstallButton, "install button");
+            AssertEqual(Translate.fmt("col_kb"), text.KbColumn, "KB column");
+            AssertEqual("Refresh", text.RefreshButton, "WPF button text should strip WinForms mnemonic markers");
+            AssertEqual("Exit", text.ExitMenu, "WPF tray menu text should strip WinForms mnemonic markers");
+            AssertEqual("Open WinForms UI", text.OpenWinFormsButton, "WPF-specific open WinForms text");
+            AssertEqual("Wednesday", text.ScheduleDays[4], "WPF schedule day text");
         }
 
         private static void Assert(bool condition, string message)

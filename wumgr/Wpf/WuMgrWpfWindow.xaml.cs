@@ -47,6 +47,7 @@ namespace wumgr.Wpf
         private int selectedScheduleDay;
         private int selectedScheduleTime;
         private bool suspendPolicyUpdate;
+        private readonly WpfLocalizedText text = new WpfLocalizedText();
 
         public ObservableCollection<WpfUpdateRow> Updates { get; private set; }
         public ObservableCollection<string> Sources { get; private set; }
@@ -54,17 +55,22 @@ namespace wumgr.Wpf
         public ObservableCollection<string> ScheduleDays { get; private set; }
         public ObservableCollection<string> ScheduleTimes { get; private set; }
 
+        public WpfLocalizedText Text { get { return text; } }
         public string VersionText { get { return "v" + Program.mVersion; } }
-        public string ElevationText { get { return IsAdministrator ? "Running elevated" : "Read-only launch. Admin actions require elevation."; } }
-        public string PendingLabel { get { return string.Format("Windows Update ({0})", Program.Agent.mPendingUpdates.Count); } }
-        public string InstalledLabel { get { return string.Format("Installed Updates ({0})", Program.Agent.mInstalledUpdates.Count); } }
-        public string HiddenLabel { get { return string.Format("Hidden Updates ({0})", Program.Agent.mHiddenUpdates.Count); } }
-        public string HistoryLabel { get { return string.Format("Update History ({0})", Program.Agent.mUpdateHistory.Count); } }
+        public string ElevationText { get { return IsAdministrator ? text.ElevatedStatus : text.ReadOnlyStatus; } }
+        public string PendingLabel { get { return Translate.fmt("lbl_fnd_upd", Program.Agent.mPendingUpdates.Count); } }
+        public string InstalledLabel { get { return Translate.fmt("lbl_inst_upd", Program.Agent.mInstalledUpdates.Count); } }
+        public string HiddenLabel { get { return Translate.fmt("lbl_block_upd", Program.Agent.mHiddenUpdates.Count); } }
+        public string HistoryLabel { get { return Translate.fmt("lbl_old_upd", Program.Agent.mUpdateHistory.Count); } }
 
         public bool IsAdministrator
         {
             get { return isAdministrator; }
-            private set { SetField(ref isAdministrator, value, "IsAdministrator"); }
+            private set
+            {
+                if (SetField(ref isAdministrator, value, "IsAdministrator"))
+                    OnPropertyChanged("ElevationText");
+            }
         }
 
         public bool OfflineMode
@@ -327,7 +333,7 @@ namespace wumgr.Wpf
         public bool CanHide { get { return CurrentActionState.CanHide; } }
         public bool CanGetLinks { get { return CurrentActionState.CanGetLinks; } }
         public bool CanCancel { get { return CurrentActionState.CanCancel; } }
-        public string HideButtonText { get { return IsHiddenList ? "Unhide" : "Hide"; } }
+        public string HideButtonText { get { return IsHiddenList ? text.UnhideButton : text.HideButton; } }
         public bool CanChangeBlockMicrosoft { get { return CurrentPolicyOptionState.CanChangeBlockMicrosoft; } }
         public bool CanSelectNotification { get { return CurrentPolicyOptionState.CanSelectNotification; } }
         public bool CanSelectDownload { get { return CurrentPolicyOptionState.CanSelectDownload; } }
@@ -368,6 +374,8 @@ namespace wumgr.Wpf
 
             InitializeComponent();
             DataContext = this;
+            Title = Program.mName;
+            ApplyLocalizedText();
 
             IsAdministrator = MiscFunc.IsAdministrator();
             skipUacEnabled = Program.IsSkipUacRun();
@@ -403,6 +411,16 @@ namespace wumgr.Wpf
             Program.Agent.Finished += Agent_Finished;
             Closing += WuMgrWpfWindow_Closing;
             Closed += WuMgrWpfWindow_Closed;
+        }
+
+        private void ApplyLocalizedText()
+        {
+            TitleColumn.Header = text.TitleColumn;
+            CategoryColumn.Header = text.CategoryColumn;
+            KbColumn.Header = text.KbColumn;
+            DateColumn.Header = text.DateColumn;
+            SizeColumn.Header = text.SizeColumn;
+            StateColumn.Header = text.StateColumn;
         }
 
         private void WuMgrWpfWindow_Closing(object sender, CancelEventArgs e)
@@ -470,8 +488,8 @@ namespace wumgr.Wpf
             notifyIcon.MouseDoubleClick += NotifyIcon_MouseDoubleClick;
             notifyIcon.BalloonTipClicked += NotifyIcon_BalloonTipClicked;
 
-            Forms.MenuItem open = new Forms.MenuItem("Open", NotifyIcon_Open);
-            Forms.MenuItem exit = new Forms.MenuItem("Exit", NotifyIcon_Exit);
+            Forms.MenuItem open = new Forms.MenuItem(text.OpenMenu, NotifyIcon_Open);
+            Forms.MenuItem exit = new Forms.MenuItem(text.ExitMenu, NotifyIcon_Exit);
             notifyIcon.ContextMenu = new Forms.ContextMenu(new Forms.MenuItem[] { open, exit });
             UpdateNotifyIcon();
         }
@@ -487,10 +505,8 @@ namespace wumgr.Wpf
         private void LoadAutoUpdateOptions()
         {
             AutoUpdateOptions.Clear();
-            AutoUpdateOptions.Add("No automatic search");
-            AutoUpdateOptions.Add("Every day");
-            AutoUpdateOptions.Add("Every week");
-            AutoUpdateOptions.Add("Every month");
+            foreach (string option in text.AutoUpdateOptions)
+                AutoUpdateOptions.Add(option);
 
             if (selectedAutoUpdateIndex < 0 || selectedAutoUpdateIndex >= AutoUpdateOptions.Count)
                 selectedAutoUpdateIndex = 0;
@@ -499,14 +515,8 @@ namespace wumgr.Wpf
         private void LoadScheduleOptions()
         {
             ScheduleDays.Clear();
-            ScheduleDays.Add("Daily");
-            ScheduleDays.Add("Sunday");
-            ScheduleDays.Add("Monday");
-            ScheduleDays.Add("Tuesday");
-            ScheduleDays.Add("Wednesday");
-            ScheduleDays.Add("Thursday");
-            ScheduleDays.Add("Friday");
-            ScheduleDays.Add("Saturday");
+            foreach (string day in text.ScheduleDays)
+                ScheduleDays.Add(day);
 
             ScheduleTimes.Clear();
             for (int hour = 0; hour < 24; hour++)

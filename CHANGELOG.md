@@ -17,6 +17,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
   notifications.
 - Added WPF Auto Update policy/options controls for Windows Update GPO,
   facilitator-service, Store auto-update, Settings-page, and driver policies.
+- Added WPF localized text bindings for migrated tabs, buttons, columns, tray
+  menu labels, and option controls.
 
 ### Fixed
 - Normal non-admin launch no longer opens a UAC prompt unless Skip UAC was

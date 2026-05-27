@@ -44,5 +44,5 @@ selection, search, list switching, selected-update actions, progress, cancel,
 single-instance restore, window placement persistence, and basic tray
 restore/exit behavior. It also supports automatic search scheduling while the
 background tray option is enabled, plus Auto Update policy/options controls.
-Translation cleanup for WPF-only labels is still handled by the default
-WinForms UI while migration continues.
+The migrated WPF controls use the same translation keys as the WinForms UI
+where available.
