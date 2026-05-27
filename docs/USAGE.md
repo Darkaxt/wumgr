@@ -105,7 +105,8 @@ under the user's Downloads directory for writable state.
 - Include the Windows version, whether WuMgr was elevated, selected update
   titles, KB numbers when present, and the exact error text from the status log.
 - For manual install failures, include the downloaded package filename and the
-  process exit code if WuMgr logs one.
+  process command line, standard error/output snippet, and exit code if WuMgr
+  logs them.
 - For policy or uninstall recovery, follow
   [UNINSTALL_AND_RECOVERY.md](UNINSTALL_AND_RECOVERY.md).
 

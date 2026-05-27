@@ -276,21 +276,33 @@ namespace wumgr
         {
             startInfo.FileName = Environment.ExpandEnvironmentVariables(startInfo.FileName);
 
-            if (silent)
+            string commandLine = ProcessTaskRunner.FormatCommandLine(startInfo);
+            AppLog.Line("Running installer command: {0}", commandLine);
+
+            ProcessTaskResult result = ProcessTaskRunner.Run(startInfo, () => Canceled, silent);
+
+            if (result.Canceled)
+                AppLog.Line("Installer command canceled: {0}", commandLine);
+            if (result.ExitCode != 0)
             {
-                startInfo.RedirectStandardOutput = true;
-                startInfo.RedirectStandardError = true;
-                startInfo.UseShellExecute = false;
-                startInfo.CreateNoWindow = true;
+                LogProcessOutput("Installer standard output", result.StandardOutput);
+                LogProcessOutput("Installer standard error", result.StandardError);
             }
 
-            Process proc = new Process();
-            proc.StartInfo = startInfo;
-            proc.EnableRaisingEvents = true;
-            proc.Start();
-            proc.WaitForExit();
+            return result.ExitCode;
+        }
 
-            return proc.ExitCode;
+        private static void LogProcessOutput(string label, string output)
+        {
+            if (string.IsNullOrWhiteSpace(output))
+                return;
+
+            string trimmed = output.Trim();
+            const int MaxLoggedOutput = 4000;
+            if (trimmed.Length > MaxLoggedOutput)
+                trimmed = trimmed.Substring(0, MaxLoggedOutput) + "...";
+
+            AppLog.Line("{0}:\r\n{1}", label, trimmed);
         }
 
         public void RunUnInstall(object parameters)

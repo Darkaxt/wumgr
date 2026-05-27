@@ -77,6 +77,9 @@ This project adheres to [Semantic Versioning](http://semver.org/).
   `Content-Disposition` headers before writing files.
 - Manual install and uninstall now treat generic process exit code `1` as a
   failure instead of reporting success.
+- Manual installer commands now log the exact process command line, drain
+  redirected standard output/error to avoid output-pipe hangs, and can be
+  canceled while the child installer process is still running.
 - Error `0x80072EE6` is now displayed as a WinINet URL-scheme error instead of
   an unknown error.
 - Manual downloads for `KBUnknown` updates now use a sanitized package-title
