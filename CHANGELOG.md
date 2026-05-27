@@ -13,6 +13,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
   cancel, progress, and single-instance restore.
 - Added WPF window placement persistence and basic tray restore/exit behavior
   for the Run in background option.
+- Added WPF automatic-search scheduling with idle checks and tray
+  notifications.
 
 ### Fixed
 - Normal non-admin launch no longer opens a UAC prompt unless Skip UAC was

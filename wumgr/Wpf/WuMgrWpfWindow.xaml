@@ -53,6 +53,11 @@
           <CheckBox Content="Run in background"
                     IsChecked="{Binding RunInBackground, Mode=TwoWay}"
                     IsEnabled="{Binding CanChangeRunInBackground}"
+                    Margin="0,0,0,5" />
+          <ComboBox ItemsSource="{Binding AutoUpdateOptions}"
+                    SelectedIndex="{Binding SelectedAutoUpdateIndex, Mode=TwoWay}"
+                    IsEnabled="{Binding RunInBackground}"
+                    MinHeight="28"
                     Margin="0,0,0,10" />
           <TextBlock Text="Update source" FontWeight="SemiBold" Margin="0,0,0,6" />
           <ComboBox ItemsSource="{Binding Sources}"
