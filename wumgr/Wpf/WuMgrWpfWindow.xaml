@@ -50,25 +50,41 @@
       <DockPanel Margin="12">
         <StackPanel DockPanel.Dock="Bottom">
           <TextBlock Text="Options" FontWeight="SemiBold" Margin="0,0,0,8" />
-          <CheckBox Content="Offline mode" IsChecked="{Binding OfflineMode}" Margin="0,0,0,5" />
+          <TextBlock Text="Update source" FontWeight="SemiBold" Margin="0,0,0,6" />
+          <ComboBox ItemsSource="{Binding Sources}"
+                    SelectedItem="{Binding SelectedSource, Mode=TwoWay}"
+                    IsEnabled="{Binding CanUseOnlineSource}"
+                    MinHeight="28"
+                    Margin="0,0,0,10" />
+          <CheckBox Content="Offline mode" IsChecked="{Binding OfflineMode, Mode=TwoWay}" Margin="0,0,0,5" />
+          <CheckBox Content="Download offline CAB"
+                    IsChecked="{Binding DownloadOfflineCab, Mode=TwoWay}"
+                    IsEnabled="{Binding OfflineMode}"
+                    Margin="0,0,0,5" />
           <CheckBox Content="Manual download/install" IsChecked="{Binding ManualMode}" Margin="0,0,0,5" />
           <CheckBox Content="Include superseded" IsChecked="{Binding IncludeSuperseded}" Margin="0,0,0,5" />
-          <CheckBox Content="Register Microsoft Update" IsChecked="{Binding RegisterMicrosoftUpdate}" Margin="0,0,0,16" />
+          <CheckBox Content="Register Microsoft Update"
+                    IsChecked="{Binding RegisterMicrosoftUpdate}"
+                    IsEnabled="{Binding IsAdministrator}"
+                    Margin="0,0,0,16" />
           <CheckBox Content="Always run as Administrator"
                     IsChecked="{Binding SkipUacEnabled}"
                     IsEnabled="{Binding IsAdministrator}" />
         </StackPanel>
 
         <StackPanel>
-          <ToggleButton Content="{Binding PendingLabel}" IsChecked="True" />
-          <ToggleButton Content="{Binding InstalledLabel}" />
-          <ToggleButton Content="{Binding HiddenLabel}" />
-          <ToggleButton Content="{Binding HistoryLabel}" />
+          <ToggleButton Content="{Binding PendingLabel}" IsChecked="{Binding IsPendingList, Mode=OneWay}" Click="PendingList_Click" />
+          <ToggleButton Content="{Binding InstalledLabel}" IsChecked="{Binding IsInstalledList, Mode=OneWay}" Click="InstalledList_Click" />
+          <ToggleButton Content="{Binding HiddenLabel}" IsChecked="{Binding IsHiddenList, Mode=OneWay}" Click="HiddenList_Click" />
+          <ToggleButton Content="{Binding HistoryLabel}" IsChecked="{Binding IsHistoryList, Mode=OneWay}" Click="HistoryList_Click" />
           <Separator Margin="0,10" />
-          <Button Content="Search" Click="Search_Click" />
-          <Button Content="Download" Click="PreviewOnly_Click" IsEnabled="{Binding HasSelection}" />
-          <Button Content="Install" Click="PreviewOnly_Click" IsEnabled="{Binding CanRunAdminSelectionAction}" />
-          <Button Content="Hide" Click="PreviewOnly_Click" IsEnabled="{Binding HasSelection}" />
+          <Button Content="Search" Click="Search_Click" IsEnabled="{Binding CanSearch}" />
+          <Button Content="Download" Click="Download_Click" IsEnabled="{Binding CanDownload}" />
+          <Button Content="Install" Click="Install_Click" IsEnabled="{Binding CanInstall}" />
+          <Button Content="Uninstall" Click="Uninstall_Click" IsEnabled="{Binding CanUninstall}" />
+          <Button Content="{Binding HideButtonText}" Click="Hide_Click" IsEnabled="{Binding CanHide}" />
+          <Button Content="Get Links" Click="GetLinks_Click" IsEnabled="{Binding CanGetLinks}" />
+          <Button Content="Cancel" Click="Cancel_Click" IsEnabled="{Binding CanCancel}" />
         </StackPanel>
       </DockPanel>
     </Border>
@@ -110,8 +126,16 @@
 
     <Border Grid.Row="2" Grid.Column="1" Margin="14,0,14,14" Background="#ffffff" BorderBrush="#d8dee6" BorderThickness="1">
       <DockPanel>
-        <TextBlock Text="Log" DockPanel.Dock="Top" FontWeight="SemiBold" Margin="10,8,10,4" />
-        <TextBox Text="{Binding StatusLog}"
+        <StackPanel DockPanel.Dock="Top" Margin="10,8,10,4">
+          <TextBlock Text="Status" FontWeight="SemiBold" />
+          <TextBlock Text="{Binding StatusText}" Margin="0,3,0,5" Foreground="#52616f" />
+          <ProgressBar Height="8"
+                       Minimum="0"
+                       Maximum="100"
+                       Value="{Binding TotalPercent}"
+                       IsIndeterminate="{Binding IsBusyIndeterminate}" />
+        </StackPanel>
+        <TextBox Text="{Binding StatusLog, Mode=OneWay}"
                  Margin="10,0,10,10"
                  IsReadOnly="True"
                  AcceptsReturn="True"

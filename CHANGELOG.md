@@ -8,6 +8,9 @@ This project adheres to [Semantic Versioning](http://semver.org/).
   manual downloads, service/GPO writes, and WPF deferral.
 - Added an opt-in WPF preview shell behind `-wpf` to start the UI migration
   without replacing the working WinForms interface.
+- Wired the WPF shell to core update actions: provider selection, search,
+  list switching, download/install/uninstall, hide/unhide, link copying,
+  cancel, progress, and single-instance restore.
 
 ### Fixed
 - Normal non-admin launch no longer opens a UAC prompt unless Skip UAC was
