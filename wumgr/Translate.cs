@@ -132,6 +132,22 @@ namespace wumgr
             mStrings.Add("lbl_group", "Group Updates");
             mStrings.Add("lbl_patreon", "Support WuMgr on Patreon");
             mStrings.Add("lbl_github", "Visit WuMgr on GitHub");
+            mStrings.Add("wpf_update_source", "Update source");
+            mStrings.Add("wpf_open_winforms", "Open WinForms UI");
+            mStrings.Add("wpf_updates_heading", "Windows Update");
+            mStrings.Add("wpf_status", "Status");
+            mStrings.Add("wpf_elevated", "Running elevated");
+            mStrings.Add("wpf_readonly", "Read-only launch. Admin actions require elevation.");
+            mStrings.Add("wpf_unhide", "Unhide");
+            mStrings.Add("wpf_open", "Open");
+            mStrings.Add("wpf_daily", "Daily");
+            mStrings.Add("wpf_sunday", "Sunday");
+            mStrings.Add("wpf_monday", "Monday");
+            mStrings.Add("wpf_tuesday", "Tuesday");
+            mStrings.Add("wpf_wednesday", "Wednesday");
+            mStrings.Add("wpf_thursday", "Thursday");
+            mStrings.Add("wpf_friday", "Friday");
+            mStrings.Add("wpf_saturday", "Saturday");
 
             string langINI = Program.appPath + @"\Translation.ini";
 
