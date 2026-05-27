@@ -14,27 +14,29 @@ namespace wumgr.Wpf
 
     internal struct WpfActionButtonSpec
     {
-        public WpfActionButtonKind Kind;
-        public string ResourceName;
+        public const string IconFontFamily = "Segoe Fluent Icons, Segoe MDL2 Assets";
 
-        public WpfActionButtonSpec(WpfActionButtonKind kind, string resourceName)
+        public WpfActionButtonKind Kind;
+        public string Glyph;
+
+        public WpfActionButtonSpec(WpfActionButtonKind kind, string glyph)
         {
             Kind = kind;
-            ResourceName = resourceName;
+            Glyph = glyph;
         }
 
         public static WpfActionButtonSpec[] CreateDefault()
         {
             return new[]
             {
-                new WpfActionButtonSpec(WpfActionButtonKind.Refresh, "icons8_refresh_32"),
-                new WpfActionButtonSpec(WpfActionButtonKind.Search, "icons8_available_updates_32"),
-                new WpfActionButtonSpec(WpfActionButtonKind.Download, "icons8_downloading_updates_32"),
-                new WpfActionButtonSpec(WpfActionButtonKind.Install, "icons8_software_installer_32"),
-                new WpfActionButtonSpec(WpfActionButtonKind.Uninstall, "icons8_trash_32"),
-                new WpfActionButtonSpec(WpfActionButtonKind.Hide, "icons8_hide_32"),
-                new WpfActionButtonSpec(WpfActionButtonKind.GetLinks, "icons8_link_32"),
-                new WpfActionButtonSpec(WpfActionButtonKind.Cancel, "icons8_cancel_32")
+                new WpfActionButtonSpec(WpfActionButtonKind.Refresh, "\uE72C"),
+                new WpfActionButtonSpec(WpfActionButtonKind.Search, "\uE721"),
+                new WpfActionButtonSpec(WpfActionButtonKind.Download, "\uE896"),
+                new WpfActionButtonSpec(WpfActionButtonKind.Install, "\uE7B8"),
+                new WpfActionButtonSpec(WpfActionButtonKind.Uninstall, "\uE74D"),
+                new WpfActionButtonSpec(WpfActionButtonKind.Hide, "\uE8C5"),
+                new WpfActionButtonSpec(WpfActionButtonKind.GetLinks, "\uE71B"),
+                new WpfActionButtonSpec(WpfActionButtonKind.Cancel, "\uE711")
             };
         }
     }

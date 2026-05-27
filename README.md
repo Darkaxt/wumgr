@@ -1,40 +1,57 @@
 # WuMgr
 
-## Maintained fork
+WuMgr (Update Manager for Windows) is a portable Windows Update manager for
+Windows 10 and Windows 11. It uses the
+[Windows Update Agent API](https://learn.microsoft.com/windows/win32/wua_sdk/portal-client)
+to search, download, install, hide, and review Microsoft product updates with
+more direct control than the built-in Settings app exposes.
 
 This repository is a public maintained fork of
-[DavidXanatos/wumgr](https://github.com/DavidXanatos/wumgr). The first forked
-maintenance release is `v1.2.0`, focused on build hygiene, documentation,
-release packaging, and conservative bug fixes.
+[DavidXanatos/wumgr](https://github.com/DavidXanatos/wumgr). Current fork
+releases are published at
+[Darkaxt/wumgr releases](https://github.com/Darkaxt/wumgr/releases), with the
+latest packaged maintenance release tagged `v1.2.1`.
 
-Current fork releases are published at
-[Darkaxt/wumgr releases](https://github.com/Darkaxt/wumgr/releases).
+## Interface
 
-## Overview
-WuMgr (Update Manager for Windows) is a tool to manage updates of Microsoft products on the Windows operating system.
-It uses the ["Windows Update Agent API"](https://docs.microsoft.com/en-us/windows/win32/wua_sdk/portal-client) to identify as well as download and install missing updates.
-It allows the user fine control of updates on modern (Windows 10) operating system versions, comparable to what windows 7 and 8.1 offered.
+The maintained fork keeps the original lightweight desktop-tool shape while
+modernizing the default WPF shell. The app supports light mode, dark mode, and
+following the Windows app theme.
 
-This tool is inspired by the [Windows Update Mini Tool (WUMT)](https://www.majorgeeks.com/files/details/windows_update_minitool.html), however in comparison to WUMT it is written in pure .NET instead of C/C++, and it is open source. 
+![WuMgr light mode](docs/assets/wumgr-wpf-light.png)
 
-Here are my official donation options:
-* ETH: `0xBf08c3c47C5175015cEF4E32fB2315c9111F5305`
-* LTC: `LTqXK1UEri1FCv7fNn9bcFhsrh78SaNdSM`
-* BTC: `18tQgfoog4VyespgskpNiaNFMTdcm6j5Gd`
+![WuMgr dark mode](docs/assets/wumgr-wpf-dark.png)
 
-And if you preffer more legit payment methods, here is [my pateron page](https://www.patreon.com/DavidXanatos): https://www.patreon.com/DavidXanatos
+## Features
 
-Icons provided by: 
-* Icons8-com (http://icons8.com/)
+- Search Windows Update, Microsoft Update, installed updates, hidden updates,
+  and update history.
+- Download, install, uninstall, hide, unhide, and copy update links from a
+  portable executable.
+- Run read-only without elevation, then elevate only for admin-only actions.
+- Configure automatic update policy controls, Microsoft Update registration,
+  offline scan mode, manual download mode, and startup behavior.
+- Use a portable release zip with `Translation.ini` next to `wumgr.exe`.
 
-## Building and releases
+## Documentation
 
-See [docs/BUILDING.md](docs/BUILDING.md) for local build, test, and packaging
-commands. Release zips include `wumgr.exe`, `Translation.ini`, project docs,
-and SHA256 hashes.
+- [Build and release commands](docs/BUILDING.md)
+- [Options reference](docs/OPTIONS.md)
+- [Uninstall and Windows Update recovery](docs/UNINSTALL_AND_RECOVERY.md)
+- [Security review notes](docs/SECURITY_REVIEW.md)
+- [Upstream issue triage](docs/ISSUE_TRIAGE.md)
+- [Modernization notes](docs/MODERNIZATION.md)
+- [Security reporting](SECURITY.md)
 
-See [docs/OPTIONS.md](docs/OPTIONS.md) for option descriptions,
-[docs/UNINSTALL_AND_RECOVERY.md](docs/UNINSTALL_AND_RECOVERY.md) for uninstall
-and Windows Update policy recovery, [docs/ISSUE_TRIAGE.md](docs/ISSUE_TRIAGE.md)
-for upstream issue triage, [docs/MODERNIZATION.md](docs/MODERNIZATION.md) for
-modernization notes, and [SECURITY.md](SECURITY.md) for security reporting.
+## Attribution
+
+WuMgr was created by
+[DavidXanatos](https://github.com/DavidXanatos) and is inspired by
+[Windows Update Mini Tool (WUMT)](https://www.majorgeeks.com/files/details/windows_update_minitool.html).
+This fork preserves the original GPLv3 licensing and attribution while
+continuing maintenance in `Darkaxt/wumgr`.
+
+To support the original author, use
+[DavidXanatos on Patreon](https://www.patreon.com/DavidXanatos).
+
+Legacy WinForms icons are provided by [Icons8](https://icons8.com/).

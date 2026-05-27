@@ -2,17 +2,15 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Drawing;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.InteropServices;
+using Microsoft.Win32;
 using System.Windows;
+using System.Windows.Input;
 using Controls = System.Windows.Controls;
 using Forms = System.Windows.Forms;
-using System.Windows.Interop;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using WUApiLib;
 
@@ -34,6 +32,7 @@ namespace wumgr.Wpf
         private bool hideWindowsUpdatePage;
         private bool disableStoreAutoUpdate;
         private bool? includeDriversInUpdates;
+        private WpfThemeMode themeMode = WpfThemeMode.System;
         private string selectedSource;
         private string statusText;
         private string statusLog;
@@ -62,6 +61,7 @@ namespace wumgr.Wpf
         public ObservableCollection<WpfUpdateRow> Updates { get; private set; }
         public ObservableCollection<string> Sources { get; private set; }
         public ObservableCollection<string> AutoUpdateOptions { get; private set; }
+        public ObservableCollection<string> ThemeOptions { get; private set; }
         public ObservableCollection<string> ScheduleDays { get; private set; }
         public ObservableCollection<string> ScheduleTimes { get; private set; }
 
@@ -182,6 +182,22 @@ namespace wumgr.Wpf
 
                 if (SetField(ref selectedAutoUpdateIndex, value, "SelectedAutoUpdateIndex"))
                     SetConfig("AutoUpdate", value.ToString(CultureInfo.InvariantCulture));
+            }
+        }
+
+        public int SelectedThemeIndex
+        {
+            get { return WpfThemeSettings.ToSelectedIndex(themeMode); }
+            set
+            {
+                WpfThemeMode nextMode = WpfThemeSettings.FromSelectedIndex(value);
+                if (themeMode == nextMode)
+                    return;
+
+                themeMode = nextMode;
+                OnPropertyChanged("SelectedThemeIndex");
+                SetConfig(WpfThemeSettings.ConfigKey, WpfThemeSettings.ToConfigValue(themeMode));
+                ApplyTheme();
             }
         }
 
@@ -388,6 +404,7 @@ namespace wumgr.Wpf
             Updates = new ObservableCollection<WpfUpdateRow>();
             Sources = new ObservableCollection<string>();
             AutoUpdateOptions = new ObservableCollection<string>();
+            ThemeOptions = new ObservableCollection<string>();
             ScheduleDays = new ObservableCollection<string>();
             ScheduleTimes = new ObservableCollection<string>();
             StatusLog = "";
@@ -398,6 +415,11 @@ namespace wumgr.Wpf
             DataContext = this;
             Title = Program.mName;
             ApplyLocalizedText();
+            ApplyWindowCaptionButtons();
+            LoadThemeOptions();
+            themeMode = WpfThemeSettings.Parse(GetConfig(WpfThemeSettings.ConfigKey, "system"));
+            OnPropertyChanged("SelectedThemeIndex");
+            ApplyTheme();
             ApplyActionButtonIcons();
 
             IsAdministrator = MiscFunc.IsAdministrator();
@@ -420,6 +442,7 @@ namespace wumgr.Wpf
             CreateNotifyIcon();
             CreateAutoUpdateTimer();
             AttachAgentEvents();
+            SystemEvents.UserPreferenceChanged += SystemEvents_UserPreferenceChanged;
             Program.ipc.PipeMessage += PipesMessageHandler;
             Program.ipc.Listen();
             LoadList();
@@ -433,6 +456,7 @@ namespace wumgr.Wpf
             Program.Agent.UpdatesChaged += Agent_UpdatesChanged;
             Program.Agent.Finished += Agent_Finished;
             ContentRendered += WuMgrWpfWindow_ContentRendered;
+            StateChanged += WuMgrWpfWindow_StateChanged;
             Closing += WuMgrWpfWindow_Closing;
             Closed += WuMgrWpfWindow_Closed;
         }
@@ -447,12 +471,130 @@ namespace wumgr.Wpf
             StateColumn.Header = text.StateColumn;
         }
 
+        private void LoadThemeOptions()
+        {
+            ThemeOptions.Clear();
+            foreach (string option in text.ThemeOptions)
+                ThemeOptions.Add(option);
+        }
+
+        private void ApplyWindowCaptionButtons()
+        {
+            MinimizeWindowButton.Content = WpfWindowCaptionGlyph.Minimize;
+            MinimizeWindowButton.ToolTip = "Minimize";
+            System.Windows.Automation.AutomationProperties.SetName(MinimizeWindowButton, "Minimize");
+
+            CloseWindowButton.Content = WpfWindowCaptionGlyph.Close;
+            CloseWindowButton.ToolTip = "Close";
+            System.Windows.Automation.AutomationProperties.SetName(CloseWindowButton, "Close");
+
+            UpdateMaximizeRestoreButton();
+        }
+
+        private void UpdateMaximizeRestoreButton()
+        {
+            bool isMaximized = WindowState == WindowState.Maximized;
+            string label = isMaximized ? "Restore" : "Maximize";
+            MaximizeWindowButton.Content = WpfWindowCaptionGlyph.GetMaximizeRestoreGlyph(isMaximized);
+            MaximizeWindowButton.ToolTip = label;
+            System.Windows.Automation.AutomationProperties.SetName(MaximizeWindowButton, label);
+        }
+
+        private void ApplyTheme()
+        {
+            WpfThemeMode effectiveMode = WpfThemeSettings.ResolveEffectiveMode(themeMode, IsSystemUsingLightTheme());
+            bool useDarkTheme = effectiveMode == WpfThemeMode.Dark;
+
+            if (useDarkTheme)
+            {
+                SetThemeBrush("WindowBackgroundBrush", "#111820");
+                SetThemeBrush("HeaderBackgroundBrush", "#151e28");
+                SetThemeBrush("PanelBackgroundBrush", "#17212d");
+                SetThemeBrush("SurfaceBackgroundBrush", "#101821");
+                SetThemeBrush("ControlBackgroundBrush", "#1f2b38");
+                SetThemeBrush("ControlHoverBrush", "#2a3948");
+                SetThemeBrush("ControlPressedBrush", "#314457");
+                SetThemeBrush("SelectedBackgroundBrush", "#264a60");
+                SetThemeBrush("BorderLineBrush", "#344252");
+                SetThemeBrush("TextBrush", "#edf3fa");
+                SetThemeBrush("MutedTextBrush", "#a8b6c6");
+                SetThemeBrush("DisabledTextBrush", "#6f7f90");
+                SetThemeBrush("WarningTextBrush", "#f3c969");
+                SetThemeBrush("GridBackgroundBrush", "#101821");
+                SetThemeBrush("GridHeaderBackgroundBrush", "#1b2633");
+                SetThemeBrush("GridLineBrush", "#2d3b49");
+                SetThemeBrush("ProgressTrackBrush", "#253342");
+                SetThemeBrush("ProgressFillBrush", "#3fb950");
+                SetThemeBrush("ProgressMarqueeBrush", "#58a6ff");
+            }
+            else
+            {
+                SetThemeBrush("WindowBackgroundBrush", "#f3f5f7");
+                SetThemeBrush("HeaderBackgroundBrush", "#ffffff");
+                SetThemeBrush("PanelBackgroundBrush", "#ffffff");
+                SetThemeBrush("SurfaceBackgroundBrush", "#ffffff");
+                SetThemeBrush("ControlBackgroundBrush", "#ffffff");
+                SetThemeBrush("ControlHoverBrush", "#edf4fb");
+                SetThemeBrush("ControlPressedBrush", "#dcecf8");
+                SetThemeBrush("SelectedBackgroundBrush", "#d9edf8");
+                SetThemeBrush("BorderLineBrush", "#d8dee6");
+                SetThemeBrush("TextBrush", "#1f2933");
+                SetThemeBrush("MutedTextBrush", "#52616f");
+                SetThemeBrush("DisabledTextBrush", "#758392");
+                SetThemeBrush("WarningTextBrush", "#7a4f00");
+                SetThemeBrush("GridBackgroundBrush", "#ffffff");
+                SetThemeBrush("GridHeaderBackgroundBrush", "#f4f6f8");
+                SetThemeBrush("GridLineBrush", "#dbe3eb");
+                SetThemeBrush("ProgressTrackBrush", "#d8dee6");
+                SetThemeBrush("ProgressFillBrush", "#1f9d35");
+                SetThemeBrush("ProgressMarqueeBrush", "#46a4ff");
+            }
+        }
+
+        private void SetThemeBrush(string key, string color)
+        {
+            var brush = new SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(color));
+            brush.Freeze();
+            Resources[key] = brush;
+        }
+
+        private static bool IsSystemUsingLightTheme()
+        {
+            try
+            {
+                using (RegistryKey key = Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Themes\Personalize"))
+                {
+                    object value = key == null ? null : key.GetValue("AppsUseLightTheme");
+                    if (value is int)
+                        return (int)value != 0;
+
+                    int parsed;
+                    if (value != null && int.TryParse(value.ToString(), out parsed))
+                        return parsed != 0;
+                }
+            }
+            catch
+            {
+            }
+
+            return true;
+        }
+
+        private void SystemEvents_UserPreferenceChanged(object sender, UserPreferenceChangedEventArgs e)
+        {
+            if (themeMode != WpfThemeMode.System)
+                return;
+
+            if (e.Category == UserPreferenceCategory.Color || e.Category == UserPreferenceCategory.General)
+                Dispatcher.BeginInvoke(new Action(ApplyTheme));
+        }
+
         private void ApplyActionButtonIcons()
         {
             foreach (WpfActionButtonSpec spec in WpfActionButtonSpec.CreateDefault())
             {
                 Controls.Button button = GetActionButton(spec.Kind);
-                button.Content = CreateActionIcon(spec.ResourceName);
+                button.Content = CreateActionIcon(spec.Glyph);
             }
 
             RefreshActionButtonTooltips();
@@ -501,35 +643,19 @@ namespace wumgr.Wpf
             }
         }
 
-        private static Controls.Image CreateActionIcon(string resourceName)
+        private static Controls.TextBlock CreateActionIcon(string glyph)
         {
-            Bitmap bitmap = Properties.Resources.ResourceManager.GetObject(resourceName) as Bitmap;
-            if (bitmap == null)
-                return null;
-
-            BitmapSource source = CreateBitmapSource(bitmap);
-            return new Controls.Image
+            var icon = new Controls.TextBlock
             {
-                Source = source,
-                Width = 24,
-                Height = 24,
-                Stretch = Stretch.Uniform
+                Text = glyph,
+                FontFamily = new FontFamily(WpfActionButtonSpec.IconFontFamily),
+                FontSize = 15,
+                HorizontalAlignment = HorizontalAlignment.Center,
+                VerticalAlignment = VerticalAlignment.Center,
+                TextAlignment = TextAlignment.Center
             };
-        }
-
-        private static BitmapSource CreateBitmapSource(Bitmap bitmap)
-        {
-            IntPtr handle = bitmap.GetHbitmap();
-            try
-            {
-                BitmapSource source = Imaging.CreateBitmapSourceFromHBitmap(handle, IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromWidthAndHeight(24, 24));
-                source.Freeze();
-                return source;
-            }
-            finally
-            {
-                DeleteObject(handle);
-            }
+            icon.SetResourceReference(Controls.TextBlock.ForegroundProperty, "TextBrush");
+            return icon;
         }
 
         private void WuMgrWpfWindow_Closing(object sender, CancelEventArgs e)
@@ -551,7 +677,9 @@ namespace wumgr.Wpf
             Program.Agent.UpdatesChaged -= Agent_UpdatesChanged;
             Program.Agent.Finished -= Agent_Finished;
             ContentRendered -= WuMgrWpfWindow_ContentRendered;
+            StateChanged -= WuMgrWpfWindow_StateChanged;
             Program.ipc.PipeMessage -= PipesMessageHandler;
+            SystemEvents.UserPreferenceChanged -= SystemEvents_UserPreferenceChanged;
 
             if (notifyIcon != null)
             {
@@ -577,6 +705,46 @@ namespace wumgr.Wpf
         private void WuMgrWpfWindow_ContentRendered(object sender, EventArgs e)
         {
             InitializeAgentAfterStartup();
+        }
+
+        private void WuMgrWpfWindow_StateChanged(object sender, EventArgs e)
+        {
+            UpdateMaximizeRestoreButton();
+        }
+
+        private void TitleBar_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.ChangedButton != MouseButton.Left)
+                return;
+
+            if (e.ClickCount == 2)
+            {
+                ToggleMaximizeRestore();
+                return;
+            }
+
+            if (e.ButtonState == MouseButtonState.Pressed)
+                DragMove();
+        }
+
+        private void MinimizeWindow_Click(object sender, RoutedEventArgs e)
+        {
+            WindowState = WindowState.Minimized;
+        }
+
+        private void MaximizeRestoreWindow_Click(object sender, RoutedEventArgs e)
+        {
+            ToggleMaximizeRestore();
+        }
+
+        private void CloseWindow_Click(object sender, RoutedEventArgs e)
+        {
+            Close();
+        }
+
+        private void ToggleMaximizeRestore()
+        {
+            WindowState = WindowState == WindowState.Maximized ? WindowState.Normal : WindowState.Maximized;
         }
 
         public void InitializeAgentAfterStartup()
@@ -1500,8 +1668,6 @@ namespace wumgr.Wpf
                 PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        [DllImport("gdi32.dll")]
-        private static extern bool DeleteObject(IntPtr hObject);
     }
 
     public class WpfUpdateRow : INotifyPropertyChanged
