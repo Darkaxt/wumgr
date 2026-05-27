@@ -25,6 +25,7 @@ namespace wumgr.Tests
             Run("Pipe security avoids World access", PipeSecurityAvoidsWorldAccess);
             Run("Download file names are sanitized", DownloadFileNamesAreSanitized);
             Run("Content-Disposition filename parsing is guarded", ContentDispositionFilenameParsingIsGuarded);
+            Run("Command-line argument lookup guards missing values", CommandLineArgumentLookupGuardsMissingValues);
             Run("Startup elevation only runs when explicitly configured", StartupElevationOnlyRunsWhenConfigured);
             Run("Startup UI defaults to WPF with WinForms fallback", StartupUiDefaultsToWpfWithWinFormsFallback);
             Run("Startup defers agent init for WPF shell", StartupDefersAgentInitForWpfShell);
@@ -198,6 +199,32 @@ namespace wumgr.Tests
             Assert(StartupElevationPolicy.ShouldAttemptStartupElevation(false, false, true), "non-admin startup with Skip UAC should attempt configured elevation");
             Assert(!StartupElevationPolicy.ShouldAttemptStartupElevation(true, false, true), "already-admin startup should not re-elevate");
             Assert(!StartupElevationPolicy.ShouldAttemptStartupElevation(false, true, true), "debug startup should not auto-elevate");
+        }
+
+        private static void CommandLineArgumentLookupGuardsMissingValues()
+        {
+            string[] savedArgs = wumgr.Program.args;
+            try
+            {
+                wumgr.Program.args = new[] { "-onclose", "notepad.exe" };
+                AssertEqual("notepad.exe", wumgr.Program.GetArg("-onclose"), "present command value");
+
+                wumgr.Program.args = new[] { "-ONCLOSE", "cmd.exe" };
+                AssertEqual("cmd.exe", wumgr.Program.GetArg("-onclose"), "case-insensitive command value");
+
+                wumgr.Program.args = new[] { "-onclose", "-tray" };
+                AssertEqual("", wumgr.Program.GetArg("-onclose"), "flag after option should not be treated as command");
+
+                wumgr.Program.args = new[] { "-onclose" };
+                AssertEqual("", wumgr.Program.GetArg("-onclose"), "missing command value should be empty");
+
+                wumgr.Program.args = new string[0];
+                AssertEqual(null, wumgr.Program.GetArg("-onclose"), "absent command option");
+            }
+            finally
+            {
+                wumgr.Program.args = savedArgs;
+            }
         }
 
         private static void StartupUiDefaultsToWpfWithWinFormsFallback()

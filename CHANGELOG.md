@@ -39,6 +39,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
   the Windows Update API maximum download size.
 - The WPF shell now suppresses duplicate result dialogs while one is already
   open.
+- Malformed `-onclose` command-line hooks are now ignored instead of causing a
+  shutdown-time argument error.
 - WPF startup now creates and shows the shell before initializing the Windows
   Update Agent, so slow WUA startup does not make launch look dead.
 - Restored the original WinForms action icons in the WPF toolbar.
