@@ -21,14 +21,20 @@ class AppLog
             mInstance.logLine(line);
     }
 
+    public static string FormatLine(string line, DateTime timestamp)
+    {
+        return string.Format(System.Globalization.CultureInfo.InvariantCulture, "[{0:HH:mm:ss}] {1}", timestamp, line ?? "");
+    }
+
     public void logLine(String line)
     {
         mDispatcher.BeginInvoke(new Action(() => {
-            mLogList.Add(line);
+            string formattedLine = FormatLine(line, DateTime.Now);
+            mLogList.Add(formattedLine);
             while (mLogList.Count > 100)
                 mLogList.RemoveAt(0);
 
-            Logger?.Invoke(this, new LogEventArgs(line));
+            Logger?.Invoke(this, new LogEventArgs(formattedLine));
         }));
     }
 

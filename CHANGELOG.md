@@ -19,6 +19,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
   facilitator-service, Store auto-update, Settings-page, and driver policies.
 - Added WPF localized text bindings for migrated tabs, buttons, columns, tray
   menu labels, and option controls.
+- Added timestamps to log entries so update searches and operations can be
+  timed from the log panel.
 - Made the WPF shell the default UI and added `-winforms` as an explicit
   fallback switch for the legacy UI.
 
