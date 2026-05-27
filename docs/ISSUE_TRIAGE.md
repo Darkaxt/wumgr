@@ -27,6 +27,8 @@ opened only when the work is actionable for this maintained fork.
 - [#138](https://github.com/DavidXanatos/wumgr/issues/138) Options documentation and large update size report
 - [#113](https://github.com/DavidXanatos/wumgr/issues/113) Automatic search/startup search; `-update` startup search is restored in the WPF path, while scheduled automatic search still requires the background tray option
 - [#87](https://github.com/DavidXanatos/wumgr/issues/87) Jittering during large update operations; duplicate dialogs and WPF first-render progress issues are mitigated, but the original install/download failure still needs reproduction data
+- [#10](https://github.com/DavidXanatos/wumgr/issues/10) Unavailable settings; the default WPF Auto Update tab now explains common disabled-control reasons
+- [#129](https://github.com/DavidXanatos/wumgr/issues/129) Disabled facilitator and WU Settings controls are greyed out; the default WPF Auto Update tab now explains common disabled-control reasons
 
 ## Handled after v1.2.0
 
@@ -90,9 +92,7 @@ opened only when the work is actionable for this maintained fork.
 
 ## Support or meta
 
-- [#10](https://github.com/DavidXanatos/wumgr/issues/10) Unavailable settings
 - [#78](https://github.com/DavidXanatos/wumgr/issues/78) Defender Updates task when Windows Update service is disabled; the fork currently has no Defender update scheduled-task artifact to patch
-- [#129](https://github.com/DavidXanatos/wumgr/issues/129) Disabled facilitator and WU Settings controls are greyed out
 - [#132](https://github.com/DavidXanatos/wumgr/issues/132) Program not asking for reboot
 - [#134](https://github.com/DavidXanatos/wumgr/issues/134) Need for changes with Windows 11
 - [#140](https://github.com/DavidXanatos/wumgr/issues/140) Future of Windows 11

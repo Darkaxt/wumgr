@@ -14,6 +14,7 @@ namespace wumgr.Tests
     internal static class Program
     {
         private static int failures;
+        private static bool englishTranslationsLoaded;
 
         private static int Main()
         {
@@ -40,6 +41,7 @@ namespace wumgr.Tests
             Run("Cancel confirmation accepts only affirmative result", CancelConfirmationAcceptsOnlyAffirmativeResult);
             Run("WPF policy options disable writes without elevation", WpfPolicyOptionsDisableWritesWithoutElevation);
             Run("WPF policy options mirror GPO respect rules", WpfPolicyOptionsMirrorGpoRespectRules);
+            Run("WPF policy disabled reason explains gated controls", WpfPolicyDisabledReasonExplainsGatedControls);
             Run("WPF progress value clamps percentages", WpfProgressValueClampsPercentages);
             Run("WPF progress fill width mirrors progress state", WpfProgressFillWidthMirrorsProgressState);
             Run("WPF progress visual helpers keep custom bar readable", WpfProgressVisualHelpersKeepCustomBarReadable);
@@ -397,10 +399,30 @@ namespace wumgr.Tests
             Assert(!windows7.CanChangeStoreAutoUpdate, "pre-Windows 8 cannot change Store auto-update policy");
         }
 
+        private static void WpfPolicyDisabledReasonExplainsGatedControls()
+        {
+            LoadEnglishTranslations();
+
+            AssertEqual("Run WuMgr as Administrator to change Auto Update policy settings.",
+                WpfPolicyDisabledReason.Get(false, false, GPO.Respect.Full),
+                "non-admin policy reason");
+            AssertEqual("Store app mode cannot write Windows policy registry settings.",
+                WpfPolicyDisabledReason.Get(true, true, GPO.Respect.Full),
+                "Store/UWP policy reason");
+            AssertEqual("This Windows edition does not support the standard Windows Update policy settings.",
+                WpfPolicyDisabledReason.Get(true, false, GPO.Respect.None),
+                "unsupported policy reason");
+            AssertEqual("This Windows edition only partially supports standard Windows Update policy settings, so some controls are limited.",
+                WpfPolicyDisabledReason.Get(true, false, GPO.Respect.Partial),
+                "partial support policy reason");
+            AssertEqual("",
+                WpfPolicyDisabledReason.Get(true, false, GPO.Respect.Full),
+                "fully enabled policy reason");
+        }
+
         private static void WpfLocalizedTextMirrorsSharedTranslations()
         {
-            wumgr.Program.appPath = Path.Combine(Directory.GetCurrentDirectory(), "wumgr");
-            Translate.Load("en");
+            LoadEnglishTranslations();
 
             var text = new WpfLocalizedText();
 
@@ -423,6 +445,16 @@ namespace wumgr.Tests
             AssertEqual("Follow system setting", text.ThemeOptions[0], "WPF system theme option");
             AssertEqual("Light", text.ThemeOptions[1], "WPF light theme option");
             AssertEqual("Dark", text.ThemeOptions[2], "WPF dark theme option");
+        }
+
+        private static void LoadEnglishTranslations()
+        {
+            if (englishTranslationsLoaded)
+                return;
+
+            wumgr.Program.appPath = Path.Combine(Directory.GetCurrentDirectory(), "wumgr");
+            Translate.Load("en");
+            englishTranslationsLoaded = true;
         }
 
         private static void WpfProgressValueClampsPercentages()
