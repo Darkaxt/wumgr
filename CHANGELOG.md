@@ -39,6 +39,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
   command-line options, background operation, local files, and troubleshooting.
 - Added a WPF Auto Update hint explaining why policy controls are disabled or
   limited.
+- Added clearer README/user-guide notes for choosing the stable release versus
+  current `master`, reporting WPF feedback, and the WPF release gate.
 
 ### Fixed
 - Normal non-admin launch no longer opens a UAC prompt unless Skip UAC was

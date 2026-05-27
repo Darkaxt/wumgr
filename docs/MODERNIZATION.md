@@ -27,5 +27,20 @@ The existing WinForms UI remains available with `-winforms` for fallback
 testing. The executable name, portable zip format, and .NET Framework target are
 unchanged.
 
-Remaining WPF migration work includes broader manual smoke coverage before the
-next release.
+## Release Gate
+
+Before packaging WPF as the normal release UI, smoke test the core workflows on
+Windows 10 22H2 and Windows 11:
+
+- Normal launch without elevation and explicit elevated launch for admin-only
+  actions.
+- Search, download, install, uninstall, hide/unhide, copy links, and cancel.
+- Startup search with `-update`, tray restore, tray exit, and notification
+  restore.
+- Auto Update policy controls, disabled-control explanations, and recovery
+  documentation.
+- Translation loading, light/dark theme behavior, window placement persistence,
+  and high-DPI rendering.
+
+Keep the WinForms fallback until those checks pass on a real Windows Update
+machine and the release notes clearly describe any remaining WPF limitations.
