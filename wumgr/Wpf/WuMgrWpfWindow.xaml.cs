@@ -311,13 +311,21 @@ namespace wumgr.Wpf
         public int TotalPercent
         {
             get { return totalPercent; }
-            private set { SetField(ref totalPercent, value, "TotalPercent"); }
+            private set
+            {
+                if (SetField(ref totalPercent, value, "TotalPercent"))
+                    UpdateProgressFill();
+            }
         }
 
         public bool IsBusyIndeterminate
         {
             get { return isBusyIndeterminate; }
-            private set { SetField(ref isBusyIndeterminate, value, "IsBusyIndeterminate"); }
+            private set
+            {
+                if (SetField(ref isBusyIndeterminate, value, "IsBusyIndeterminate"))
+                    UpdateProgressFill();
+            }
         }
 
         public bool HasSelection { get { return Updates.Any(update => update.Selected); } }
@@ -960,6 +968,21 @@ namespace wumgr.Wpf
         private void Cancel_Click(object sender, RoutedEventArgs e)
         {
             Program.Agent.CancelOperations();
+        }
+
+        private void ProgressTrack_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            UpdateProgressFill();
+        }
+
+        private void UpdateProgressFill()
+        {
+            if (ProgressTrack == null || ProgressFill == null)
+                return;
+
+            double ratio = isBusyIndeterminate ? 1.0 : WpfProgressValue.NormalizePercent(totalPercent);
+            ProgressFill.Width = ProgressTrack.ActualWidth * ratio;
+            ProgressFill.Visibility = ratio > 0 ? Visibility.Visible : Visibility.Collapsed;
         }
 
         private void OpenWinForms_Click(object sender, RoutedEventArgs e)

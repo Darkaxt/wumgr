@@ -32,6 +32,7 @@ namespace wumgr.Tests
             Run("Auto update schedule reports due days", AutoUpdateScheduleReportsDueDays);
             Run("WPF policy options disable writes without elevation", WpfPolicyOptionsDisableWritesWithoutElevation);
             Run("WPF policy options mirror GPO respect rules", WpfPolicyOptionsMirrorGpoRespectRules);
+            Run("WPF progress value clamps percentages", WpfProgressValueClampsPercentages);
             Run("WPF localized text mirrors shared translations", WpfLocalizedTextMirrorsSharedTranslations);
 
             if (failures != 0)
@@ -299,6 +300,15 @@ namespace wumgr.Tests
             AssertEqual("Close this WPF window and launch WuMgr with -winforms to use the legacy UI.", text.OpenWinFormsHint, "WPF-specific WinForms hint text");
             AssertEqual("Initializing Windows Update Agent...", text.InitializingAgent, "WPF startup status text");
             AssertEqual("Wednesday", text.ScheduleDays[4], "WPF schedule day text");
+        }
+
+        private static void WpfProgressValueClampsPercentages()
+        {
+            AssertEqual(0.0, WpfProgressValue.NormalizePercent(-25), "negative percent");
+            AssertEqual(0.0, WpfProgressValue.NormalizePercent(0), "zero percent");
+            AssertEqual(0.42, WpfProgressValue.NormalizePercent(42), "mid percent");
+            AssertEqual(1.0, WpfProgressValue.NormalizePercent(100), "full percent");
+            AssertEqual(1.0, WpfProgressValue.NormalizePercent(150), "overfull percent");
         }
 
         private static void Assert(bool condition, string message)

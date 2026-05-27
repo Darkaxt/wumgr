@@ -209,11 +209,9 @@
         <StackPanel DockPanel.Dock="Top" Margin="10,8,10,4">
           <TextBlock Text="{Binding Text.StatusHeader}" FontWeight="SemiBold" />
           <TextBlock Text="{Binding StatusText}" Margin="0,3,0,5" Foreground="#52616f" />
-          <ProgressBar Height="8"
-                       Minimum="0"
-                       Maximum="100"
-                       Value="{Binding TotalPercent}"
-                       IsIndeterminate="{Binding IsBusyIndeterminate}" />
+          <Grid x:Name="ProgressTrack" Height="8" Background="#d8dee6" SizeChanged="ProgressTrack_SizeChanged">
+            <Border x:Name="ProgressFill" Background="#2684ff" HorizontalAlignment="Left" Width="0" />
+          </Grid>
         </StackPanel>
         <TextBox Text="{Binding StatusLog, Mode=OneWay}"
                  Margin="10,0,10,10"

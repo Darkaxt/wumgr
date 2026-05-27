@@ -132,6 +132,7 @@
     <Compile Include="Wpf\WpfActionState.cs" />
     <Compile Include="Wpf\WpfLocalizedText.cs" />
     <Compile Include="Wpf\WpfPolicyOptionState.cs" />
+    <Compile Include="Wpf\WpfProgressValue.cs" />
     <Compile Include="Wpf\WpfWindowPlacement.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
