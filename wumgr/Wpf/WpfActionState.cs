@@ -18,7 +18,7 @@ namespace wumgr
         public bool CanGetLinks;
         public bool CanCancel;
 
-        public static WpfActionState Create(bool hasSelection, bool isAdministrator, bool agentActive, bool agentBusy, bool agentValid, bool manualMode, WpfUpdateListKind currentList)
+        public static WpfActionState Create(bool hasSelection, bool hasUninstallableSelection, bool isAdministrator, bool agentActive, bool agentBusy, bool agentValid, bool manualMode, WpfUpdateListKind currentList)
         {
             bool enable = agentActive && !agentBusy;
             bool validForDownloadOrInstall = agentValid || manualMode;
@@ -27,7 +27,7 @@ namespace wumgr
             state.CanSearch = enable;
             state.CanDownload = hasSelection && enable && validForDownloadOrInstall && currentList == WpfUpdateListKind.Pending;
             state.CanInstall = hasSelection && isAdministrator && enable && validForDownloadOrInstall && currentList == WpfUpdateListKind.Pending;
-            state.CanUninstall = hasSelection && isAdministrator && enable && currentList == WpfUpdateListKind.Installed;
+            state.CanUninstall = hasUninstallableSelection && isAdministrator && enable && currentList == WpfUpdateListKind.Installed;
             state.CanHide = hasSelection && enable && agentValid && (currentList == WpfUpdateListKind.Pending || currentList == WpfUpdateListKind.Hidden);
             state.CanGetLinks = hasSelection && currentList != WpfUpdateListKind.History;
             state.CanCancel = agentBusy;

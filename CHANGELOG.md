@@ -59,6 +59,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
   even if stale progress values remain.
 - The WPF shell now reports successful update installations that require a
   reboot instead of treating every successful operation as silent.
+- The Uninstall action now requires at least one selected installed update that
+  Windows marks as uninstallable, preventing no-op uninstall attempts.
 - Displayed update dates now use the local Windows date format, while cached
   update dates are stored in an invariant format and can still read legacy
   localized cache entries.

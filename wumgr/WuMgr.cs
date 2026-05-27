@@ -718,7 +718,8 @@ namespace wumgr
         {
             checkChecks = false;
 
-            bool isChecked = updateView.CheckedItems.Count > 0;
+            UpdateSelectionState selectionState = UpdateSelectionState.FromUpdates(GetUpdates());
+            bool isChecked = selectionState.HasSelection;
 
             bool busy = agent.IsBusy();
             btnCancel.Visible = busy;
@@ -734,7 +735,7 @@ namespace wumgr
             btnSearch.Enabled = enable;
             btnDownload.Enabled = isChecked && enable && isValid2 && (CurrentList == UpdateLists.PendingUpdates);
             btnInstall.Enabled = isChecked && admin && enable && isValid2 && (CurrentList == UpdateLists.PendingUpdates);
-            btnUnInstall.Enabled = isChecked && admin && enable && (CurrentList == UpdateLists.InstaledUpdates);
+            btnUnInstall.Enabled = selectionState.HasUninstallableSelection && admin && enable && (CurrentList == UpdateLists.InstaledUpdates);
             btnHide.Enabled = isChecked && enable && isValid && (CurrentList == UpdateLists.PendingUpdates || CurrentList == UpdateLists.HiddenUpdates);
             btnGetLink.Enabled = isChecked && CurrentList != UpdateLists.UpdateHistory;
         }
