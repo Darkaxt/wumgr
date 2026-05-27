@@ -46,9 +46,10 @@ For removal and policy recovery steps, see
 
 ## UI Mode
 
-WuMgr opens the WPF shell by default. Use `-winforms` to launch the legacy
-WinForms UI for fallback testing. `-wpf` is still accepted and selects the
-default WPF shell explicitly.
+Current `master` opens the WPF shell by default. Use `-winforms` to launch the
+legacy WinForms UI for fallback testing. `-wpf` is still accepted and selects
+the default WPF shell explicitly. Packaged `v1.2.1` releases still use the
+WinForms UI.
 
 Use `-tray` to start hidden in the notification area. Use `-minimized` to show
 the main window minimized on the taskbar. `-tray` takes precedence when both

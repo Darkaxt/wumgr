@@ -136,6 +136,7 @@
     <Compile Include="Wpf\WpfActionState.cs" />
     <Compile Include="Wpf\WpfListSelectionPolicy.cs" />
     <Compile Include="Wpf\WpfLocalizedText.cs" />
+    <Compile Include="Wpf\WpfOperationResultMessage.cs" />
     <Compile Include="Wpf\WpfPolicyDisabledReason.cs" />
     <Compile Include="Wpf\WpfPolicyOptionState.cs" />
     <Compile Include="Wpf\WpfProgressValue.cs" />
