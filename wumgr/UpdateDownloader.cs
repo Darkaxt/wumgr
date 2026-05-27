@@ -68,7 +68,7 @@ namespace wumgr
                 {
                     foreach (MsUpdate update in mUpdates)
                     {
-                        if (update.KB.Equals(Download.KB))
+                        if (ManualDownloadPlanner.GetUpdateKey(update).Equals(Download.KB))
                         {
                             mInfo = update.Title;
                             break;
