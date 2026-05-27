@@ -31,6 +31,7 @@ namespace wumgr.Tests
             Run("Startup elevation only runs when explicitly configured", StartupElevationOnlyRunsWhenConfigured);
             Run("Startup UI defaults to WPF with WinForms fallback", StartupUiDefaultsToWpfWithWinFormsFallback);
             Run("Startup defers agent init for WPF shell", StartupDefersAgentInitForWpfShell);
+            Run("Update selection state detects uninstallable selections", UpdateSelectionStateDetectsUninstallableSelections);
             Run("WPF action state mirrors admin and list rules", WpfActionStateMirrorsAdminAndListRules);
             Run("WPF window placement rejects missing and tiny persisted bounds", WpfWindowPlacementRejectsInvalidBounds);
             Run("WPF status pane height rejects invalid persisted values", WpfStatusPaneHeightRejectsInvalidPersistedValues);
@@ -272,25 +273,49 @@ namespace wumgr.Tests
             Assert(StartupUiMode.ShouldInitializeAgentBeforeWindow(StartupUiKind.WinForms), "WinForms should preserve the legacy initialization order");
         }
 
+        private static void UpdateSelectionStateDetectsUninstallableSelections()
+        {
+            UpdateSelectionState empty = UpdateSelectionState.FromUpdates(new List<MsUpdate>());
+            Assert(!empty.HasSelection, "empty selection should report no selection");
+            Assert(!empty.HasUninstallableSelection, "empty selection should report no uninstallable items");
+
+            UpdateSelectionState nonUninstallable = UpdateSelectionState.FromUpdates(new List<MsUpdate>
+            {
+                new MsUpdate { Attributes = (int)MsUpdate.UpdateAttr.Installed }
+            });
+            Assert(nonUninstallable.HasSelection, "selected installed update should report a selection");
+            Assert(!nonUninstallable.HasUninstallableSelection, "installed update without uninstallable flag should not be eligible");
+
+            UpdateSelectionState uninstallable = UpdateSelectionState.FromUpdates(new List<MsUpdate>
+            {
+                new MsUpdate { Attributes = (int)MsUpdate.UpdateAttr.Uninstallable }
+            });
+            Assert(uninstallable.HasSelection, "uninstallable update should report a selection");
+            Assert(uninstallable.HasUninstallableSelection, "uninstallable update should be eligible");
+        }
+
         private static void WpfActionStateMirrorsAdminAndListRules()
         {
-            WpfActionState pendingNonAdmin = WpfActionState.Create(true, false, true, false, true, false, WpfUpdateListKind.Pending);
+            WpfActionState pendingNonAdmin = WpfActionState.Create(true, false, false, true, false, true, false, WpfUpdateListKind.Pending);
             Assert(pendingNonAdmin.CanSearch, "active non-busy agent can search");
             Assert(pendingNonAdmin.CanDownload, "selected pending updates can be downloaded");
             Assert(!pendingNonAdmin.CanInstall, "non-admin user cannot install");
             Assert(pendingNonAdmin.CanHide, "selected pending updates can be hidden");
 
-            WpfActionState pendingAdmin = WpfActionState.Create(true, true, true, false, true, false, WpfUpdateListKind.Pending);
+            WpfActionState pendingAdmin = WpfActionState.Create(true, false, true, true, false, true, false, WpfUpdateListKind.Pending);
             Assert(pendingAdmin.CanInstall, "admin user can install selected pending updates");
 
-            WpfActionState installedAdmin = WpfActionState.Create(true, true, true, false, true, false, WpfUpdateListKind.Installed);
+            WpfActionState installedAdmin = WpfActionState.Create(true, true, true, true, false, true, false, WpfUpdateListKind.Installed);
             Assert(installedAdmin.CanUninstall, "admin user can uninstall selected installed updates");
             Assert(!installedAdmin.CanDownload, "installed updates cannot be downloaded");
 
-            WpfActionState hidden = WpfActionState.Create(true, false, true, false, true, false, WpfUpdateListKind.Hidden);
+            WpfActionState nonUninstallableInstalled = WpfActionState.Create(true, false, true, true, false, true, false, WpfUpdateListKind.Installed);
+            Assert(!nonUninstallableInstalled.CanUninstall, "non-uninstallable installed updates should not enable uninstall");
+
+            WpfActionState hidden = WpfActionState.Create(true, false, false, true, false, true, false, WpfUpdateListKind.Hidden);
             Assert(hidden.CanHide, "selected hidden updates can be unhidden");
 
-            WpfActionState busy = WpfActionState.Create(true, true, true, true, true, true, WpfUpdateListKind.Pending);
+            WpfActionState busy = WpfActionState.Create(true, false, true, true, true, true, true, WpfUpdateListKind.Pending);
             Assert(!busy.CanSearch, "busy agent cannot search");
             Assert(!busy.CanDownload, "busy agent cannot download");
             Assert(busy.CanCancel, "busy agent can be cancelled");

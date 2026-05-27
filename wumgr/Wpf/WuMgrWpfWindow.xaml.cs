@@ -398,7 +398,7 @@ namespace wumgr.Wpf
             }
         }
 
-        public bool HasSelection { get { return Updates.Any(update => update.Selected); } }
+        public bool HasSelection { get { return CurrentSelectionState.HasSelection; } }
         public bool HasSearchFilter { get { return !string.IsNullOrWhiteSpace(SearchFilter); } }
         public bool CanUseOnlineSource { get { return !OfflineMode; } }
         public bool CanChangeRunInBackground { get { return !MiscFunc.IsRunningAsUwp() || !RunInBackground; } }
@@ -439,8 +439,14 @@ namespace wumgr.Wpf
         {
             get
             {
-                return WpfActionState.Create(HasSelection, IsAdministrator, Program.Agent.IsActive(), Program.Agent.IsBusy(), Program.Agent.IsValid(), ManualMode, currentList);
+                UpdateSelectionState selectionState = CurrentSelectionState;
+                return WpfActionState.Create(selectionState.HasSelection, selectionState.HasUninstallableSelection, IsAdministrator, Program.Agent.IsActive(), Program.Agent.IsBusy(), Program.Agent.IsValid(), ManualMode, currentList);
             }
+        }
+
+        private UpdateSelectionState CurrentSelectionState
+        {
+            get { return UpdateSelectionState.FromUpdates(GetSelectedUpdates()); }
         }
 
         private WpfPolicyOptionState CurrentPolicyOptionState
