@@ -57,6 +57,21 @@ are supplied.
 Use `-update` to start a search after the Windows Update Agent is initialized.
 It can be combined with `-tray` for a hidden startup search.
 
+## Language Override
+
+WuMgr chooses the UI language from the installed Windows UI culture by default.
+To force a specific translation without changing Windows regional settings, add
+the language code to `wumgr.ini` next to `wumgr.exe`:
+
+```ini
+[Options]
+Lang=en
+```
+
+Use the section names from `Translation.ini`, such as `en`, `de`, `fr`, `it`,
+`ja`, `pl`, `pt`, `pt-br`, `ru`, or `zh-cmn-Hans-CN`. Missing translated
+strings fall back to the built-in English text.
+
 The WPF path supports source selection, search, list switching, selected-update
 actions, progress, cancel, single-instance restore, window placement
 persistence, and tray restore/exit behavior. It also supports automatic search
