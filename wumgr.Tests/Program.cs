@@ -23,6 +23,7 @@ namespace wumgr.Tests
             Run("GetCompletedFiles skips failed and incomplete downloads", GetCompletedFilesSkipsFailedAndIncompleteDownloads);
             Run("Select all reports selection changes", SelectAllReportsSelectionChanges);
             Run("Result dialog guard suppresses duplicate dialogs", ResultDialogGuardSuppressesDuplicateDialogs);
+            Run("WPF result messages report successful reboot requirements", WpfResultMessagesReportSuccessfulRebootRequirements);
             Run("Pipe security avoids World access", PipeSecurityAvoidsWorldAccess);
             Run("Download file names are sanitized", DownloadFileNamesAreSanitized);
             Run("Content-Disposition filename parsing is guarded", ContentDispositionFilenameParsingIsGuarded);
@@ -155,6 +156,22 @@ namespace wumgr.Tests
             AssertEqual(1, shown, "suppressed callback should not run");
             Assert(guard.TryRun(() => shown++), "guard should reset after callback");
             AssertEqual(2, shown, "second callback should run after reset");
+        }
+
+        private static void WpfResultMessagesReportSuccessfulRebootRequirements()
+        {
+            LoadEnglishTranslations();
+
+            WpfOperationResultMessage successReboot = WpfOperationResultMessage.Create(WuAgent.AgentOperation.InstallingUpdates, WuAgent.RetCodes.Success, true, "Installing Updates", "");
+            Assert(successReboot.ShowDialog, "successful install with reboot should show a message");
+            AssertEqual("Updates successfully installed, however, a reboot is required.", successReboot.Message, "successful reboot message");
+            AssertEqual("Installing Updates: Updates successfully installed, however, a reboot is required.", successReboot.DuplicateDescription, "successful reboot duplicate description");
+
+            WpfOperationResultMessage successNoReboot = WpfOperationResultMessage.Create(WuAgent.AgentOperation.InstallingUpdates, WuAgent.RetCodes.Success, false, "Installing Updates", "");
+            Assert(!successNoReboot.ShowDialog, "successful install without reboot remains quiet");
+
+            WpfOperationResultMessage inProgress = WpfOperationResultMessage.Create(WuAgent.AgentOperation.InstallingUpdates, WuAgent.RetCodes.InProgress, true, "Installing Updates", "");
+            Assert(!inProgress.ShowDialog, "in-progress result remains quiet");
         }
 
         private static void PipeSecurityAvoidsWorldAccess()

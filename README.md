@@ -10,7 +10,8 @@ This repository is a public maintained fork of
 [DavidXanatos/wumgr](https://github.com/DavidXanatos/wumgr). Current fork
 releases are published at
 [Darkaxt/wumgr releases](https://github.com/Darkaxt/wumgr/releases), with the
-latest packaged maintenance release tagged `v1.2.1`.
+latest packaged maintenance release tagged `v1.2.1`. Current `master` includes
+unreleased WPF modernization work for the next maintenance release.
 
 ## Quick Start
 
@@ -18,19 +19,25 @@ latest packaged maintenance release tagged `v1.2.1`.
 2. Unzip it to a writable folder.
 3. Run `wumgr.exe`.
 
-WuMgr now starts read-only by default. Search and review flows can run without
-elevation, while download, install, uninstall, policy, service, and Skip UAC
-changes require an elevated launch.
+The latest packaged release uses the maintained WinForms UI. Current `master`
+starts read-only by default and opens the WPF shell unless `-winforms` is used.
+Search and review flows can run without elevation, while download, install,
+uninstall, policy, service, and Skip UAC changes require an elevated launch.
 
-## Interface
+## Current Master Preview
 
 The maintained fork keeps the original lightweight desktop-tool shape while
-modernizing the default WPF shell. The app supports light mode, dark mode, and
-following the Windows app theme.
+modernizing the default WPF shell. This work is currently unreleased. It
+supports light mode, dark mode, and following the Windows app theme.
 
 ![WuMgr light mode](docs/assets/wumgr-wpf-light.png)
 
 ![WuMgr dark mode](docs/assets/wumgr-wpf-dark.png)
+
+The WPF path is wired to the main update lists and actions, restores the
+original action icons, uses a progress strip only while work is active, and
+keeps the legacy WinForms UI available with `-winforms` while migration testing
+continues.
 
 ## Features
 
@@ -38,7 +45,8 @@ following the Windows app theme.
   and update history.
 - Download, install, uninstall, hide, unhide, and copy update links from a
   portable executable.
-- Run read-only without elevation, then elevate only for admin-only actions.
+- Run current `master` read-only without elevation, then elevate only for
+  admin-only actions.
 - Configure automatic update policy controls, Microsoft Update registration,
   offline scan mode, manual download mode, and startup behavior.
 - Use a portable release zip with `Translation.ini` next to `wumgr.exe`.

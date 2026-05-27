@@ -1561,21 +1561,15 @@ namespace wumgr.Wpf
 
         private void ShowResult(WuAgent.AgentOperation operation, WuAgent.RetCodes ret, bool reboot)
         {
-            if (ret == WuAgent.RetCodes.Success || ret == WuAgent.RetCodes.InProgress)
+            WpfOperationResultMessage result = WpfOperationResultMessage.Create(operation, ret, reboot, FormatOperation(operation), FormatRetCode(ret));
+            if (!result.HasMessage)
                 return;
 
-            if (ret == WuAgent.RetCodes.Abborted)
-            {
-                AppendLog(FormatOperation(operation) + " aborted.");
-                return;
-            }
-
-            string message = FormatRetCode(ret);
-            AppendLog(message);
-            ShowResultDialog(message, FormatOperation(operation) + ": " + message);
-
-            if (reboot)
-                AppendLog("A reboot is required to finish the operation.");
+            AppendLog(result.Message);
+            if (result.ShowDialog)
+                ShowResultDialog(result.Message, result.DuplicateDescription);
+            if (result.HasAdditionalLogMessage)
+                AppendLog(result.AdditionalLogMessage);
         }
 
         private void ShowResultDialog(string message, string duplicateDescription)

@@ -52,6 +52,7 @@ opened only when the work is actionable for this maintained fork.
 - [#44](https://github.com/DavidXanatos/wumgr/issues/44) Stacked error windows; guarded in both WinForms and WPF result dialogs
 - [#95](https://github.com/DavidXanatos/wumgr/issues/95) Non-local date format
 - [#121](https://github.com/DavidXanatos/wumgr/issues/121) Update history showing wrong date; mitigated by invariant update-cache dates and legacy localized cache parsing
+- [#132](https://github.com/DavidXanatos/wumgr/issues/132) Program not asking for reboot; the WPF shell now reports successful installs that require a reboot
 - [#133](https://github.com/DavidXanatos/wumgr/issues/133) Cancellation confirmation
 - [#143](https://github.com/DavidXanatos/wumgr/issues/143) Honor system dark mode
 - [#105](https://github.com/DavidXanatos/wumgr/issues/105) Switch GUI language from German to English; documented the existing `Lang=en` override
@@ -93,7 +94,6 @@ opened only when the work is actionable for this maintained fork.
 ## Support or meta
 
 - [#78](https://github.com/DavidXanatos/wumgr/issues/78) Defender Updates task when Windows Update service is disabled; the fork currently has no Defender update scheduled-task artifact to patch
-- [#132](https://github.com/DavidXanatos/wumgr/issues/132) Program not asking for reboot
 - [#134](https://github.com/DavidXanatos/wumgr/issues/134) Need for changes with Windows 11
 - [#140](https://github.com/DavidXanatos/wumgr/issues/140) Future of Windows 11
 - [#147](https://github.com/DavidXanatos/wumgr/issues/147) Dead project?
