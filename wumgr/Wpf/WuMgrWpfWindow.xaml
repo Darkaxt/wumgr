@@ -494,6 +494,21 @@
 
       <DockPanel Grid.Row="0" Margin="0,0,0,10" LastChildFill="False">
         <StackPanel Orientation="Horizontal" DockPanel.Dock="Right">
+          <TextBlock Text="{Binding Text.SearchFilter}"
+                     VerticalAlignment="Center"
+                     Margin="0,0,6,0"
+                     Foreground="{DynamicResource MutedTextBrush}" />
+          <TextBox Text="{Binding SearchFilter, UpdateSourceTrigger=PropertyChanged}"
+                   Width="260"
+                   MinHeight="30"
+                   Padding="7,5"
+                   Margin="0,0,4,0" />
+          <Button Style="{StaticResource ActionIconButtonStyle}"
+                  Content="&#xE711;"
+                  FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets"
+                  ToolTip="{Binding Text.ClearFilter}"
+                  Click="ClearFilter_Click"
+                  IsEnabled="{Binding HasSearchFilter}" />
           <Button x:Name="RefreshActionButton"
                   Style="{StaticResource ActionIconButtonStyle}"
                   Click="Refresh_Click" />

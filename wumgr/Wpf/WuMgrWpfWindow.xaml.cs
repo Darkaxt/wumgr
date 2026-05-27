@@ -36,6 +36,7 @@ namespace wumgr.Wpf
         private string selectedSource;
         private string statusText;
         private string statusLog;
+        private string searchFilter;
         private int totalPercent;
         private bool isBusyIndeterminate;
         private bool allowShowDisplay = true;
@@ -333,6 +334,19 @@ namespace wumgr.Wpf
             private set { SetField(ref statusLog, value, "StatusLog"); }
         }
 
+        public string SearchFilter
+        {
+            get { return searchFilter; }
+            set
+            {
+                if (!SetField(ref searchFilter, value, "SearchFilter"))
+                    return;
+
+                OnPropertyChanged("HasSearchFilter");
+                LoadList();
+            }
+        }
+
         public int TotalPercent
         {
             get { return totalPercent; }
@@ -357,6 +371,7 @@ namespace wumgr.Wpf
         }
 
         public bool HasSelection { get { return Updates.Any(update => update.Selected); } }
+        public bool HasSearchFilter { get { return !string.IsNullOrWhiteSpace(SearchFilter); } }
         public bool CanUseOnlineSource { get { return !OfflineMode; } }
         public bool CanChangeRunInBackground { get { return !MiscFunc.IsRunningAsUwp() || !RunInBackground; } }
         public bool IsPendingList { get { return currentList == WpfUpdateListKind.Pending; } }
@@ -1090,6 +1105,9 @@ namespace wumgr.Wpf
             foreach (MsUpdate update in GetCurrentUpdates())
             {
                 WpfUpdateRow row = new WpfUpdateRow(update);
+                if (!WpfUpdateFilter.Matches(row, SearchFilter))
+                    continue;
+
                 row.PropertyChanged += UpdateRow_PropertyChanged;
                 Updates.Add(row);
             }
@@ -1156,6 +1174,11 @@ namespace wumgr.Wpf
         {
             LoadList();
             AppendLog(WpfStatusText.CurrentListRefreshed);
+        }
+
+        private void ClearFilter_Click(object sender, RoutedEventArgs e)
+        {
+            SearchFilter = "";
         }
 
         private void Search_Click(object sender, RoutedEventArgs e)
