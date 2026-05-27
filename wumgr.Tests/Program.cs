@@ -26,6 +26,8 @@ namespace wumgr.Tests
             Run("WPF action state mirrors admin and list rules", WpfActionStateMirrorsAdminAndListRules);
             Run("WPF window placement rejects missing and tiny persisted bounds", WpfWindowPlacementRejectsInvalidBounds);
             Run("Auto update schedule reports due days", AutoUpdateScheduleReportsDueDays);
+            Run("WPF policy options disable writes without elevation", WpfPolicyOptionsDisableWritesWithoutElevation);
+            Run("WPF policy options mirror GPO respect rules", WpfPolicyOptionsMirrorGpoRespectRules);
 
             if (failures != 0)
                 Console.Error.WriteLine("{0} test(s) failed.", failures);
@@ -214,6 +216,44 @@ namespace wumgr.Tests
             AssertEqual(2, AutoUpdateSchedule.GetDueDays(AutoUpdateMode.EveryMonth, now.AddMonths(-1).AddDays(-2), now), "monthly overdue two days");
             AssertEqual(3, AutoUpdateSchedule.GetGraceDays(AutoUpdateMode.EveryDay), "daily grace");
             AssertEqual(15, AutoUpdateSchedule.GetGraceDays(AutoUpdateMode.EveryMonth), "monthly grace");
+        }
+
+        private static void WpfPolicyOptionsDisableWritesWithoutElevation()
+        {
+            WpfPolicyOptionState state = WpfPolicyOptionState.Create(false, GPO.Respect.Full, 10.0f, GPO.AUOptions.Scheduled, true, false);
+
+            Assert(!state.CanChangeBlockMicrosoft, "non-admin cannot change WU server block");
+            Assert(!state.CanSelectNotification, "non-admin cannot select notification policy");
+            Assert(!state.CanSelectDownload, "non-admin cannot select download policy");
+            Assert(!state.CanSelectScheduled, "non-admin cannot select scheduled policy");
+            Assert(!state.CanChangeSchedule, "non-admin cannot change scheduled day/time");
+            Assert(!state.CanChangeDisableFacilitators, "non-admin cannot change update facilitators");
+            Assert(!state.CanChangeHideWindowsUpdatePage, "non-admin cannot hide Settings page");
+            Assert(!state.CanChangeStoreAutoUpdate, "non-admin cannot change Store auto-update policy");
+            Assert(!state.CanChangeDrivers, "non-admin cannot change driver policy");
+        }
+
+        private static void WpfPolicyOptionsMirrorGpoRespectRules()
+        {
+            WpfPolicyOptionState partialWithoutBlock = WpfPolicyOptionState.Create(true, GPO.Respect.Partial, 10.0f, GPO.AUOptions.Disabled, false, false);
+            Assert(!partialWithoutBlock.CanSelectNotification, "partial GPO support disables notification policy");
+            Assert(!partialWithoutBlock.CanSelectDownload, "partial GPO support disables download policy");
+            Assert(!partialWithoutBlock.CanSelectScheduled, "partial GPO support disables scheduled policy");
+            Assert(partialWithoutBlock.DisableFacilitatorsForcedOn, "partial support without WU block forces facilitator disable");
+            Assert(!partialWithoutBlock.CanChangeDisableFacilitators, "forced facilitator disable is read-only");
+            Assert(partialWithoutBlock.HideWindowsUpdatePageForcedOn, "disabled facilitators force the Settings page hidden");
+
+            WpfPolicyOptionState partialWithBlock = WpfPolicyOptionState.Create(true, GPO.Respect.Partial, 10.0f, GPO.AUOptions.Disabled, true, false);
+            Assert(partialWithBlock.CanChangeDisableFacilitators, "partial support with WU block can change facilitator disable");
+
+            WpfPolicyOptionState fullScheduled = WpfPolicyOptionState.Create(true, GPO.Respect.Full, 10.0f, GPO.AUOptions.Scheduled, false, false);
+            Assert(fullScheduled.CanSelectScheduled, "full GPO support can select scheduled policy");
+            Assert(fullScheduled.CanChangeSchedule, "scheduled policy enables day/time controls");
+            Assert(!fullScheduled.CanChangeDisableFacilitators, "non-disabled AU policy disables facilitator control");
+
+            WpfPolicyOptionState windows7 = WpfPolicyOptionState.Create(true, GPO.Respect.Full, 6.1f, GPO.AUOptions.Default, false, false);
+            Assert(!windows7.CanChangeHideWindowsUpdatePage, "pre-Windows 10 cannot hide WU Settings page");
+            Assert(!windows7.CanChangeStoreAutoUpdate, "pre-Windows 8 cannot change Store auto-update policy");
         }
 
         private static void Assert(bool condition, string message)

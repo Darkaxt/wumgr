@@ -11,12 +11,13 @@ layout structure and is now wired to core update operations: source selection,
 search, list switching, selection, download/install/uninstall, hide/unhide,
 link copying, cancellation, progress, single-instance restore, window placement
 persistence, tray restore/exit behavior, automatic search scheduling, idle
-checks, and tray notifications.
+checks, tray notifications, and the Auto Update policy/options controls for
+Windows Update GPO, facilitator services, Store auto-update, Settings-page, and
+driver policies.
 
 The existing WinForms UI, command-line options, portable zip format, and .NET
 Framework target remain unchanged for normal v1.2.x releases until the WPF path
 has equivalent behavior and smoke-test coverage.
 
-Remaining WPF migration work includes full Auto Update policy/options parity,
-translation cleanup for WPF-only labels, and manual smoke coverage before making
-WPF the default UI.
+Remaining WPF migration work includes translation cleanup for WPF-only labels
+and manual smoke coverage before making WPF the default UI.

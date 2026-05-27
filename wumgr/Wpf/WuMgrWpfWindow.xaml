@@ -48,38 +48,109 @@
 
     <Border Grid.Row="1" Grid.Column="0" Grid.RowSpan="2" Background="#ffffff" BorderBrush="#d8dee6" BorderThickness="0,0,1,0">
       <DockPanel Margin="12">
-        <StackPanel DockPanel.Dock="Bottom">
-          <TextBlock Text="Options" FontWeight="SemiBold" Margin="0,0,0,8" />
-          <CheckBox Content="Run in background"
-                    IsChecked="{Binding RunInBackground, Mode=TwoWay}"
-                    IsEnabled="{Binding CanChangeRunInBackground}"
-                    Margin="0,0,0,5" />
-          <ComboBox ItemsSource="{Binding AutoUpdateOptions}"
-                    SelectedIndex="{Binding SelectedAutoUpdateIndex, Mode=TwoWay}"
-                    IsEnabled="{Binding RunInBackground}"
-                    MinHeight="28"
-                    Margin="0,0,0,10" />
-          <TextBlock Text="Update source" FontWeight="SemiBold" Margin="0,0,0,6" />
-          <ComboBox ItemsSource="{Binding Sources}"
-                    SelectedItem="{Binding SelectedSource, Mode=TwoWay}"
-                    IsEnabled="{Binding CanUseOnlineSource}"
-                    MinHeight="28"
-                    Margin="0,0,0,10" />
-          <CheckBox Content="Offline mode" IsChecked="{Binding OfflineMode, Mode=TwoWay}" Margin="0,0,0,5" />
-          <CheckBox Content="Download offline CAB"
-                    IsChecked="{Binding DownloadOfflineCab, Mode=TwoWay}"
-                    IsEnabled="{Binding OfflineMode}"
-                    Margin="0,0,0,5" />
-          <CheckBox Content="Manual download/install" IsChecked="{Binding ManualMode}" Margin="0,0,0,5" />
-          <CheckBox Content="Include superseded" IsChecked="{Binding IncludeSuperseded}" Margin="0,0,0,5" />
-          <CheckBox Content="Register Microsoft Update"
-                    IsChecked="{Binding RegisterMicrosoftUpdate}"
-                    IsEnabled="{Binding IsAdministrator}"
-                    Margin="0,0,0,16" />
-          <CheckBox Content="Always run as Administrator"
-                    IsChecked="{Binding SkipUacEnabled}"
-                    IsEnabled="{Binding IsAdministrator}" />
-        </StackPanel>
+        <TabControl DockPanel.Dock="Bottom" MinHeight="314" Margin="0,10,0,0">
+          <TabItem Header="Options">
+            <ScrollViewer VerticalScrollBarVisibility="Auto">
+              <StackPanel Margin="6">
+                <CheckBox Content="Run in background"
+                          IsChecked="{Binding RunInBackground, Mode=TwoWay}"
+                          IsEnabled="{Binding CanChangeRunInBackground}"
+                          Margin="0,0,0,5" />
+                <ComboBox ItemsSource="{Binding AutoUpdateOptions}"
+                          SelectedIndex="{Binding SelectedAutoUpdateIndex, Mode=TwoWay}"
+                          IsEnabled="{Binding RunInBackground}"
+                          MinHeight="28"
+                          Margin="0,0,0,10" />
+                <TextBlock Text="Update source" FontWeight="SemiBold" Margin="0,0,0,6" />
+                <ComboBox ItemsSource="{Binding Sources}"
+                          SelectedItem="{Binding SelectedSource, Mode=TwoWay}"
+                          IsEnabled="{Binding CanUseOnlineSource}"
+                          MinHeight="28"
+                          Margin="0,0,0,10" />
+                <CheckBox Content="Offline mode" IsChecked="{Binding OfflineMode, Mode=TwoWay}" Margin="0,0,0,5" />
+                <CheckBox Content="Download offline CAB"
+                          IsChecked="{Binding DownloadOfflineCab, Mode=TwoWay}"
+                          IsEnabled="{Binding OfflineMode}"
+                          Margin="0,0,0,5" />
+                <CheckBox Content="Manual download/install" IsChecked="{Binding ManualMode}" Margin="0,0,0,5" />
+                <CheckBox Content="Include superseded" IsChecked="{Binding IncludeSuperseded}" Margin="0,0,0,5" />
+                <CheckBox Content="Register Microsoft Update"
+                          IsChecked="{Binding RegisterMicrosoftUpdate}"
+                          IsEnabled="{Binding IsAdministrator}"
+                          Margin="0,0,0,16" />
+                <CheckBox Content="Always run as Administrator"
+                          IsChecked="{Binding SkipUacEnabled}"
+                          IsEnabled="{Binding IsAdministrator}" />
+              </StackPanel>
+            </ScrollViewer>
+          </TabItem>
+          <TabItem Header="Auto Update">
+            <ScrollViewer VerticalScrollBarVisibility="Auto">
+              <StackPanel Margin="6">
+                <CheckBox Content="Block access to WU servers"
+                          IsChecked="{Binding BlockMicrosoftServers, Mode=TwoWay}"
+                          IsThreeState="True"
+                          IsEnabled="{Binding CanChangeBlockMicrosoft}"
+                          Margin="0,0,0,7" />
+                <RadioButton Content="Disable automatic update"
+                             GroupName="PolicyAutoUpdate"
+                             IsChecked="{Binding IsPolicyDisabled, Mode=TwoWay}"
+                             IsEnabled="{Binding IsAdministrator}"
+                             Margin="0,0,0,5" />
+                <CheckBox Content="Disable update facilitators"
+                          IsChecked="{Binding DisableUpdateFacilitators, Mode=TwoWay}"
+                          IsEnabled="{Binding CanChangeDisableFacilitators}"
+                          Margin="16,0,0,7" />
+                <RadioButton Content="Notification only"
+                             GroupName="PolicyAutoUpdate"
+                             IsChecked="{Binding IsPolicyNotification, Mode=TwoWay}"
+                             IsEnabled="{Binding CanSelectNotification}"
+                             Margin="0,0,0,5" />
+                <RadioButton Content="Download only"
+                             GroupName="PolicyAutoUpdate"
+                             IsChecked="{Binding IsPolicyDownload, Mode=TwoWay}"
+                             IsEnabled="{Binding CanSelectDownload}"
+                             Margin="0,0,0,5" />
+                <RadioButton Content="Scheduled installation"
+                             GroupName="PolicyAutoUpdate"
+                             IsChecked="{Binding IsPolicyScheduled, Mode=TwoWay}"
+                             IsEnabled="{Binding CanSelectScheduled}"
+                             Margin="0,0,0,5" />
+                <StackPanel Orientation="Horizontal" Margin="16,0,0,7">
+                  <ComboBox ItemsSource="{Binding ScheduleDays}"
+                            SelectedIndex="{Binding SelectedScheduleDay, Mode=TwoWay}"
+                            IsEnabled="{Binding CanChangeSchedule}"
+                            Width="96"
+                            MinHeight="26"
+                            Margin="0,0,6,0" />
+                  <ComboBox ItemsSource="{Binding ScheduleTimes}"
+                            SelectedIndex="{Binding SelectedScheduleTime, Mode=TwoWay}"
+                            IsEnabled="{Binding CanChangeSchedule}"
+                            Width="70"
+                            MinHeight="26" />
+                </StackPanel>
+                <RadioButton Content="Automatic update (default)"
+                             GroupName="PolicyAutoUpdate"
+                             IsChecked="{Binding IsPolicyDefault, Mode=TwoWay}"
+                             IsEnabled="{Binding IsAdministrator}"
+                             Margin="0,0,0,8" />
+                <Separator Margin="0,0,0,8" />
+                <CheckBox Content="Hide WU Settings page"
+                          IsChecked="{Binding HideWindowsUpdatePage, Mode=TwoWay}"
+                          IsEnabled="{Binding CanChangeHideWindowsUpdatePage}"
+                          Margin="0,0,0,5" />
+                <CheckBox Content="Disable Store auto update"
+                          IsChecked="{Binding DisableStoreAutoUpdate, Mode=TwoWay}"
+                          IsEnabled="{Binding CanChangeStoreAutoUpdate}"
+                          Margin="0,0,0,5" />
+                <CheckBox Content="Include drivers"
+                          IsChecked="{Binding IncludeDriversInUpdates, Mode=TwoWay}"
+                          IsThreeState="True"
+                          IsEnabled="{Binding CanChangeDrivers}" />
+              </StackPanel>
+            </ScrollViewer>
+          </TabItem>
+        </TabControl>
 
         <StackPanel>
           <ToggleButton Content="{Binding PendingLabel}" IsChecked="{Binding IsPendingList, Mode=OneWay}" Click="PendingList_Click" />
