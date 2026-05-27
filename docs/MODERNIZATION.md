@@ -15,7 +15,8 @@ checks, tray notifications, and the Auto Update policy/options controls for
 Windows Update GPO, facilitator services, Store auto-update, Settings-page, and
 driver policies. Migrated WPF tabs, buttons, columns, tray menu labels, and
 option controls now use the same translation keys as the WinForms UI where
-available.
+available. The WPF shell is shown before Windows Update Agent initialization so
+slow WUA startup does not make launch appear stalled.
 
 The existing WinForms UI remains available with `-winforms` for fallback
 testing. The executable name, portable zip format, and .NET Framework target are

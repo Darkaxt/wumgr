@@ -47,6 +47,7 @@ namespace wumgr.Wpf
         private int selectedScheduleDay;
         private int selectedScheduleTime;
         private bool suspendPolicyUpdate;
+        private bool agentInitializationStarted;
         private readonly WpfLocalizedText text = new WpfLocalizedText();
 
         public ObservableCollection<WpfUpdateRow> Updates { get; private set; }
@@ -409,6 +410,7 @@ namespace wumgr.Wpf
             Program.Agent.Progress += Agent_Progress;
             Program.Agent.UpdatesChaged += Agent_UpdatesChanged;
             Program.Agent.Finished += Agent_Finished;
+            ContentRendered += WuMgrWpfWindow_ContentRendered;
             Closing += WuMgrWpfWindow_Closing;
             Closed += WuMgrWpfWindow_Closed;
         }
@@ -425,7 +427,7 @@ namespace wumgr.Wpf
 
         private void WuMgrWpfWindow_Closing(object sender, CancelEventArgs e)
         {
-            if (RunInBackground && allowShowDisplay)
+            if (ShouldUseTray() && allowShowDisplay)
             {
                 e.Cancel = true;
                 allowShowDisplay = false;
@@ -441,6 +443,7 @@ namespace wumgr.Wpf
             Program.Agent.Progress -= Agent_Progress;
             Program.Agent.UpdatesChaged -= Agent_UpdatesChanged;
             Program.Agent.Finished -= Agent_Finished;
+            ContentRendered -= WuMgrWpfWindow_ContentRendered;
             Program.ipc.PipeMessage -= PipesMessageHandler;
 
             if (notifyIcon != null)
@@ -457,6 +460,42 @@ namespace wumgr.Wpf
             }
         }
 
+        private void WuMgrWpfWindow_ContentRendered(object sender, EventArgs e)
+        {
+            InitializeAgentAfterStartup();
+        }
+
+        public void InitializeAgentAfterStartup()
+        {
+            if (agentInitializationStarted)
+                return;
+
+            agentInitializationStarted = true;
+            Dispatcher.BeginInvoke(new Action(InitializeAgentAfterWindowShown), DispatcherPriority.ApplicationIdle);
+        }
+
+        private void InitializeAgentAfterWindowShown()
+        {
+            if (!Program.Agent.IsActive())
+            {
+                StatusText = text.InitializingAgent;
+                Program.Agent.Init();
+            }
+
+            RefreshAgentBackedState();
+            StatusText = "";
+        }
+
+        private void RefreshAgentBackedState()
+        {
+            string source = SelectedSource;
+            registerMicrosoftUpdate = Program.Agent.IsActive() && Program.Agent.TestService(WuAgent.MsUpdGUID);
+            OnPropertyChanged("RegisterMicrosoftUpdate");
+            LoadSources(string.IsNullOrEmpty(source) ? GetConfig("Source", "Windows Update") : source);
+            LoadList();
+            NotifyAllStateChanged();
+        }
+
         private void PipesMessageHandler(PipeIPC.PipeServer pipe, string data)
         {
             if (data.Equals("show", StringComparison.CurrentCultureIgnoreCase))
@@ -470,7 +509,7 @@ namespace wumgr.Wpf
             }
         }
 
-        private void ShowMainWindow()
+        public void ShowMainWindow()
         {
             allowShowDisplay = true;
             if (WindowState == WindowState.Minimized)
@@ -722,7 +761,12 @@ namespace wumgr.Wpf
         private void UpdateNotifyIcon()
         {
             if (notifyIcon != null)
-                notifyIcon.Visible = RunInBackground;
+                notifyIcon.Visible = ShouldUseTray();
+        }
+
+        private bool ShouldUseTray()
+        {
+            return RunInBackground || StartupUiMode.ShouldStartInTray(Program.args);
         }
 
         private void NotifyIcon_MouseDoubleClick(object sender, Forms.MouseEventArgs e)
@@ -920,7 +964,7 @@ namespace wumgr.Wpf
 
         private void OpenWinForms_Click(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show("Close this WPF window and launch WuMgr without -wpf to use the WinForms UI.", Program.mName);
+            MessageBox.Show(text.OpenWinFormsHint, Program.mName);
         }
 
         private void LoadWindowSettings()

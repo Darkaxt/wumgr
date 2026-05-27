@@ -26,6 +26,7 @@ namespace wumgr.Tests
             Run("Content-Disposition filename parsing is guarded", ContentDispositionFilenameParsingIsGuarded);
             Run("Startup elevation only runs when explicitly configured", StartupElevationOnlyRunsWhenConfigured);
             Run("Startup UI defaults to WPF with WinForms fallback", StartupUiDefaultsToWpfWithWinFormsFallback);
+            Run("Startup defers agent init for WPF shell", StartupDefersAgentInitForWpfShell);
             Run("WPF action state mirrors admin and list rules", WpfActionStateMirrorsAdminAndListRules);
             Run("WPF window placement rejects missing and tiny persisted bounds", WpfWindowPlacementRejectsInvalidBounds);
             Run("Auto update schedule reports due days", AutoUpdateScheduleReportsDueDays);
@@ -178,6 +179,15 @@ namespace wumgr.Tests
             AssertEqual(StartupUiKind.WinForms, StartupUiMode.Select(new[] { "-winforms" }), "explicit WinForms fallback");
             AssertEqual(StartupUiKind.WinForms, StartupUiMode.Select(new[] { "/winforms" }), "slash WinForms fallback");
             AssertEqual(StartupUiKind.WinForms, StartupUiMode.Select(new[] { "-wpf", "-winforms" }), "fallback should override WPF when both are present");
+            Assert(!StartupUiMode.ShouldStartInTray(new string[0]), "normal launch should show a window");
+            Assert(StartupUiMode.ShouldStartInTray(new[] { "-tray" }), "dash tray launch should start hidden");
+            Assert(StartupUiMode.ShouldStartInTray(new[] { "/tray" }), "slash tray launch should start hidden");
+        }
+
+        private static void StartupDefersAgentInitForWpfShell()
+        {
+            Assert(!StartupUiMode.ShouldInitializeAgentBeforeWindow(StartupUiKind.Wpf), "WPF should show the window before slow WUA initialization");
+            Assert(StartupUiMode.ShouldInitializeAgentBeforeWindow(StartupUiKind.WinForms), "WinForms should preserve the legacy initialization order");
         }
 
         private static void WpfActionStateMirrorsAdminAndListRules()
@@ -286,6 +296,8 @@ namespace wumgr.Tests
             AssertEqual("Refresh", text.RefreshButton, "WPF button text should strip WinForms mnemonic markers");
             AssertEqual("Exit", text.ExitMenu, "WPF tray menu text should strip WinForms mnemonic markers");
             AssertEqual("Open WinForms UI", text.OpenWinFormsButton, "WPF-specific open WinForms text");
+            AssertEqual("Close this WPF window and launch WuMgr with -winforms to use the legacy UI.", text.OpenWinFormsHint, "WPF-specific WinForms hint text");
+            AssertEqual("Initializing Windows Update Agent...", text.InitializingAgent, "WPF startup status text");
             AssertEqual("Wednesday", text.ScheduleDays[4], "WPF schedule day text");
         }
 

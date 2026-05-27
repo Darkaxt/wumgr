@@ -18,6 +18,16 @@ namespace wumgr
             return StartupUiKind.Wpf;
         }
 
+        public static bool ShouldInitializeAgentBeforeWindow(StartupUiKind uiKind)
+        {
+            return uiKind == StartupUiKind.WinForms;
+        }
+
+        public static bool ShouldStartInTray(string[] args)
+        {
+            return HasArg(args, "-tray") || HasArg(args, "/tray");
+        }
+
         private static bool HasArg(string[] args, string name)
         {
             if (args == null)

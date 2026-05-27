@@ -134,10 +134,12 @@ namespace wumgr
             mStrings.Add("lbl_github", "Visit WuMgr on GitHub");
             mStrings.Add("wpf_update_source", "Update source");
             mStrings.Add("wpf_open_winforms", "Open WinForms UI");
+            mStrings.Add("wpf_open_winforms_hint", "Close this WPF window and launch WuMgr with -winforms to use the legacy UI.");
             mStrings.Add("wpf_updates_heading", "Windows Update");
             mStrings.Add("wpf_status", "Status");
             mStrings.Add("wpf_elevated", "Running elevated");
             mStrings.Add("wpf_readonly", "Read-only launch. Admin actions require elevation.");
+            mStrings.Add("wpf_initializing_agent", "Initializing Windows Update Agent...");
             mStrings.Add("wpf_unhide", "Unhide");
             mStrings.Add("wpf_open", "Open");
             mStrings.Add("wpf_daily", "Daily");

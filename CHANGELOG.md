@@ -25,6 +25,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - Normal non-admin launch no longer opens a UAC prompt unless Skip UAC was
   explicitly configured.
+- WPF startup now creates and shows the shell before initializing the Windows
+  Update Agent, so slow WUA startup does not make launch look dead.
 - Restricted named-pipe IPC ACLs to the current user, local Administrators, and
   Local System instead of granting `World` full control.
 - Sanitized manual download filenames derived from redirects and

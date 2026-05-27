@@ -37,10 +37,12 @@ namespace wumgr.Wpf
         public string CancelButton { get { return Translate.fmt("tip_cancel"); } }
         public string RefreshButton { get { return StripWinFormsMnemonic(Translate.fmt("menu_refresh")); } }
         public string OpenWinFormsButton { get { return Translate.fmt("wpf_open_winforms"); } }
+        public string OpenWinFormsHint { get { return Translate.fmt("wpf_open_winforms_hint"); } }
         public string WindowsUpdateHeading { get { return Translate.fmt("wpf_updates_heading"); } }
         public string StatusHeader { get { return Translate.fmt("wpf_status"); } }
         public string ElevatedStatus { get { return Translate.fmt("wpf_elevated"); } }
         public string ReadOnlyStatus { get { return Translate.fmt("wpf_readonly"); } }
+        public string InitializingAgent { get { return Translate.fmt("wpf_initializing_agent"); } }
         public string TitleColumn { get { return Translate.fmt("col_title"); } }
         public string CategoryColumn { get { return Translate.fmt("col_cat"); } }
         public string KbColumn { get { return Translate.fmt("col_kb"); } }
