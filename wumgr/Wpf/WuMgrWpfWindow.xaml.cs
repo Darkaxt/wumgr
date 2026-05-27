@@ -53,6 +53,8 @@ namespace wumgr.Wpf
         private int selectedScheduleTime;
         private bool suspendPolicyUpdate;
         private bool agentInitializationStarted;
+        private bool suppressSelectAllRowsChange;
+        private bool? selectAllRowsState;
         private readonly WpfLocalizedText text = new WpfLocalizedText();
 
         public ObservableCollection<WpfUpdateRow> Updates { get; private set; }
@@ -415,7 +417,7 @@ namespace wumgr.Wpf
             Program.ipc.PipeMessage += PipesMessageHandler;
             Program.ipc.Listen();
             LoadList();
-            AppendLog("WPF shell loaded. Full update operations are now wired for the core lists.");
+            AppendLog(WpfStatusText.Ready);
             NotifyAllStateChanged();
         }
 
@@ -454,6 +456,7 @@ namespace wumgr.Wpf
         {
             switch (kind)
             {
+                case WpfActionButtonKind.Refresh: return RefreshActionButton;
                 case WpfActionButtonKind.Search: return SearchActionButton;
                 case WpfActionButtonKind.Download: return DownloadActionButton;
                 case WpfActionButtonKind.Install: return InstallActionButton;
@@ -469,6 +472,7 @@ namespace wumgr.Wpf
         {
             switch (kind)
             {
+                case WpfActionButtonKind.Refresh: return text.RefreshButton;
                 case WpfActionButtonKind.Search: return text.SearchButton;
                 case WpfActionButtonKind.Download: return text.DownloadButton;
                 case WpfActionButtonKind.Install: return text.InstallButton;
@@ -909,6 +913,7 @@ namespace wumgr.Wpf
                 Updates.Add(row);
             }
 
+            UpdateSelectionControls();
             NotifyAllStateChanged();
         }
 
@@ -932,7 +937,10 @@ namespace wumgr.Wpf
         private void UpdateRow_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName == "Selected")
+            {
+                UpdateSelectionControls();
                 NotifyActionStateChanged();
+            }
         }
 
         private void PendingList_Click(object sender, RoutedEventArgs e)
@@ -966,7 +974,7 @@ namespace wumgr.Wpf
         private void Refresh_Click(object sender, RoutedEventArgs e)
         {
             LoadList();
-            AppendLog("Current WPF list refreshed from the agent cache.");
+            AppendLog(WpfStatusText.CurrentListRefreshed);
         }
 
         private void Search_Click(object sender, RoutedEventArgs e)
@@ -1059,6 +1067,52 @@ namespace wumgr.Wpf
             Program.Agent.CancelOperations();
         }
 
+        private void SelectAllRows_Click(object sender, RoutedEventArgs e)
+        {
+            if (suppressSelectAllRowsChange || !WpfListSelectionPolicy.CanSelectRows(currentList))
+                return;
+
+            bool select = selectAllRowsState != true;
+            foreach (WpfUpdateRow row in Updates)
+                row.Selected = select;
+
+            UpdateSelectionControls();
+            NotifyActionStateChanged();
+        }
+
+        private void UpdateSelectionControls()
+        {
+            if (SelectionColumn == null || SelectAllRowsCheckBox == null)
+                return;
+
+            bool canSelectRows = WpfListSelectionPolicy.CanSelectRows(currentList);
+            SelectionColumn.Visibility = canSelectRows ? Visibility.Visible : Visibility.Collapsed;
+            SelectAllRowsCheckBox.IsEnabled = canSelectRows && Updates.Count > 0;
+            SelectAllRowsCheckBox.ToolTip = text.SelectAllRows;
+            System.Windows.Automation.AutomationProperties.SetName(SelectAllRowsCheckBox, text.SelectAllRows);
+
+            bool? checkState = false;
+            if (canSelectRows && Updates.Count > 0)
+            {
+                int selected = Updates.Count(update => update.Selected);
+                if (selected == Updates.Count)
+                    checkState = true;
+                else if (selected > 0)
+                    checkState = null;
+            }
+
+            suppressSelectAllRowsChange = true;
+            try
+            {
+                selectAllRowsState = checkState;
+                SelectAllRowsCheckBox.IsChecked = checkState;
+            }
+            finally
+            {
+                suppressSelectAllRowsChange = false;
+            }
+        }
+
         private void ProgressTrack_SizeChanged(object sender, SizeChangedEventArgs e)
         {
             UpdateProgressFill();
@@ -1072,11 +1126,6 @@ namespace wumgr.Wpf
             double width = WpfProgressValue.GetFillWidth(ProgressTrack.ActualWidth, totalPercent, isBusyIndeterminate);
             ProgressFill.Width = width;
             ProgressFill.Visibility = width > 0 ? Visibility.Visible : Visibility.Collapsed;
-        }
-
-        private void OpenWinForms_Click(object sender, RoutedEventArgs e)
-        {
-            MessageBox.Show(text.OpenWinFormsHint, Program.mName);
         }
 
         private void LoadWindowSettings()
