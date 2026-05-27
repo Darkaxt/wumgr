@@ -31,6 +31,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
   fallback switch for the legacy UI.
 - Documented the existing `wumgr.ini` language override for users who want a
   fixed UI language independent of Windows regional settings.
+- Refreshed repository documentation for current WPF defaults, packaging
+  commands, and upstream triage status.
 
 ### Fixed
 - Normal non-admin launch no longer opens a UAC prompt unless Skip UAC was

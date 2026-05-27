@@ -12,6 +12,16 @@ releases are published at
 [Darkaxt/wumgr releases](https://github.com/Darkaxt/wumgr/releases), with the
 latest packaged maintenance release tagged `v1.2.1`.
 
+## Quick Start
+
+1. Download `WuMgr_v1.2.1.zip` from the fork releases page.
+2. Unzip it to a writable folder.
+3. Run `wumgr.exe`.
+
+WuMgr now starts read-only by default. Search and review flows can run without
+elevation, while download, install, uninstall, policy, service, and Skip UAC
+changes require an elevated launch.
+
 ## Interface
 
 The maintained fork keeps the original lightweight desktop-tool shape while
@@ -32,6 +42,8 @@ following the Windows app theme.
 - Configure automatic update policy controls, Microsoft Update registration,
   offline scan mode, manual download mode, and startup behavior.
 - Use a portable release zip with `Translation.ini` next to `wumgr.exe`.
+- Force a UI language with `Lang=` in `wumgr.ini` when Windows regional
+  settings should not control the app language.
 
 ## Documentation
 
