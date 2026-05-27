@@ -34,6 +34,7 @@ namespace wumgr.Tests
             Run("Update dates display with local culture", UpdateDatesDisplayWithLocalCulture);
             Run("Update cache dates round-trip invariantly", UpdateCacheDatesRoundTripInvariantly);
             Run("Update cache dates read legacy localized values", UpdateCacheDatesReadLegacyLocalizedValues);
+            Run("App log formats lines with timestamps", AppLogFormatsLinesWithTimestamps);
             Run("WPF policy options disable writes without elevation", WpfPolicyOptionsDisableWritesWithoutElevation);
             Run("WPF policy options mirror GPO respect rules", WpfPolicyOptionsMirrorGpoRespectRules);
             Run("WPF progress value clamps percentages", WpfProgressValueClampsPercentages);
@@ -279,6 +280,13 @@ namespace wumgr.Tests
             AssertEqual(new DateTime(2021, 5, 15), parsed.Date, "legacy German cache date");
             Assert(!UpdateDateFormatter.TryDeserializeFromCache("", new CultureInfo("en-US"), out parsed), "empty cache date should fail");
             Assert(!UpdateDateFormatter.TryDeserializeFromCache("not a date", new CultureInfo("en-US"), out parsed), "invalid cache date should fail");
+        }
+
+        private static void AppLogFormatsLinesWithTimestamps()
+        {
+            DateTime timestamp = new DateTime(2026, 5, 27, 13, 4, 5);
+
+            AssertEqual("[13:04:05] Searching for updates", AppLog.FormatLine("Searching for updates", timestamp), "timestamped line");
         }
 
         private static void WpfPolicyOptionsDisableWritesWithoutElevation()

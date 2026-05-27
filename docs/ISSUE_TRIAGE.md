@@ -43,6 +43,7 @@ opened only when the work is actionable for this maintained fork.
 
 ## Handled after v1.2.1
 
+- [#40](https://github.com/DavidXanatos/wumgr/issues/40) Add time marks in log panel
 - [#95](https://github.com/DavidXanatos/wumgr/issues/95) Non-local date format
 - [#121](https://github.com/DavidXanatos/wumgr/issues/121) Update history showing wrong date; mitigated by invariant update-cache dates and legacy localized cache parsing
 - [#143](https://github.com/DavidXanatos/wumgr/issues/143) Honor system dark mode
@@ -101,7 +102,6 @@ opened only when the work is actionable for this maintained fork.
 
 ## Low priority or insufficiently actionable
 
-- [#40](https://github.com/DavidXanatos/wumgr/issues/40) Add time marks in log panel
 - [#92](https://github.com/DavidXanatos/wumgr/issues/92) KB4549951
 - [#101](https://github.com/DavidXanatos/wumgr/issues/101) General pre-test questions
 - [#105](https://github.com/DavidXanatos/wumgr/issues/105) Switch GUI language from German to English
