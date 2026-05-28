@@ -98,6 +98,7 @@ See [docs/BUILDING.md](docs/BUILDING.md) for packaging and release commands.
 - [Uninstall and Windows Update recovery](docs/UNINSTALL_AND_RECOVERY.md)
 - [Security review notes](docs/SECURITY_REVIEW.md)
 - [Upstream issue triage](docs/ISSUE_TRIAGE.md)
+- [Upstream pull request triage](docs/UPSTREAM_PR_TRIAGE.md)
 - [Modernization notes](docs/MODERNIZATION.md)
 - [Security reporting](SECURITY.md)
 

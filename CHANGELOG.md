@@ -43,6 +43,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
   current `master`, reporting WPF feedback, and the WPF release gate.
 - Refined upstream issue triage so partially handled diagnostics and
   non-actionable support reports are not left in the active repro bucket.
+- Added upstream pull request triage notes for the stale PRs reviewed from the
+  parent project.
 
 ### Fixed
 - Normal non-admin launch no longer opens a UAC prompt unless Skip UAC was
