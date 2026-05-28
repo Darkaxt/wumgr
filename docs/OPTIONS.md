@@ -8,7 +8,9 @@
   outside the Windows Update download cache.
 - Include superseded: include potentially superseded updates in searches.
 - Register Microsoft Update: include Microsoft product updates, not only Windows.
-- Run in background: start WuMgr in the notification area.
+- Run in background: keep WuMgr in the notification area and save that
+  preference in `wumgr.ini`; WuMgr also writes a current-user startup entry so
+  it can start in the tray at logon.
 - Start minimized: show WuMgr minimized on launch without hiding it in the tray.
 - Automatic search: search daily, weekly, or monthly when WuMgr is running in the
   tray and the computer has been idle long enough.

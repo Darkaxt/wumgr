@@ -221,7 +221,7 @@ namespace wumgr
             try{
                 dlAutoCheck.SelectedIndex = MiscFunc.parseInt(GetConfig("AutoUpdate", "0"));
             }catch{ }
-            chkAutoRun.Checked = Program.IsAutoStart();
+            chkAutoRun.Checked = StartupBackgroundPreference.IsEnabled(GetConfig(StartupBackgroundPreference.ConfigKey, ""), Program.IsAutoStart());
             if (MiscFunc.IsRunningAsUwp() && chkAutoRun.CheckState == CheckState.Checked)
                 chkAutoRun.Enabled = false;
             IdleDelay = MiscFunc.parseInt(GetConfig("IdleDelay", "20"));
@@ -1295,6 +1295,7 @@ namespace wumgr
                 }
                 return;
             }
+            SetConfig(StartupBackgroundPreference.ConfigKey, StartupBackgroundPreference.ToConfigValue(chkAutoRun.Checked));
             Program.AutoStart(chkAutoRun.Checked);
         }
 
