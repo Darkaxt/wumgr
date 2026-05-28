@@ -522,10 +522,119 @@
                   Style="{StaticResource ActionIconButtonStyle}"
                   Click="Refresh_Click" />
         </StackPanel>
-        <TextBlock Text="{Binding Text.WindowsUpdateHeading}" FontSize="20" FontWeight="SemiBold" DockPanel.Dock="Left" />
+        <StackPanel Orientation="Horizontal" DockPanel.Dock="Left" VerticalAlignment="Center">
+          <TextBlock Text="{Binding Text.WindowsUpdateHeading}" FontSize="20" FontWeight="SemiBold" VerticalAlignment="Center" />
+          <CheckBox x:Name="SelectAllRowsCheckBox"
+                    Content="{Binding Text.SelectAllRows}"
+                    IsThreeState="True"
+                    Margin="16,2,0,0"
+                    VerticalAlignment="Center"
+                    Click="SelectAllRows_Click" />
+        </StackPanel>
       </DockPanel>
 
+      <ScrollViewer Grid.Row="1"
+                    Visibility="{Binding GroupedUpdatesVisibility}"
+                    VerticalScrollBarVisibility="Auto"
+                    HorizontalScrollBarVisibility="Disabled">
+        <ItemsControl ItemsSource="{Binding UpdateGroups}">
+          <ItemsControl.ItemTemplate>
+            <DataTemplate>
+              <Border BorderBrush="{DynamicResource BorderLineBrush}"
+                      BorderThickness="1"
+                      Background="{DynamicResource SurfaceBackgroundBrush}"
+                      CornerRadius="4"
+                      Margin="0,0,0,12">
+                <StackPanel>
+                  <DockPanel MinHeight="34"
+                             Background="{DynamicResource GridHeaderBackgroundBrush}"
+                             LastChildFill="True">
+                    <Button DockPanel.Dock="Right"
+                            Width="30"
+                            Height="28"
+                            MinHeight="28"
+                            Margin="0,3,6,3"
+                            Padding="0"
+                            Content="{Binding ExpandGlyph}"
+                            FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets"
+                            Tag="{Binding}"
+                            ToolTip="Expand or collapse category"
+                            AutomationProperties.Name="Expand or collapse category"
+                            Click="GroupExpand_Click" />
+                    <StackPanel Orientation="Horizontal" Margin="8,0,0,0" VerticalAlignment="Center">
+                      <CheckBox IsThreeState="True"
+                                IsChecked="{Binding SelectedState, Mode=OneWay}"
+                                Tag="{Binding}"
+                                VerticalAlignment="Center"
+                                ToolTip="Select category"
+                                AutomationProperties.Name="Select category"
+                                Click="GroupSelect_Click" />
+                      <TextBlock Text="{Binding Category}"
+                                 FontWeight="SemiBold"
+                                 Foreground="{DynamicResource TextBrush}"
+                                 Margin="8,0,0,0"
+                                 VerticalAlignment="Center" />
+                      <TextBlock Text="{Binding Count}"
+                                 Foreground="{DynamicResource MutedTextBrush}"
+                                 Margin="8,0,0,0"
+                                 VerticalAlignment="Center" />
+                    </StackPanel>
+                  </DockPanel>
+                  <ItemsControl ItemsSource="{Binding Rows}" Visibility="{Binding RowsVisibility}">
+                    <ItemsControl.ItemTemplate>
+                      <DataTemplate>
+                        <Border BorderBrush="{DynamicResource GridLineBrush}"
+                                BorderThickness="0,1,0,0"
+                                Padding="10,8"
+                                Background="{DynamicResource GridBackgroundBrush}">
+                          <Grid>
+                            <Grid.ColumnDefinitions>
+                              <ColumnDefinition Width="32" />
+                              <ColumnDefinition Width="*" />
+                              <ColumnDefinition Width="178" />
+                            </Grid.ColumnDefinitions>
+                            <CheckBox Grid.Column="0"
+                                      IsChecked="{Binding Selected, Mode=TwoWay}"
+                                      HorizontalAlignment="Center"
+                                      VerticalAlignment="Center" />
+                            <StackPanel Grid.Column="1" Margin="0,0,12,0">
+                              <TextBlock Text="{Binding Title}"
+                                         TextWrapping="Wrap"
+                                         Foreground="{DynamicResource TextBrush}" />
+                              <TextBlock Text="{Binding KB}"
+                                         Foreground="#005a9e"
+                                         Margin="0,3,0,0" />
+                            </StackPanel>
+                            <Border Grid.Column="2"
+                                    BorderBrush="{DynamicResource GridLineBrush}"
+                                    BorderThickness="1,0,0,0">
+                              <StackPanel HorizontalAlignment="Stretch"
+                                          VerticalAlignment="Center">
+                                <TextBlock Text="{Binding State}"
+                                           TextAlignment="Center"
+                                           Foreground="{DynamicResource MutedTextBrush}" />
+                                <TextBlock Text="{Binding Date}"
+                                           TextAlignment="Center"
+                                           Foreground="{DynamicResource MutedTextBrush}" />
+                                <TextBlock Text="{Binding Size}"
+                                           TextAlignment="Center"
+                                           Foreground="{DynamicResource MutedTextBrush}" />
+                              </StackPanel>
+                            </Border>
+                          </Grid>
+                        </Border>
+                      </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                  </ItemsControl>
+                </StackPanel>
+              </Border>
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+      </ScrollViewer>
+
       <DataGrid Grid.Row="1"
+                Visibility="{Binding TableUpdatesVisibility}"
                 ItemsSource="{Binding Updates}"
                 AutoGenerateColumns="False"
                 CanUserAddRows="False"
@@ -536,13 +645,6 @@
                 RowHeaderWidth="0">
         <DataGrid.Columns>
           <DataGridCheckBoxColumn x:Name="SelectionColumn" Binding="{Binding Selected, Mode=TwoWay}" Width="38">
-            <DataGridCheckBoxColumn.Header>
-              <CheckBox x:Name="SelectAllRowsCheckBox"
-                        IsThreeState="True"
-                        HorizontalAlignment="Center"
-                        VerticalAlignment="Center"
-                        Click="SelectAllRows_Click" />
-            </DataGridCheckBoxColumn.Header>
           </DataGridCheckBoxColumn>
           <DataGridTextColumn x:Name="TitleColumn" Binding="{Binding Title}" Width="*" IsReadOnly="True" />
           <DataGridTextColumn x:Name="CategoryColumn" Binding="{Binding Category}" Width="190" IsReadOnly="True" />

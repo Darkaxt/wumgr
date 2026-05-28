@@ -26,8 +26,8 @@ release.
 
 The screenshots below show the WPF shell on current `master`. The packaged
 `v1.2.1` release still uses the older WinForms interface. These captures show
-the idle state; the WPF progress strip is only shown while an update operation
-is active.
+the grouped active-update list; categories are selectable but WuMgr does not
+auto-skip driver, preview, or other update groups.
 
 | Light theme | Dark theme |
 | --- | --- |
@@ -68,9 +68,9 @@ not include all unreleased read-only launch changes yet.
   offline scan mode, manual download mode, and startup behavior.
 - Run current `master` without elevation for read-only inspection, then restart
   elevated only when using admin-only update or policy actions.
-- Use the WPF preview with compact icon actions, a resizable status/log pane,
-  and progress that stays hidden until search, download, install, or hide work
-  is running.
+- Use the WPF preview with grouped update categories, compact icon actions, a
+  resizable status/log pane, and progress that stays hidden until search,
+  download, install, or hide work is running.
 - Use `Translation.ini` next to `wumgr.exe` for portable translations.
 - Force a UI language with `Lang=` in `wumgr.ini` when Windows regional settings
   should not control the app language.

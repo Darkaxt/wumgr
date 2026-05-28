@@ -84,6 +84,12 @@ namespace wumgr.Tests
             Run("WPF caption glyphs reflect window state", WpfCaptionGlyphsReflectWindowState);
             Run("WPF list selection policy hides history selectors", WpfListSelectionPolicyHidesHistorySelectors);
             Run("WPF update filter matches visible columns", WpfUpdateFilterMatchesVisibleColumns);
+            Run("WPF grouped updates preserve category order", WpfGroupedUpdatesPreserveCategoryOrder);
+            Run("WPF grouped updates use Other Updates for blank categories", WpfGroupedUpdatesUseOtherUpdatesForBlankCategories);
+            Run("WPF grouped updates apply filtering before grouping", WpfGroupedUpdatesApplyFilteringBeforeGrouping);
+            Run("WPF grouped update selection stays scoped to a category", WpfGroupedUpdateSelectionStaysScopedToCategory);
+            Run("WPF grouped update selection can select all visible groups", WpfGroupedUpdateSelectionCanSelectAllVisibleGroups);
+            Run("WPF grouped cards apply only to active lists", WpfGroupedCardsApplyOnlyToActiveLists);
             Run("WPF status text avoids implementation labels", WpfStatusTextAvoidsImplementationLabels);
             Run("WPF localized text mirrors shared translations", WpfLocalizedTextMirrorsSharedTranslations);
 
@@ -790,6 +796,113 @@ namespace wumgr.Tests
             Assert(WpfUpdateFilter.Matches(row, "kb500"), "filter should match KB case-insensitively");
             Assert(WpfUpdateFilter.Matches(row, "security"), "filter should match category");
             Assert(!WpfUpdateFilter.Matches(row, "office"), "unmatched filter should exclude row");
+        }
+
+        private static void WpfGroupedUpdatesPreserveCategoryOrder()
+        {
+            List<WpfUpdateRow> rows = new List<WpfUpdateRow>
+            {
+                CreateWpfRow("Security One", "Security Updates", "KB1"),
+                CreateWpfRow("Driver One", "Drivers", "KB2"),
+                CreateWpfRow("Security Two", "Security Updates", "KB3")
+            };
+
+            var groups = WpfUpdateGroupBuilder.Create(rows);
+
+            AssertEqual(2, groups.Count, "group count");
+            AssertEqual("Security Updates", groups[0].Category, "first category");
+            AssertEqual(2, groups[0].Count, "first category count");
+            AssertEqual("Drivers", groups[1].Category, "second category");
+            AssertEqual(1, groups[1].Count, "second category count");
+        }
+
+        private static void WpfGroupedUpdatesUseOtherUpdatesForBlankCategories()
+        {
+            var groups = WpfUpdateGroupBuilder.Create(new[] { CreateWpfRow("Mystery", "", "KB1") });
+
+            AssertEqual(1, groups.Count, "group count");
+            AssertEqual(WpfUpdateGroupBuilder.OtherCategoryName, groups[0].Category, "blank category fallback");
+        }
+
+        private static void WpfGroupedUpdatesApplyFilteringBeforeGrouping()
+        {
+            List<WpfUpdateRow> rows = new List<WpfUpdateRow>
+            {
+                CreateWpfRow("Cumulative Security Update", "Security Updates", "KB1"),
+                CreateWpfRow("Lenovo Driver Update", "Drivers", "KB2")
+            };
+
+            var visibleRows = rows.Where(row => WpfUpdateFilter.Matches(row, "driver")).ToList();
+            var groups = WpfUpdateGroupBuilder.Create(visibleRows);
+
+            AssertEqual(1, groups.Count, "filtered group count");
+            AssertEqual("Drivers", groups[0].Category, "filtered category");
+            AssertEqual("Lenovo Driver Update", groups[0].Rows[0].Title, "filtered row");
+        }
+
+        private static void WpfGroupedUpdateSelectionStaysScopedToCategory()
+        {
+            WpfUpdateRow securityOne = CreateWpfRow("Security One", "Security Updates", "KB1");
+            WpfUpdateRow securityTwo = CreateWpfRow("Security Two", "Security Updates", "KB2");
+            WpfUpdateRow driver = CreateWpfRow("Driver One", "Drivers", "KB3");
+            var groups = WpfUpdateGroupBuilder.Create(new[] { securityOne, securityTwo, driver });
+
+            groups[0].SetSelected(true);
+
+            Assert(groups[0].SelectedState == true, "selected group should be checked");
+            Assert(securityOne.Selected, "first row in selected group");
+            Assert(securityTwo.Selected, "second row in selected group");
+            Assert(!driver.Selected, "other group should remain unchanged");
+
+            securityOne.Selected = false;
+
+            Assert(groups[0].SelectedState == null, "partial group should be indeterminate");
+
+            groups[0].SetSelected(false);
+
+            Assert(groups[0].SelectedState == false, "cleared group should be unchecked");
+            Assert(!securityOne.Selected, "first row cleared");
+            Assert(!securityTwo.Selected, "second row cleared");
+        }
+
+        private static void WpfGroupedUpdateSelectionCanSelectAllVisibleGroups()
+        {
+            WpfUpdateRow security = CreateWpfRow("Security One", "Security Updates", "KB1");
+            WpfUpdateRow driver = CreateWpfRow("Driver One", "Drivers", "KB2");
+            var groups = WpfUpdateGroupBuilder.Create(new[] { security, driver });
+
+            WpfUpdateGroupSelection.SetAll(groups, true);
+
+            Assert(security.Selected, "security row selected");
+            Assert(driver.Selected, "driver row selected");
+            Assert(groups[0].SelectedState == true, "security group checked");
+            Assert(groups[1].SelectedState == true, "driver group checked");
+
+            WpfUpdateGroupSelection.SetAll(groups, false);
+
+            Assert(!security.Selected, "security row cleared");
+            Assert(!driver.Selected, "driver row cleared");
+        }
+
+        private static void WpfGroupedCardsApplyOnlyToActiveLists()
+        {
+            Assert(WpfUpdateGroupBuilder.UseGroupedCards(WpfUpdateListKind.Pending), "pending list should use grouped cards");
+            Assert(WpfUpdateGroupBuilder.UseGroupedCards(WpfUpdateListKind.Installed), "installed list should use grouped cards");
+            Assert(WpfUpdateGroupBuilder.UseGroupedCards(WpfUpdateListKind.Hidden), "hidden list should use grouped cards");
+            Assert(!WpfUpdateGroupBuilder.UseGroupedCards(WpfUpdateListKind.History), "history list should keep table layout");
+        }
+
+        private static WpfUpdateRow CreateWpfRow(string title, string category, string kb)
+        {
+            return new WpfUpdateRow(new MsUpdate
+            {
+                Title = title,
+                Category = category,
+                KB = kb,
+                Date = new DateTime(2026, 5, 27),
+                Size = 1024,
+                State = MsUpdate.UpdateState.Pending
+            });
         }
 
         private static void WpfStatusTextAvoidsImplementationLabels()
