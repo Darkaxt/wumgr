@@ -14,20 +14,18 @@ published at [Darkaxt/wumgr releases](https://github.com/Darkaxt/wumgr/releases)
 
 | Track | Status | UI | Notes |
 | --- | --- | --- | --- |
-| Latest packaged release | `v1.2.1` | WinForms | Conservative maintenance release. Use this if you want the current stable zip. |
-| Current `master` | Unreleased `v1.2.2` work | WPF by default | Preview of the modern shell, read-only launch, and recent security/reliability hardening. |
-| Legacy fallback | Current `master` only | WinForms | Start with `-winforms` when testing behavior against the original UI. |
+| Latest packaged release | `v1.2.2` | WPF by default | Current maintained release with the modern shell, read-only launch, and recent security/reliability hardening. |
+| Current `master` | Post-release work | WPF by default | Development branch for fixes after `v1.2.2`. |
+| Legacy fallback | Available in release and `master` | WinForms | Start with `-winforms` when testing behavior against the original UI. |
 
 Use the release zip when you need a stable portable build. Use current `master`
-when you want to test the WPF migration and report feedback before the next
-release.
+when you want to test changes that have not been packaged yet.
 
 ## Screenshots
 
-The screenshots below show the WPF shell on current `master`. The packaged
-`v1.2.1` release still uses the older WinForms interface. These captures show
-the grouped active-update list; categories are selectable but WuMgr does not
-auto-skip driver, preview, or other update groups.
+The screenshots below show the WPF shell used by the current packaged release.
+These captures show the grouped active-update list; categories are selectable
+but WuMgr does not auto-skip driver, preview, or other update groups.
 
 | Light theme | Dark theme |
 | --- | --- |
@@ -35,7 +33,7 @@ auto-skip driver, preview, or other update groups.
 
 ## Download And Run
 
-For normal use, download `WuMgr_v1.2.1.zip` from
+For normal use, download `WuMgr_v1.2.2.zip` from
 [Darkaxt/wumgr releases](https://github.com/Darkaxt/wumgr/releases), unzip it
 to a writable folder, and run `wumgr.exe`.
 
@@ -50,13 +48,10 @@ For day-to-day usage, see [docs/USAGE.md](docs/USAGE.md).
 WuMgr can inspect update state without administrator rights, but changing system
 update state requires elevation.
 
-Current `master` starts read-only without a UAC prompt unless Skip UAC was
-explicitly configured. Admin-only actions such as download, install, uninstall,
+WuMgr starts read-only without a UAC prompt unless Skip UAC was explicitly
+configured. Admin-only actions such as download, install, uninstall,
 hide/unhide, service changes, GPO changes, and Skip UAC configuration stay
 unavailable until WuMgr is launched elevated.
-
-The packaged `v1.2.1` release is the older WinForms maintenance build and does
-not include all unreleased read-only launch changes yet.
 
 ## Features
 
@@ -66,16 +61,15 @@ not include all unreleased read-only launch changes yet.
   portable executable.
 - Configure automatic update policy controls, Microsoft Update registration,
   offline scan mode, manual download mode, and startup behavior.
-- Run current `master` without elevation for read-only inspection, then restart
-  elevated only when using admin-only update or policy actions.
-- Use the WPF preview with grouped update categories, compact icon actions, a
+- Run without elevation for read-only inspection, then restart elevated only
+  when using admin-only update or policy actions.
+- Use the WPF shell with grouped update categories, compact icon actions, a
   resizable status/log pane, and progress that stays hidden until search,
   download, install, or hide work is running.
 - Use `Translation.ini` next to `wumgr.exe` for portable translations.
 - Force a UI language with `Lang=` in `wumgr.ini` when Windows regional settings
   should not control the app language.
-- Use `-winforms` on current `master` to compare the WPF shell with the legacy
-  WinForms UI.
+- Use `-winforms` to compare the WPF shell with the legacy WinForms UI.
 
 ## Building From Source
 

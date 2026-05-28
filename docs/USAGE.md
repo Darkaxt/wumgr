@@ -5,10 +5,10 @@ This guide describes the maintained fork at `Darkaxt/wumgr`.
 ## Choose A Build
 
 - Use the latest release zip for normal use. The current packaged release is
-  `v1.2.1`, which is the conservative WinForms maintenance build.
-- Use current `master` only when testing unreleased `v1.2.2` changes. Current
-  `master` opens the WPF shell by default and keeps the WinForms UI available
-  with `-winforms`.
+  `v1.2.2`, which opens the WPF shell by default and keeps the WinForms UI
+  available with `-winforms`.
+- Use current `master` only when testing changes that have not been packaged
+  yet.
 - Use the release asset `SHA256SUMS.txt` to check downloaded archives after
   extraction.
 
@@ -17,11 +17,10 @@ warning.
 
 ## UI Modes
 
-Current `master` opens the WPF shell by default. It is intended to become the
-main interface, but it is still part of the unreleased `v1.2.2` work. It
-supports the primary update lists, source selection, search, selected-update
-actions, copy links, cancellation, progress/status reporting, tray behavior,
-startup search, and the migrated Auto Update controls.
+WuMgr opens the WPF shell by default. It supports the primary update lists,
+source selection, search, selected-update actions, copy links, cancellation,
+progress/status reporting, tray behavior, startup search, and the migrated Auto
+Update controls.
 
 The active update lists are grouped by category. Use a category checkbox to
 select or clear only that visible group, or use Select All to select every
@@ -44,9 +43,8 @@ interface.
 4. Relaunch as Administrator before downloading, installing, uninstalling,
    hiding, changing services, or changing Windows Update policy.
 
-Current `master` starts read-only without prompting for UAC unless Skip UAC was
-explicitly configured. The packaged `v1.2.1` release may still request elevation
-earlier because it uses the older WinForms startup path.
+WuMgr starts read-only without prompting for UAC unless Skip UAC was explicitly
+configured.
 
 ## Elevation Rules
 

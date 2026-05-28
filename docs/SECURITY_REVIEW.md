@@ -73,3 +73,4 @@ privilege and update integrity.
 - WPF is now the default shell. The maintained fork keeps the legacy WinForms UI
   as a fallback while additional UI modernization stays separate from security
   hardening.
+- v1.2.2 binaries remain unsigned.

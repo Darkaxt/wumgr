@@ -3,6 +3,8 @@ All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
+
+## [1.2.2] - 2026-05-28
 ### Added
 - Added v1.2.2 security review notes covering command hooks, Skip UAC, IPC,
   manual downloads, service/GPO writes, and WPF deferral.
@@ -104,6 +106,9 @@ This project adheres to [Semantic Versioning](http://semver.org/).
   instead of being swallowed silently.
 - The Run in background option now stores an explicit `wumgr.ini` preference
   instead of relying only on the current-user startup registry entry.
+
+### Changed
+- Version updated to 1.2.2.0.
 
 ## [1.2.1] - 2026-05-27
 ### Added
