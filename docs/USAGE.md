@@ -23,6 +23,10 @@ supports the primary update lists, source selection, search, selected-update
 actions, copy links, cancellation, progress/status reporting, tray behavior,
 startup search, and the migrated Auto Update controls.
 
+In the idle state, the WPF status pane shows only the current status/log text.
+The progress strip appears only while WuMgr is actively searching, downloading,
+installing, uninstalling, hiding, unhiding, or canceling an operation.
+
 The legacy WinForms UI remains available with `-winforms`. Use it as a fallback
 when testing a WPF regression or when comparing behavior against the original
 interface.
@@ -114,6 +118,8 @@ under the user's Downloads directory for writable state.
 
 - Use current `master` with `-winforms` if a WPF regression blocks an update
   workflow.
+- If progress looks stuck, include the visible status text and the latest log
+  lines; idle current `master` builds intentionally hide the progress strip.
 - Use `-console` when collecting logs for a bug report.
 - Include the Windows version, whether WuMgr was elevated, selected update
   titles, KB numbers when present, and the exact error text from the status log.

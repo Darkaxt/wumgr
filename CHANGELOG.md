@@ -45,6 +45,9 @@ This project adheres to [Semantic Versioning](http://semver.org/).
   non-actionable support reports are not left in the active repro bucket.
 - Added upstream pull request triage notes for the stale PRs reviewed from the
   parent project.
+- Refreshed README/user-guide notes and screenshots so the WPF preview reflects
+  the current idle-progress behavior and Patreon-only original-author support
+  link.
 
 ### Fixed
 - Normal non-admin launch no longer opens a UAC prompt unless Skip UAC was
