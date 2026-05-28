@@ -38,6 +38,7 @@ opened only when the work is actionable for this maintained fork.
 - [#83](https://github.com/DavidXanatos/wumgr/issues/83) Office 2013 updates are not installed; manual installer command and failure output logging is improved, while Office-specific install handling still needs a reproducible package/exit-code example
 - [#151](https://github.com/DavidXanatos/wumgr/issues/151) Shows 0 updates; search criteria now avoids the undocumented `DeploymentAction=*` wildcard and explicitly includes optional-installation groups, while zero-result environments still need local Windows Update log/repro data
 - [#100](https://github.com/DavidXanatos/wumgr/issues/100) Hide option does not work in Store update manager; failed hide/unhide attempts now log the affected update and Windows error, while Store-specific hide support still needs reproduction data
+- [#107](https://github.com/DavidXanatos/wumgr/issues/107) Repeated failures on Windows 10; the concrete missing diagnostics called out in the report are improved through better progress, failed-download reporting, manual installer output/exit-code logging, and reboot-required reporting, while the original fresh-install stall still needs reproduction data
 
 ## Handled after v1.2.0
 
@@ -72,10 +73,7 @@ opened only when the work is actionable for this maintained fork.
 ## Needs reproduction before code changes
 
 - [#60](https://github.com/DavidXanatos/wumgr/issues/60) Fresh Windows 8.1 install cannot launch WuMgr
-- [#107](https://github.com/DavidXanatos/wumgr/issues/107) Repeated failures on Windows 10
 - [#118](https://github.com/DavidXanatos/wumgr/issues/118) Windows Server 2019 hidden update behavior
-- [#139](https://github.com/DavidXanatos/wumgr/issues/139) Windows 11 upgrade not applied on reboot
-- [#153](https://github.com/DavidXanatos/wumgr/issues/153) Surface Slim Pen not charging
 
 ## Deferred feature or major-scope requests
 
@@ -95,6 +93,7 @@ opened only when the work is actionable for this maintained fork.
 
 - [#78](https://github.com/DavidXanatos/wumgr/issues/78) Defender Updates task when Windows Update service is disabled; the fork currently has no Defender update scheduled-task artifact to patch
 - [#134](https://github.com/DavidXanatos/wumgr/issues/134) Need for changes with Windows 11
+- [#139](https://github.com/DavidXanatos/wumgr/issues/139) Windows 11 upgrade not applied on reboot; the reporter also reproduced the failure with Microsoft's Windows 11 Upgrade Assistant, so this is not currently actionable as a WuMgr-specific fix
 - [#140](https://github.com/DavidXanatos/wumgr/issues/140) Future of Windows 11
 - [#147](https://github.com/DavidXanatos/wumgr/issues/147) Dead project?
 
@@ -102,3 +101,4 @@ opened only when the work is actionable for this maintained fork.
 
 - [#92](https://github.com/DavidXanatos/wumgr/issues/92) KB4549951
 - [#101](https://github.com/DavidXanatos/wumgr/issues/101) General pre-test questions
+- [#153](https://github.com/DavidXanatos/wumgr/issues/153) Surface Slim Pen not charging; no body, logs, update identity, or WuMgr-specific behavior was provided

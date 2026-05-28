@@ -41,6 +41,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
   limited.
 - Added clearer README/user-guide notes for choosing the stable release versus
   current `master`, reporting WPF feedback, and the WPF release gate.
+- Refined upstream issue triage so partially handled diagnostics and
+  non-actionable support reports are not left in the active repro bucket.
 
 ### Fixed
 - Normal non-admin launch no longer opens a UAC prompt unless Skip UAC was
