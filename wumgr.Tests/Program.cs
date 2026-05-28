@@ -57,6 +57,7 @@ namespace wumgr.Tests
             Run("WinINet unrecognized scheme error is named", WinInetUnrecognizedSchemeErrorIsNamed);
             Run("Hide failure messages identify update and Windows error", HideFailureMessagesIdentifyUpdateAndWindowsError);
             Run("Startup elevation only runs when explicitly configured", StartupElevationOnlyRunsWhenConfigured);
+            Run("Run in background preference uses explicit config before startup entry", RunInBackgroundPreferenceUsesExplicitConfigBeforeStartupEntry);
             Run("Startup UI defaults to WPF with WinForms fallback", StartupUiDefaultsToWpfWithWinFormsFallback);
             Run("Startup defers agent init for WPF shell", StartupDefersAgentInitForWpfShell);
             Run("Update selection state detects uninstallable selections", UpdateSelectionStateDetectsUninstallableSelections);
@@ -261,6 +262,17 @@ namespace wumgr.Tests
             Assert(StartupElevationPolicy.ShouldAttemptStartupElevation(false, false, true), "non-admin startup with Skip UAC should attempt configured elevation");
             Assert(!StartupElevationPolicy.ShouldAttemptStartupElevation(true, false, true), "already-admin startup should not re-elevate");
             Assert(!StartupElevationPolicy.ShouldAttemptStartupElevation(false, true, true), "debug startup should not auto-elevate");
+        }
+
+        private static void RunInBackgroundPreferenceUsesExplicitConfigBeforeStartupEntry()
+        {
+            Assert(StartupBackgroundPreference.IsEnabled("1", false), "explicit enabled config should keep background mode even without a startup entry");
+            Assert(!StartupBackgroundPreference.IsEnabled("0", true), "explicit disabled config should override a stale startup entry");
+            Assert(StartupBackgroundPreference.IsEnabled("", true), "missing config should preserve legacy startup-entry behavior");
+            Assert(!StartupBackgroundPreference.IsEnabled("", false), "missing config without startup entry should be disabled");
+            Assert(StartupBackgroundPreference.IsEnabled("invalid", true), "invalid config should fall back to startup-entry behavior");
+            AssertEqual("1", StartupBackgroundPreference.ToConfigValue(true), "enabled config value");
+            AssertEqual("0", StartupBackgroundPreference.ToConfigValue(false), "disabled config value");
         }
 
         private static void CommandLineArgumentLookupGuardsMissingValues()

@@ -61,6 +61,7 @@ opened only when the work is actionable for this maintained fork.
 - [#91](https://github.com/DavidXanatos/wumgr/issues/91) SCEP update KB3209361 install error; manual SCEP installers now use `/s /q` arguments
 - [#45](https://github.com/DavidXanatos/wumgr/issues/45) Delete KB scan never stops; Uninstall is now enabled only when the selected installed updates include at least one uninstallable update
 - [#44](https://github.com/DavidXanatos/wumgr/issues/44) Stacked error windows; guarded in both WinForms and WPF result dialogs
+- [#61](https://github.com/DavidXanatos/wumgr/issues/61) Options page does not apply some settings; `Include superseded` is persisted in `wumgr.ini`, and `Run in background` now has an explicit saved preference independent of the current startup registry entry
 - [#95](https://github.com/DavidXanatos/wumgr/issues/95) Non-local date format
 - [#121](https://github.com/DavidXanatos/wumgr/issues/121) Update history showing wrong date; mitigated by invariant update-cache dates and legacy localized cache parsing
 - [#132](https://github.com/DavidXanatos/wumgr/issues/132) Program not asking for reboot; the WPF shell now reports successful installs that require a reboot
@@ -71,7 +72,6 @@ opened only when the work is actionable for this maintained fork.
 ## Needs reproduction before code changes
 
 - [#60](https://github.com/DavidXanatos/wumgr/issues/60) Fresh Windows 8.1 install cannot launch WuMgr
-- [#61](https://github.com/DavidXanatos/wumgr/issues/61) Options page does not apply some settings
 - [#107](https://github.com/DavidXanatos/wumgr/issues/107) Repeated failures on Windows 10
 - [#118](https://github.com/DavidXanatos/wumgr/issues/118) Windows Server 2019 hidden update behavior
 - [#139](https://github.com/DavidXanatos/wumgr/issues/139) Windows 11 upgrade not applied on reboot

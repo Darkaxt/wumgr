@@ -93,6 +93,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
   adding explicit optional-installation groups.
 - Failed hide/unhide attempts now log the affected update and Windows error
   instead of being swallowed silently.
+- The Run in background option now stores an explicit `wumgr.ini` preference
+  instead of relying only on the current-user startup registry entry.
 
 ## [1.2.1] - 2026-05-27
 ### Added

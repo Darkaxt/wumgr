@@ -170,6 +170,7 @@ namespace wumgr.Wpf
                 if (!SetField(ref runInBackground, value, "RunInBackground"))
                     return;
 
+                SetConfig(StartupBackgroundPreference.ConfigKey, StartupBackgroundPreference.ToConfigValue(value));
                 if (!MiscFunc.IsRunningAsUwp())
                     Program.AutoStart(value);
                 UpdateNotifyIcon();
@@ -489,7 +490,7 @@ namespace wumgr.Wpf
             manualMode = MiscFunc.parseInt(GetConfig("Manual", "0")) != 0;
             includeSuperseded = MiscFunc.parseInt(GetConfig("IncludeOld", "0")) != 0;
             registerMicrosoftUpdate = Program.Agent.IsActive() && Program.Agent.TestService(WuAgent.MsUpdGUID);
-            runInBackground = Program.IsAutoStart();
+            runInBackground = StartupBackgroundPreference.IsEnabled(GetConfig(StartupBackgroundPreference.ConfigKey, ""), Program.IsAutoStart());
             startMinimized = StartupUiMode.IsStartMinimizedConfigured();
             idleDelay = MiscFunc.parseInt(GetConfig("IdleDelay", "20"));
             selectedAutoUpdateIndex = MiscFunc.parseInt(GetConfig("AutoUpdate", "0"));

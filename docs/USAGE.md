@@ -86,8 +86,9 @@ those modes instead of fully reimplementing every legacy startup switch.
 
 ## Background Operation
 
-- `Run in background` registers a current-user startup entry and keeps WuMgr in
-  the notification area when the main window is closed.
+- `Run in background` is saved in `wumgr.ini`, keeps WuMgr in the notification
+  area when the main window is closed, and registers a current-user startup
+  entry so WuMgr can start hidden at logon.
 - `Start minimized` starts the main window minimized without hiding it in the
   tray.
 - Automatic search runs only while WuMgr is running in the tray and the machine
