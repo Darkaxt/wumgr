@@ -20,9 +20,9 @@ available. The WPF shell is shown before Windows Update Agent initialization so
 slow WUA startup does not make launch appear stalled.
 
 Recent WPF polish restored the original action icons, moved the refresh action
-into the toolbar, hides progress when no operation is active, and reports
-successful installs that require a reboot. The README screenshots are captured
-from that idle state, so no progress strip is visible until an operation starts.
+into the toolbar, groups active updates by category, hides progress when no
+operation is active, and reports successful installs that require a reboot. The
+README screenshots show the grouped list in an idle state.
 
 The existing WinForms UI remains available with `-winforms` for fallback
 testing. The executable name, portable zip format, and .NET Framework target are

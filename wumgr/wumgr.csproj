@@ -151,6 +151,7 @@
     <Compile Include="Wpf\WpfStatusText.cs" />
     <Compile Include="Wpf\WpfStatusPaneHeight.cs" />
     <Compile Include="Wpf\WpfThemeSettings.cs" />
+    <Compile Include="Wpf\WpfUpdateGroup.cs" />
     <Compile Include="Wpf\WpfUpdateFilter.cs" />
     <Compile Include="Wpf\WpfWindowCaptionGlyph.cs" />
     <Compile Include="Wpf\WpfWindowPlacement.cs" />

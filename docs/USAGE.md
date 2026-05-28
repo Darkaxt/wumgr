@@ -23,6 +23,11 @@ supports the primary update lists, source selection, search, selected-update
 actions, copy links, cancellation, progress/status reporting, tray behavior,
 startup search, and the migrated Auto Update controls.
 
+The active update lists are grouped by category. Use a category checkbox to
+select or clear only that visible group, or use Select All to select every
+visible row. WuMgr does not automatically skip drivers, preview updates, or any
+other category; grouping is for scanning and manual choice.
+
 In the idle state, the WPF status pane shows only the current status/log text.
 The progress strip appears only while WuMgr is actively searching, downloading,
 installing, uninstalling, hiding, unhiding, or canceling an operation.

@@ -62,6 +62,7 @@ namespace wumgr.Wpf
         private readonly WpfLocalizedText text = new WpfLocalizedText();
 
         public ObservableCollection<WpfUpdateRow> Updates { get; private set; }
+        public ObservableCollection<WpfUpdateGroup> UpdateGroups { get; private set; }
         public ObservableCollection<string> Sources { get; private set; }
         public ObservableCollection<string> AutoUpdateOptions { get; private set; }
         public ObservableCollection<string> ThemeOptions { get; private set; }
@@ -399,6 +400,16 @@ namespace wumgr.Wpf
             }
         }
 
+        public Visibility GroupedUpdatesVisibility
+        {
+            get { return WpfUpdateGroupBuilder.UseGroupedCards(currentList) ? Visibility.Visible : Visibility.Collapsed; }
+        }
+
+        public Visibility TableUpdatesVisibility
+        {
+            get { return WpfUpdateGroupBuilder.UseGroupedCards(currentList) ? Visibility.Collapsed : Visibility.Visible; }
+        }
+
         public bool HasSelection { get { return CurrentSelectionState.HasSelection; } }
         public bool HasSearchFilter { get { return !string.IsNullOrWhiteSpace(SearchFilter); } }
         public bool CanUseOnlineSource { get { return !OfflineMode; } }
@@ -463,6 +474,7 @@ namespace wumgr.Wpf
         public WuMgrWpfWindow()
         {
             Updates = new ObservableCollection<WpfUpdateRow>();
+            UpdateGroups = new ObservableCollection<WpfUpdateGroup>();
             Sources = new ObservableCollection<string>();
             AutoUpdateOptions = new ObservableCollection<string>();
             ThemeOptions = new ObservableCollection<string>();
@@ -1168,6 +1180,8 @@ namespace wumgr.Wpf
         private void LoadList()
         {
             Updates.Clear();
+            UpdateGroups.Clear();
+            List<WpfUpdateRow> visibleRows = new List<WpfUpdateRow>();
             foreach (MsUpdate update in GetCurrentUpdates())
             {
                 WpfUpdateRow row = new WpfUpdateRow(update);
@@ -1176,7 +1190,11 @@ namespace wumgr.Wpf
 
                 row.PropertyChanged += UpdateRow_PropertyChanged;
                 Updates.Add(row);
+                visibleRows.Add(row);
             }
+
+            foreach (WpfUpdateGroup group in WpfUpdateGroupBuilder.Create(visibleRows))
+                UpdateGroups.Add(group);
 
             UpdateSelectionControls();
             NotifyAllStateChanged();
@@ -1352,11 +1370,38 @@ namespace wumgr.Wpf
                 return;
 
             bool select = selectAllRowsState != true;
-            foreach (WpfUpdateRow row in Updates)
-                row.Selected = select;
+            if (WpfUpdateGroupBuilder.UseGroupedCards(currentList))
+                WpfUpdateGroupSelection.SetAll(UpdateGroups, select);
+            else
+            {
+                foreach (WpfUpdateRow row in Updates)
+                    row.Selected = select;
+            }
 
             UpdateSelectionControls();
             NotifyActionStateChanged();
+        }
+
+        private void GroupSelect_Click(object sender, RoutedEventArgs e)
+        {
+            var checkBox = sender as Controls.CheckBox;
+            var group = checkBox == null ? null : checkBox.Tag as WpfUpdateGroup;
+            if (group == null)
+                return;
+
+            group.SetSelected(group.SelectedState != true);
+            UpdateSelectionControls();
+            NotifyActionStateChanged();
+        }
+
+        private void GroupExpand_Click(object sender, RoutedEventArgs e)
+        {
+            var button = sender as Controls.Button;
+            var group = button == null ? null : button.Tag as WpfUpdateGroup;
+            if (group == null)
+                return;
+
+            group.IsExpanded = !group.IsExpanded;
         }
 
         private void UpdateSelectionControls()
@@ -1365,7 +1410,8 @@ namespace wumgr.Wpf
                 return;
 
             bool canSelectRows = WpfListSelectionPolicy.CanSelectRows(currentList);
-            SelectionColumn.Visibility = canSelectRows ? Visibility.Visible : Visibility.Collapsed;
+            SelectionColumn.Visibility = canSelectRows && !WpfUpdateGroupBuilder.UseGroupedCards(currentList) ? Visibility.Visible : Visibility.Collapsed;
+            SelectAllRowsCheckBox.Visibility = canSelectRows ? Visibility.Visible : Visibility.Collapsed;
             SelectAllRowsCheckBox.IsEnabled = canSelectRows && Updates.Count > 0;
             SelectAllRowsCheckBox.ToolTip = text.SelectAllRows;
             System.Windows.Automation.AutomationProperties.SetName(SelectAllRowsCheckBox, text.SelectAllRows);
@@ -1722,6 +1768,8 @@ namespace wumgr.Wpf
             OnPropertyChanged("IsInstalledList");
             OnPropertyChanged("IsHiddenList");
             OnPropertyChanged("IsHistoryList");
+            OnPropertyChanged("GroupedUpdatesVisibility");
+            OnPropertyChanged("TableUpdatesVisibility");
             OnPropertyChanged("HideButtonText");
             RefreshActionButtonTooltips();
             NotifyPolicySelectionChanged();

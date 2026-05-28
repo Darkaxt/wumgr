@@ -48,6 +48,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Refreshed README/user-guide notes and screenshots so the WPF preview reflects
   the current idle-progress behavior and Patreon-only original-author support
   link.
+- Added a grouped WPF active-update list inspired by Windows Update MiniTool,
+  with category counts, collapsible groups, and category-scoped selection.
 
 ### Fixed
 - Normal non-admin launch no longer opens a UAC prompt unless Skip UAC was
